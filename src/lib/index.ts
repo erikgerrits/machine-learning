@@ -1,0 +1,1 @@
+export { default as Matrix } from "./math/linear-algebra/Matrix";
