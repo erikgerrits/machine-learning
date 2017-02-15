@@ -37,6 +37,22 @@ export default class Matrix {
         return matrix.getClone().add(value);
     }
 
+    public static appendBottom (matrix: Matrix, matrixToAppend: Matrix) {
+        return matrix.getClone().appendBottom(matrixToAppend);
+    }
+
+    public static appendLeft (matrix: Matrix, matrixToAppend: Matrix) {
+        return matrix.getClone().appendLeft(matrixToAppend);
+    }
+
+    public static appendRight (matrix: Matrix, matrixToAppend: Matrix) {
+        return matrix.getClone().appendRight(matrixToAppend);
+    }
+
+    public static appendTop (matrix: Matrix, matrixToAppend: Matrix) {
+        return matrix.getClone().appendTop(matrixToAppend);
+    }
+
     public static columnVector (elements: number[]) {
         return new Matrix(elements.map((element) => [element]));
     }
@@ -357,20 +373,6 @@ export default class Matrix {
         return this.columnCount;
     }
 
-    public getData () {
-        const columnCount = this.columnCount;
-        const size = this.rowCount * columnCount;
-
-        const dataArray = Array.from(this.data);
-        const data: number[][] = [];
-
-        for (let start = 0; start < size; start += columnCount) {
-            data.push(dataArray.slice(start, start + columnCount));
-        }
-
-        return data;
-    }
-
     public getDeterminant (): number {
         const rowCount = this.rowCount;
         const columnCount = this.columnCount;
@@ -511,6 +513,20 @@ export default class Matrix {
         }
 
         return sum;
+    }
+
+    public toArray () {
+        const columnCount = this.columnCount;
+        const size = this.rowCount * columnCount;
+
+        const dataArray = Array.from(this.data);
+        const data: number[][] = [];
+
+        for (let start = 0; start < size; start += columnCount) {
+            data.push(dataArray.slice(start, start + columnCount));
+        }
+
+        return data;
     }
 
     /* Helper methods */
