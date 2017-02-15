@@ -9,7 +9,7 @@ linearRegression.setLearningRate(0.02);
 
 const predictionsBeforeTraining = linearRegression.predict(inputs);
 console.log(predictionsBeforeTraining.toArray());
-// [ [ 0 ], [ 0 ], [ 0 ], [ 0 ], [ 0 ] ] 
+// [ [ 0 ], [ 0 ], [ 0 ], [ 0 ], [ 0 ] ]
 
 linearRegression.train();
 const predictionsAfterTraining = linearRegression.predict(inputs);
