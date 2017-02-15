@@ -38,8 +38,6 @@ abstract class Regression {
 
             this.hypothesis = newHypothesis;
         }
-
-        return this.hypothesis;
     }
 
     public predict (inputs: Matrix) {

@@ -55,3 +55,27 @@ console.log(predictionsAfterTraining.toArray());
 // [ [ 1 ], [ 0 ], [ 1 ], [ 0 ], [ 0 ], [ 1 ] ]
 
 ```
+
+## Multiclass Logistic Regression
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Multiclass Logistic Regression: determine the highest value
+const inputs = new ml.Matrix([[4500, 1200, 3000], [700, 890, 800], [700, 1200, 1300], [1150, 600, 700], [600, 1500, 1650], [400, 401, 400]]);
+const outputs = new ml.Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0], [0, 0, 1], [0, 1, 0]]);
+
+const multiclassLogisticRegression = new ml.MulticlassLogisticRegression(inputs, outputs);
+multiclassLogisticRegression.setMaximumIterations(10000);
+multiclassLogisticRegression.setLearningRate(0.1);
+
+const predictionsBeforeTraining = multiclassLogisticRegression.predict(inputs);
+console.log(predictionsBeforeTraining.toArray());
+// [ [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ] ]
+
+multiclassLogisticRegression.train();
+const predictionsAfterTraining = multiclassLogisticRegression.predict(inputs);
+console.log(predictionsAfterTraining.toArray());
+// [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ], [ 0, 0, 1 ], [ 0, 1, 0 ] ]
+
+```
+

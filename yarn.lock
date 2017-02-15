@@ -6,6 +6,10 @@
   version "0.7.31"
   resolved "https://registry.yarnpkg.com/@types/chance/-/chance-0.7.31.tgz#8dcd812456a261bb4d832243b85ebc5c68e28c80"
 
+"@types/lodash@^4.14.52":
+  version "4.14.52"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.52.tgz#de5c7ab14da1289733233c9b0ec6f9e377db90f5"
+
 "@types/nblas@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/nblas/-/nblas-1.2.0.tgz#07a758520fd33c7940a76dcb87074f96471cb67c"
@@ -17,6 +21,10 @@
 chance@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/chance/-/chance-1.0.4.tgz#2dbc3ea6ad0541f7f965bd0af25d1ca275c853c4"
+
+lodash@^4.17.4:
+  version "4.17.4"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
 nblas@^1.2.2:
   version "1.2.2"

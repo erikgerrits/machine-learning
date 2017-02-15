@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "TypeScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -13,7 +13,7 @@
   },
   "keywords": [
     "machine learning",
-    "artificial ingelligence",
+    "artificial intelligence",
     "matrix",
     "neural network",
     "linear regression",
@@ -28,9 +28,11 @@
   "dependencies": {
     "@types/chance": "^0.7.31",
     "@types/nblas": "^1.2.0",
-    "@types/node": "^7.0.5",
     "chance": "^1.0.4",
-    "nblas": "^1.2.2",
+    "nblas": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.5",
     "typescript": "^2.1.6"
   }
 }

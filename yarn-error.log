@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add typescript
+  /usr/local/bin/node /usr/local/bin/yarn
 
 PATH: 
   /Library/Frameworks/Python.framework/Versions/3.6/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin
@@ -16,10 +16,10 @@ Platform:
 npm manifest: 
   {
     "name": "machine-learning",
-    "version": "0.1.0",
+    "version": "0.1.4",
     "description": "TypeScript machine learning library",
-    "main": "dist/index.js",
-    "typings": "dist/index",
+    "main": "dist/lib/index.js",
+    "typings": "dist/lib/index",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -29,7 +29,7 @@ npm manifest:
     },
     "keywords": [
       "machine learning",
-      "artificial ingelligence",
+      "artificial intelligence",
       "matrix",
       "neural network",
       "linear regression",
@@ -46,7 +46,9 @@ npm manifest:
       "@types/nblas": "^1.2.0",
       "@types/node": "^7.0.5",
       "chance": "^1.0.4",
-      "nblas": "^1.2.2",
+      "nblas": "^1.2.2"
+    },
+    "devDependencies": {
       "typescript": "^2.1.6"
     }
   }
@@ -84,5 +86,5 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.1.6.tgz#40c7e6e9e5da7961b7718b55505f9cac9487a607"
 
 Trace: 
-  Error: EACCES: permission denied, rmdir '/Users/erik/Dev/machine-learning/node_modules/dashdash/node_modules/assert-plus'
+  Error: EACCES: permission denied, unlink '/Users/erik/Dev/machine-learning/node_modules/.bin/tsc'
       at Error (native)
