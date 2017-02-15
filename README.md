@@ -10,7 +10,7 @@ On Windows you may need to install [LAPACK](http://www.netlib.org/lapack/#_lapac
 
 ### Example usage
 ```TypeScript
-import { Matrix, LinearRegression } from '../lib/index';
+import { Matrix, LinearRegression } from 'machine-learning';
 
 const inputs = new Matrix([[5], [7], [9], [11], [13]]);
 const outputs = new Matrix([[2000], [2400], [2800], [3200], [3600]]);
