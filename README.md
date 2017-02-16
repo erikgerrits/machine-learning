@@ -9,7 +9,11 @@ This library is in an early development phase and many **breaking changes are to
 
 The TypeScript source files can be found on [GitHub](https://github.com/erikgerrits/machine-learning) and the JavaScript production files(including .ts.d files) can be found as an [npm package](https://www.npmjs.com/package/machine-learning).
 
-## Linear Regression
+## Documentation
+
+TypeDocs for all classes can be found [here](http://platformj.com). Below are some simple code usage examples.
+
+### Linear Regression
 
 ```TypeScript
 import * as ml from 'machine-learning';
@@ -33,7 +37,7 @@ console.log(predictionsAfterTraining.toArray());
 
 ```
 
-## Logistic Regression
+### Logistic Regression
 ```TypeScript
 import * as ml from 'machine-learning';
 
@@ -56,7 +60,7 @@ console.log(predictionsAfterTraining.toArray());
 
 ```
 
-## Multiclass Logistic Regression
+### Multiclass Logistic Regression
 ```TypeScript
 import * as ml from 'machine-learning';
 

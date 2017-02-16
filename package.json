@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "TypeScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
