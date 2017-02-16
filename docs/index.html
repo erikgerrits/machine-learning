@@ -72,7 +72,35 @@
 				<p>This library is in an early development phase and many <strong>breaking changes are to be expected</strong>.</p>
 				<p>The TypeScript source files can be found on <a href="https://github.com/erikgerrits/machine-learning">GitHub</a> and the JavaScript production files(including .ts.d files) can be found as an <a href="https://www.npmjs.com/package/machine-learning">npm package</a>.</p>
 				<h2 id="documentation">Documentation</h2>
-				<p>TypeDocs for all classes can be found <a href="http://platformj.com">here</a>. Below are some simple code usage examples.</p>
+				<p>Below are some simple code usage examples. TypeDocs for all classes can be found <a href="http://platformj.com">here</a>.</p>
+				<ul>
+					<li><a href="#feedforward-neural-network">Feedforward Neural Network</a></li>
+					<li><a href="#linear-regression">Linear Regression</a></li>
+					<li><a href="#logistic-regression">Logistic Regression</a></li>
+					<li><a href="#multiclass-logistic-regression">Multiclass Logistic Regression</a></li>
+					<li><a href="#nearest-neighbors">Nearest Neighbors</a></li>
+				</ul>
+				<h3 id="feedforward-neural-network">Feedforward Neural Network</h3>
+				<pre><code class="lang-TypeScript"><span class="hljs-keyword">import</span> * as ml from <span class="hljs-string">'machine-learning'</span>;
+
+<span class="hljs-comment">// Feedforward neural network: solve XNOR problem (opposite of XOR)</span>
+<span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>]]);
+<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>]]);
+
+<span class="hljs-keyword">const</span> feedforwardNeuralNetwork = <span class="hljs-keyword">new</span> ml.FeedforwardNeuralNetwork(inputs, outputs, [<span class="hljs-number">5</span>]);
+feedforwardNeuralNetwork.setMaximumIterations(<span class="hljs-number">1000</span>);
+feedforwardNeuralNetwork.setLearningRate(<span class="hljs-number">1</span>);
+
+<span class="hljs-keyword">const</span> predictionsBeforeTraining = feedforwardNeuralNetwork.predict(inputs);
+<span class="hljs-built_in">console</span>.log(predictionsBeforeTraining.toArray());
+<span class="hljs-comment">// [ [ 0.7124268075556096 ], [ 0.6816362785223121 ], [ 0.7143507126826376 ], [ 0.68576576898992 ] ]</span>
+
+feedforwardNeuralNetwork.train();
+<span class="hljs-keyword">const</span> predictionsAfterTraining = feedforwardNeuralNetwork.predict(inputs);
+<span class="hljs-built_in">console</span>.log(predictionsAfterTraining.toArray());
+<span class="hljs-comment">// [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]</span>
+</code></pre>
+				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_feedforwardneuralnetwork_.feedforwardneuralnetwork.html">FeedforwardNeuralNetwork class documentation</a></p>
 				<h3 id="linear-regression">Linear Regression</h3>
 				<pre><code class="lang-TypeScript"><span class="hljs-keyword">import</span> * as ml from <span class="hljs-string">'machine-learning'</span>;
 
@@ -136,27 +164,23 @@ multiclassLogisticRegression.train();
 <span class="hljs-comment">// [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ], [ 0, 0, 1 ], [ 0, 1, 0 ] ]</span>
 </code></pre>
 				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_multiclasslogisticregression_.multiclasslogisticregression.html">MulticlassLogisticRegression class documentation</a></p>
-				<h3 id="feedforward-neural-network">Feedforward Neural Network</h3>
+				<h3 id="nearest-neighbors">Nearest Neighbors</h3>
 				<pre><code class="lang-TypeScript"><span class="hljs-keyword">import</span> * as ml from <span class="hljs-string">'machine-learning'</span>;
 
-<span class="hljs-comment">// Feedforward neural network: solve XNOR problem (opposite of XOR)</span>
-<span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>]]);
-<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>]]);
+<span class="hljs-comment">// Nearest neighbors: Equidistant examples, breaks ties by considering multiple neighbors even though number set to 1</span>
+<span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">2</span>, <span class="hljs-number">2</span>]]);
+<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]]);
 
-<span class="hljs-keyword">const</span> feedforwardNeuralNetwork = <span class="hljs-keyword">new</span> ml.FeedforwardNeuralNetwork(inputs, outputs, [<span class="hljs-number">5</span>]);
-feedforwardNeuralNetwork.setMaximumIterations(<span class="hljs-number">1000</span>);
-feedforwardNeuralNetwork.setLearningRate(<span class="hljs-number">1</span>);
+<span class="hljs-keyword">const</span> nearestNeighbors = <span class="hljs-keyword">new</span> ml.NearestNeighbors(inputs, outputs);
+nearestNeighbors.setNumberOfNeighbors(<span class="hljs-number">1</span>);
 
-<span class="hljs-keyword">const</span> predictionsBeforeTraining = feedforwardNeuralNetwork.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsBeforeTraining.toArray());
-<span class="hljs-comment">// [ [ 0.7124268075556096 ], [ 0.6816362785223121 ], [ 0.7143507126826376 ], [ 0.68576576898992 ] ]</span>
+<span class="hljs-keyword">const</span> unknowns = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>], [<span class="hljs-number">1.5</span>, <span class="hljs-number">1.5</span>], [<span class="hljs-number">1.75</span>, <span class="hljs-number">1.75</span>]]);
 
-feedforwardNeuralNetwork.train();
-<span class="hljs-keyword">const</span> predictionsAfterTraining = feedforwardNeuralNetwork.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsAfterTraining.toArray());
-<span class="hljs-comment">// [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]</span>
+<span class="hljs-keyword">const</span> predictions = nearestNeighbors.predict(unknowns);
+<span class="hljs-built_in">console</span>.log(predictions.toArray());
+<span class="hljs-comment">// [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]</span>
 </code></pre>
-				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_feedforwardneuralnetwork_.feedforwardneuralnetwork.html">FeedforwardNeuralNetwork class documentation</a></p>
+				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_nearestneighbors_.nearestneighbors.html">NearestNeighbors class documentation</a></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -179,6 +203,9 @@ feedforwardNeuralNetwork.train();
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_machine_learning_supervised_multiclasslogisticregression_.html">"machine-<wbr>learning/supervised/<wbr>Multiclass<wbr>Logistic<wbr>Regression"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_machine_learning_supervised_nearestneighbors_.html">"machine-<wbr>learning/supervised/<wbr>Nearest<wbr>Neighbors"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_machine_learning_supervised_regression_.html">"machine-<wbr>learning/supervised/<wbr>Regression"</a>

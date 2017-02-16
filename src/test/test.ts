@@ -76,3 +76,18 @@ import * as ml from '../lib/index';
     console.log(predictionsAfterTraining.toArray());
     // [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]
 }
+
+{
+    // Nearest neighbors: Equidistant examples, breaks ties by considering multiple neighbors even though number set to 1
+    const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [1, 1], [2, 2]]);
+    const outputs = new ml.Matrix([[0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]]);
+
+    const nearestNeighbors = new ml.NearestNeighbors(inputs, outputs);
+    nearestNeighbors.setNumberOfNeighbors(1);
+
+    const unknowns = new ml.Matrix([[0.5, 0.5], [1.5, 1.5], [1.75, 1.75]]);
+
+    const predictions = nearestNeighbors.predict(unknowns);
+    console.log(predictions.toArray());
+    // [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
+}

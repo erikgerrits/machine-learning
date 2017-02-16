@@ -17,6 +17,7 @@ Below are some simple code usage examples. TypeDocs for all classes can be found
 * [Linear Regression](#linear-regression)
 * [Logistic Regression](#logistic-regression)
 * [Multiclass Logistic Regression](#multiclass-logistic-regression)
+* [Nearest Neighbors](#nearest-neighbors)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -118,3 +119,24 @@ console.log(predictionsAfterTraining.toArray());
 ```
 
 For more detailed information, access the [MulticlassLogisticRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_multiclasslogisticregression_.multiclasslogisticregression.html)
+
+### Nearest Neighbors
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Nearest neighbors: Equidistant examples, breaks ties by considering multiple neighbors even though number set to 1
+const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [1, 1], [2, 2]]);
+const outputs = new ml.Matrix([[0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]]);
+
+const nearestNeighbors = new ml.NearestNeighbors(inputs, outputs);
+nearestNeighbors.setNumberOfNeighbors(1);
+
+const unknowns = new ml.Matrix([[0.5, 0.5], [1.5, 1.5], [1.75, 1.75]]);
+
+const predictions = nearestNeighbors.predict(unknowns);
+console.log(predictions.toArray());
+// [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
+
+```
+
+For more detailed information, access the [NearestNeighbors class documentation](http://platformj.com/classes/_machine_learning_supervised_nearestneighbors_.nearestneighbors.html)
