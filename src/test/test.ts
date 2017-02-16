@@ -57,3 +57,22 @@ import * as ml from '../lib/index';
     console.log(predictionsAfterTraining.toArray());
     // [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ], [ 0, 0, 1 ], [ 0, 1, 0 ] ]
 }
+
+{
+    // Feedforward neural network: solve XNOR problem (opposite of XOR)
+    const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]);
+    const outputs = new ml.Matrix([[1], [0], [0], [1]]);
+
+    const feedforwardNeuralNetwork = new ml.FeedforwardNeuralNetwork(inputs, outputs, [5]);
+    feedforwardNeuralNetwork.setMaximumIterations(1000);
+    feedforwardNeuralNetwork.setLearningRate(1);
+
+    const predictionsBeforeTraining = feedforwardNeuralNetwork.predict(inputs);
+    console.log(predictionsBeforeTraining.toArray());
+    // [ [ 0.7124268075556096 ], [ 0.6816362785223121 ], [ 0.7143507126826376 ], [ 0.68576576898992 ] ]
+
+    feedforwardNeuralNetwork.train();
+    const predictionsAfterTraining = feedforwardNeuralNetwork.predict(inputs);
+    console.log(predictionsAfterTraining.toArray());
+    // [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]
+}

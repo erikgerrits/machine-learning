@@ -37,6 +37,8 @@ console.log(predictionsAfterTraining.toArray());
 
 ```
 
+For more detailed information, access the [LinearRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_linearregression_.linearregression.html)
+
 ### Logistic Regression
 ```TypeScript
 import * as ml from 'machine-learning';
@@ -59,6 +61,8 @@ console.log(predictionsAfterTraining.toArray());
 // [ [ 1 ], [ 0 ], [ 1 ], [ 0 ], [ 0 ], [ 1 ] ]
 
 ```
+
+For more detailed information, access the [LogisticRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_logisticregression_.logisticregression.html)
 
 ### Multiclass Logistic Regression
 ```TypeScript
@@ -83,3 +87,29 @@ console.log(predictionsAfterTraining.toArray());
 
 ```
 
+For more detailed information, access the [MulticlassLogisticRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_multiclasslogisticregression_.multiclasslogisticregression.html)
+
+### Feedforward Neural Network
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Feedforward neural network: solve XNOR problem (opposite of XOR)
+const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]);
+const outputs = new ml.Matrix([[1], [0], [0], [1]]);
+
+const feedforwardNeuralNetwork = new ml.FeedforwardNeuralNetwork(inputs, outputs, [5]);
+feedforwardNeuralNetwork.setMaximumIterations(1000);
+feedforwardNeuralNetwork.setLearningRate(1);
+
+const predictionsBeforeTraining = feedforwardNeuralNetwork.predict(inputs);
+console.log(predictionsBeforeTraining.toArray());
+// [ [ 0.7124268075556096 ], [ 0.6816362785223121 ], [ 0.7143507126826376 ], [ 0.68576576898992 ] ]
+
+feedforwardNeuralNetwork.train();
+const predictionsAfterTraining = feedforwardNeuralNetwork.predict(inputs);
+console.log(predictionsAfterTraining.toArray());
+// [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]
+
+```
+
+For more detailed information, access the [FeedforwardNeuralNetwork class documentation](http://platformj.com/classes/_machine_learning_supervised_feedforwardneuralnetwork_.feedforwardneuralnetwork.html)
