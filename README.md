@@ -11,7 +11,37 @@ The TypeScript source files can be found on [GitHub](https://github.com/erikgerr
 
 ## Documentation
 
-TypeDocs for all classes can be found [here](http://platformj.com). Below are some simple code usage examples.
+Below are some simple code usage examples. TypeDocs for all classes can be found [here](http://platformj.com).
+
+* [Feedforward Neural Network](#feedforward-neural-network)
+* [Linear Regression](#linear-regression)
+* [Logistic Regression](#logistic-regression)
+* [Multiclass Logistic Regression](#multiclass-logistic-regression)
+
+### Feedforward Neural Network
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Feedforward neural network: solve XNOR problem (opposite of XOR)
+const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]);
+const outputs = new ml.Matrix([[1], [0], [0], [1]]);
+
+const feedforwardNeuralNetwork = new ml.FeedforwardNeuralNetwork(inputs, outputs, [5]);
+feedforwardNeuralNetwork.setMaximumIterations(1000);
+feedforwardNeuralNetwork.setLearningRate(1);
+
+const predictionsBeforeTraining = feedforwardNeuralNetwork.predict(inputs);
+console.log(predictionsBeforeTraining.toArray());
+// [ [ 0.7124268075556096 ], [ 0.6816362785223121 ], [ 0.7143507126826376 ], [ 0.68576576898992 ] ]
+
+feedforwardNeuralNetwork.train();
+const predictionsAfterTraining = feedforwardNeuralNetwork.predict(inputs);
+console.log(predictionsAfterTraining.toArray());
+// [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]
+
+```
+
+For more detailed information, access the [FeedforwardNeuralNetwork class documentation](http://platformj.com/classes/_machine_learning_supervised_feedforwardneuralnetwork_.feedforwardneuralnetwork.html)
 
 ### Linear Regression
 
@@ -88,28 +118,3 @@ console.log(predictionsAfterTraining.toArray());
 ```
 
 For more detailed information, access the [MulticlassLogisticRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_multiclasslogisticregression_.multiclasslogisticregression.html)
-
-### Feedforward Neural Network
-```TypeScript
-import * as ml from 'machine-learning';
-
-// Feedforward neural network: solve XNOR problem (opposite of XOR)
-const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]);
-const outputs = new ml.Matrix([[1], [0], [0], [1]]);
-
-const feedforwardNeuralNetwork = new ml.FeedforwardNeuralNetwork(inputs, outputs, [5]);
-feedforwardNeuralNetwork.setMaximumIterations(1000);
-feedforwardNeuralNetwork.setLearningRate(1);
-
-const predictionsBeforeTraining = feedforwardNeuralNetwork.predict(inputs);
-console.log(predictionsBeforeTraining.toArray());
-// [ [ 0.7124268075556096 ], [ 0.6816362785223121 ], [ 0.7143507126826376 ], [ 0.68576576898992 ] ]
-
-feedforwardNeuralNetwork.train();
-const predictionsAfterTraining = feedforwardNeuralNetwork.predict(inputs);
-console.log(predictionsAfterTraining.toArray());
-// [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]
-
-```
-
-For more detailed information, access the [FeedforwardNeuralNetwork class documentation](http://platformj.com/classes/_machine_learning_supervised_feedforwardneuralnetwork_.feedforwardneuralnetwork.html)
