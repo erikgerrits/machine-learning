@@ -97,14 +97,15 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#gethypothesis" class="tsd-kind-icon">get<wbr>Hypothesis</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getlearningrate" class="tsd-kind-icon">get<wbr>Learning<wbr>Rate</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getmaximumiterations" class="tsd-kind-icon">get<wbr>Maximum<wbr>Iterations</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getnumberofepochs" class="tsd-kind-icon">get<wbr>Number<wbr>OfEpochs</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getregularizationfactor" class="tsd-kind-icon">get<wbr>Regularization<wbr>Factor</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#predict" class="tsd-kind-icon">predict</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#predictfromenrichedinputs" class="tsd-kind-icon">predict<wbr>From<wbr>Enriched<wbr>Inputs</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#resethypothesis" class="tsd-kind-icon">reset<wbr>Hypothesis</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setbatchsize" class="tsd-kind-icon">set<wbr>Batch<wbr>Size</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#sethypothesis" class="tsd-kind-icon">set<wbr>Hypothesis</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setlearningrate" class="tsd-kind-icon">set<wbr>Learning<wbr>Rate</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setmaximumiterations" class="tsd-kind-icon">set<wbr>Maximum<wbr>Iterations</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setnumberofepochs" class="tsd-kind-icon">set<wbr>Number<wbr>OfEpochs</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setregularizationfactor" class="tsd-kind-icon">set<wbr>Regularization<wbr>Factor</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_machine_learning_supervised_logisticregression_.logisticregression.html#train" class="tsd-kind-icon">train</a></li>
 							</ul>
@@ -118,25 +119,16 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Logistic<wbr>Regression<span class="tsd-signature-symbol">(</span>inputs<span class="tsd-signature-symbol">: </span><a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a>, outputs<span class="tsd-signature-symbol">: </span><a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_machine_learning_supervised_logisticregression_.logisticregression.html" class="tsd-signature-type">LogisticRegression</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Logistic<wbr>Regression<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_machine_learning_supervised_logisticregression_.logisticregression.html" class="tsd-signature-type">LogisticRegression</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L10">machine-learning/supervised/Regression.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L10">machine-learning/supervised/Regression.ts:10</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>inputs: <a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a></h5>
-								</li>
-								<li>
-									<h5>outputs: <a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a></h5>
-								</li>
-							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_machine_learning_supervised_logisticregression_.logisticregression.html" class="tsd-signature-type">LogisticRegression</a></h4>
 						</li>
 					</ul>
@@ -155,7 +147,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#gethypothesis">getHypothesis</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L87">machine-learning/supervised/Regression.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L89">machine-learning/supervised/Regression.ts:89</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a></h4>
@@ -173,7 +165,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#getlearningrate">getLearningRate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L75">machine-learning/supervised/Regression.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L77">machine-learning/supervised/Regression.ts:77</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -181,17 +173,17 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<a name="getmaximumiterations" class="tsd-anchor"></a>
-					<h3>get<wbr>Maximum<wbr>Iterations</h3>
+					<a name="getnumberofepochs" class="tsd-anchor"></a>
+					<h3>get<wbr>Number<wbr>OfEpochs</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Maximum<wbr>Iterations<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Number<wbr>OfEpochs<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#getmaximumiterations">getMaximumIterations</a></p>
+								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#getnumberofepochs">getNumberOfEpochs</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L79">machine-learning/supervised/Regression.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L81">machine-learning/supervised/Regression.ts:81</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -209,7 +201,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#getregularizationfactor">getRegularizationFactor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L83">machine-learning/supervised/Regression.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L85">machine-learning/supervised/Regression.ts:85</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -227,7 +219,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#predict">predict</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L43">machine-learning/supervised/Regression.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L33">machine-learning/supervised/Regression.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -251,7 +243,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#predictfromenrichedinputs">predictFromEnrichedInputs</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/LogisticRegression.ts#L6">machine-learning/supervised/LogisticRegression.ts:6</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/LogisticRegression.ts#L6">machine-learning/supervised/LogisticRegression.ts:6</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -275,9 +267,48 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#resethypothesis">resetHypothesis</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L69">machine-learning/supervised/Regression.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L71">machine-learning/supervised/Regression.ts:71</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="setbatchsize" class="tsd-anchor"></a>
+					<h3>set<wbr>Batch<wbr>Size</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Batch<wbr>Size<span class="tsd-signature-symbol">(</span>batchSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#setbatchsize">setBatchSize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L48">machine-learning/supervised/Regression.ts:48</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Set batch size to</p>
+									<ul>
+										<li>0 for batch gradient descent</li>
+										<li>1 for stochastic gradient descent</li>
+										<li><blockquote>
+												<p>1 for mini-batch gradient descent</p>
+											</blockquote>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> batchSize: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -293,7 +324,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#sethypothesis">setHypothesis</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L65">machine-learning/supervised/Regression.ts:65</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L67">machine-learning/supervised/Regression.ts:67</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -317,7 +348,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#setlearningrate">setLearningRate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L50">machine-learning/supervised/Regression.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L52">machine-learning/supervised/Regression.ts:52</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -331,23 +362,23 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<a name="setmaximumiterations" class="tsd-anchor"></a>
-					<h3>set<wbr>Maximum<wbr>Iterations</h3>
+					<a name="setnumberofepochs" class="tsd-anchor"></a>
+					<h3>set<wbr>Number<wbr>OfEpochs</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Maximum<wbr>Iterations<span class="tsd-signature-symbol">(</span>maximumIterations<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Number<wbr>OfEpochs<span class="tsd-signature-symbol">(</span>numberOfEpochs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#setmaximumiterations">setMaximumIterations</a></p>
+								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#setnumberofepochs">setNumberOfEpochs</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L55">machine-learning/supervised/Regression.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L57">machine-learning/supervised/Regression.ts:57</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>maximumIterations: <span class="tsd-signature-type">number</span></h5>
+									<h5>numberOfEpochs: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
@@ -365,7 +396,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#setregularizationfactor">setRegularizationFactor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L60">machine-learning/supervised/Regression.ts:60</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L62">machine-learning/supervised/Regression.ts:62</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -382,16 +413,25 @@
 					<a name="train" class="tsd-anchor"></a>
 					<h3>train</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">train<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">train<span class="tsd-signature-symbol">(</span>inputs<span class="tsd-signature-symbol">: </span><a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a>, targets<span class="tsd-signature-symbol">: </span><a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_machine_learning_supervised_regression_.regression.html">Regression</a>.<a href="_machine_learning_supervised_regression_.regression.html#train">train</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/e926fab/src/lib/machine-learning/supervised/Regression.ts#L17">machine-learning/supervised/Regression.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/erikgerrits/machine-learning/blob/11922c0/src/lib/machine-learning/supervised/Regression.ts#L14">machine-learning/supervised/Regression.ts:14</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>inputs: <a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a></h5>
+								</li>
+								<li>
+									<h5>targets: <a href="_math_linear_algebra_matrix_.matrix.html" class="tsd-signature-type">Matrix</a></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -447,7 +487,7 @@
 								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getlearningrate" class="tsd-kind-icon">get<wbr>Learning<wbr>Rate</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getmaximumiterations" class="tsd-kind-icon">get<wbr>Maximum<wbr>Iterations</a>
+								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getnumberofepochs" class="tsd-kind-icon">get<wbr>Number<wbr>OfEpochs</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#getregularizationfactor" class="tsd-kind-icon">get<wbr>Regularization<wbr>Factor</a>
@@ -462,13 +502,16 @@
 								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#resethypothesis" class="tsd-kind-icon">reset<wbr>Hypothesis</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setbatchsize" class="tsd-kind-icon">set<wbr>Batch<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#sethypothesis" class="tsd-kind-icon">set<wbr>Hypothesis</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setlearningrate" class="tsd-kind-icon">set<wbr>Learning<wbr>Rate</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setmaximumiterations" class="tsd-kind-icon">set<wbr>Maximum<wbr>Iterations</a>
+								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setnumberofepochs" class="tsd-kind-icon">set<wbr>Number<wbr>OfEpochs</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="_machine_learning_supervised_logisticregression_.logisticregression.html#setregularizationfactor" class="tsd-kind-icon">set<wbr>Regularization<wbr>Factor</a>

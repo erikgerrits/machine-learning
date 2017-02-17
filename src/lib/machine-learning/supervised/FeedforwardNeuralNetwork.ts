@@ -4,33 +4,36 @@ export default class FeedforwardNeuralNetwork {
 
     private weightMatrices: Matrix[] = [];
 
+    private numberOfEpochs = 1000;
+    private batchSize = 0;
     private learningRate = 0.001;
-    private maximumIterations = 1000;
 
     // Use the sigmoid function as default activation function
     private activationFunction = (value: number) => 1.0 / (1.0 + Math.exp(-value));
     private activationGradientFunction = (value: number) => this.activationFunction(value) * (1 - this.activationFunction(value));
 
-    public constructor (private inputs: Matrix, private outputs: Matrix, numberOfNodesPerHiddenLayer: number[], randomSeed?: number) {
-        const nodeCounts = numberOfNodesPerHiddenLayer.slice();
-        nodeCounts.unshift(inputs.getColumnCount());
-        nodeCounts.push(outputs.getColumnCount());
+    public constructor (numberOfNodesPerLayer: number[], randomSeed?: number) {
+        for (let weightLayer = 0; weightLayer < numberOfNodesPerLayer.length - 1; weightLayer++) {
+            const incomingNodeCount = numberOfNodesPerLayer[weightLayer];
+            const outgoingNodeCount = numberOfNodesPerLayer[weightLayer + 1];
 
-        for (let weightLayer = 0; weightLayer < nodeCounts.length - 1; weightLayer++) {
-            const incomingNodeCount = nodeCounts[weightLayer];
-            const outgoingNodeCount = nodeCounts[weightLayer + 1];
-
-            // Good epsilon "strategy" according to excercise 4 in week 5 of Stanford Machine Learning course on Coursera by Andrew Ng
+            // Good epsilon "strategy" according to exercise 4 in week 5 of Stanford Machine Learning course on Coursera by Andrew Ng
             const epsilon = Math.sqrt(6) / Math.sqrt(incomingNodeCount + outgoingNodeCount);
 
             this.weightMatrices.push(Matrix.rand(incomingNodeCount + 1, outgoingNodeCount, epsilon, randomSeed));
         }
     }
 
-    public train () {
-        for (let iteration = 0; iteration < this.maximumIterations; iteration++) {
-            const [activations, incomingActivations] = this.forwardPropagate(this.inputs);
-            this.backPropagate(activations, incomingActivations);
+    public train (inputs: Matrix, targets: Matrix) {
+        const exampleCount = inputs.getRowCount();
+
+        for (let epoch = 0; epoch < this.numberOfEpochs; epoch++) {
+            const batchSize = this.batchSize !== 0 ? this.batchSize : Number.POSITIVE_INFINITY;
+
+            for (let batchStartIndex = 0; batchStartIndex < exampleCount; batchStartIndex += batchSize) {
+                const batchEndIndex = Math.min(batchStartIndex + batchSize - 1, inputs.getRowCount() - 1);
+                this.trainBatch(inputs.getRows(batchStartIndex, batchEndIndex), targets.getRows(batchStartIndex, batchEndIndex));
+            }
         }
     }
 
@@ -50,14 +53,29 @@ export default class FeedforwardNeuralNetwork {
         this.activationGradientFunction = activationGradientFunction;
     }
 
-    public setLearningRate (learningRate: number) {
-        this.learningRate = learningRate;
-        return this;
+    /**
+     * Set batch size to
+     * - 0 for batch gradient descent
+     * - 1 for stochastic gradient descent
+     * - >1 for mini-batch gradient descent
+     *
+     * @param batchSize
+     */
+    public setBatchSize (batchSize = 0) {
+        this.batchSize = batchSize;
     }
 
-    public setMaximumIterations (maximumIterations: number) {
-        this.maximumIterations = maximumIterations;
-        return this;
+    public setLearningRate (learningRate = 0.001) {
+        this.learningRate = learningRate;
+    }
+
+    /**
+     * The number of iterations over the full training set.
+     *
+     * @param numberOfEpochs
+     */
+    public setNumberOfEpochs (numberOfEpochs = 1000) {
+        this.numberOfEpochs = numberOfEpochs;
     }
 
     /* Parameter getters */
@@ -70,18 +88,27 @@ export default class FeedforwardNeuralNetwork {
         return this.activationGradientFunction;
     }
 
+    public getBatchSize () {
+        return this.batchSize;
+    }
+
     public getLearningRate () {
         return this.learningRate;
     }
 
-    public getMaximumIterations () {
-        return this.maximumIterations;
+    public getNumberOfEpochs () {
+        return this.numberOfEpochs;
     }
 
     /* Private methods */
 
+    private trainBatch (inputs: Matrix, targets: Matrix) {
+        const [activations, incomingActivations] = this.forwardPropagate(inputs);
+        this.backPropagate(activations, incomingActivations, targets);
+    }
+
     private forwardPropagate (inputs: Matrix) {
-        const activations = [this.inputs.getClone()];
+        const activations = [inputs.getClone()];
         const incomingActivations: Matrix[] = [];
 
         for (let weightLayer = 0; weightLayer < this.weightMatrices.length; weightLayer++) {
@@ -98,11 +125,11 @@ export default class FeedforwardNeuralNetwork {
         return [activations, incomingActivations];
     }
 
-    private backPropagate (activations: Matrix[], incomingActivations: Matrix[]) {
+    private backPropagate (activations: Matrix[], incomingActivations: Matrix[], targets: Matrix) {
         const errors: Matrix[] = [];
 
         // Calculate the errors in the output nodes by subtracting the expected desired activations from the actual activations
-        errors[this.weightMatrices.length] = Matrix.subtract(activations[this.weightMatrices.length], this.outputs);
+        errors[this.weightMatrices.length] = Matrix.subtract(activations[this.weightMatrices.length], targets);
 
         for (let weightLayerIndex = this.weightMatrices.length - 1; weightLayerIndex > 0; weightLayerIndex--) {
             // Transpose the weight matrix  of the incoming node layer and remove the weights from the bias nodes since we don't need to compute an error for the bias node.
@@ -114,7 +141,7 @@ export default class FeedforwardNeuralNetwork {
 
         for (let weightLayer = 0; weightLayer < this.weightMatrices.length; weightLayer++) {
             // Compute the gradient of the previous weightLayer based on the computed errors
-            const gradients = Matrix.transpose(activations[weightLayer]).multiply(errors[weightLayer + 1]).multiply(1 / this.inputs.getRowCount());
+            const gradients = Matrix.transpose(activations[weightLayer]).multiply(errors[weightLayer + 1]).multiply(1 / targets.getRowCount());
 
             this.weightMatrices[weightLayer].subtract(gradients.multiply(this.learningRate));
         }

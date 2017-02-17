@@ -5,9 +5,15 @@ export default class NearestNeighbors {
     private distanceFunction = (x: Matrix, y: Matrix) => Matrix.subtract(x, y).transform(value => value * value).getSum();
     private numberOfNeighbors = 1;
 
-    public constructor (private inputs: Matrix, private outputs: Matrix) {}
+    private inputs: Matrix;
+    private targets: Matrix;
 
-    public train () {}
+    public constructor () {}
+
+    public train (inputs: Matrix, targets: Matrix) {
+        this.inputs = inputs;
+        this.targets = targets;
+    }
 
     public predict (inputs: Matrix) {
         const outputs = new Matrix([]);
@@ -47,7 +53,7 @@ export default class NearestNeighbors {
 
         for (let exampleIndex = 0; exampleIndex < this.inputs.getRowCount(); exampleIndex++) {
             const exampleInput = this.inputs.getRow(exampleIndex);
-            const exampleOutput = this.outputs.getRow(exampleIndex);
+            const exampleOutput = this.targets.getRow(exampleIndex);
 
             const distance = this.distanceFunction(input, exampleInput);
 

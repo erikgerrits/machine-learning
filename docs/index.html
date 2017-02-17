@@ -85,20 +85,16 @@
 
 <span class="hljs-comment">// Feedforward neural network: solve XNOR problem (opposite of XOR)</span>
 <span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>]]);
-<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>]]);
+<span class="hljs-keyword">const</span> targets = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>]]);
 
-<span class="hljs-keyword">const</span> feedforwardNeuralNetwork = <span class="hljs-keyword">new</span> ml.FeedforwardNeuralNetwork(inputs, outputs, [<span class="hljs-number">5</span>]);
-feedforwardNeuralNetwork.setMaximumIterations(<span class="hljs-number">1000</span>);
+<span class="hljs-keyword">const</span> feedforwardNeuralNetwork = <span class="hljs-keyword">new</span> ml.FeedforwardNeuralNetwork([<span class="hljs-number">2</span>, <span class="hljs-number">5</span>, <span class="hljs-number">1</span>], <span class="hljs-number">0</span>);
+feedforwardNeuralNetwork.setNumberOfEpochs(<span class="hljs-number">1000</span>);
 feedforwardNeuralNetwork.setLearningRate(<span class="hljs-number">1</span>);
 
-<span class="hljs-keyword">const</span> predictionsBeforeTraining = feedforwardNeuralNetwork.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsBeforeTraining.toArray());
-<span class="hljs-comment">// [ [ 0.7124268075556096 ], [ 0.6816362785223121 ], [ 0.7143507126826376 ], [ 0.68576576898992 ] ]</span>
-
-feedforwardNeuralNetwork.train();
-<span class="hljs-keyword">const</span> predictionsAfterTraining = feedforwardNeuralNetwork.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsAfterTraining.toArray());
-<span class="hljs-comment">// [ [ 0.9959984961377983 ], [ 0.013960357357609482 ], [ 0.011093933572618063 ], [ 0.9798749896755027 ] ]</span>
+feedforwardNeuralNetwork.train(inputs, targets);
+<span class="hljs-keyword">const</span> predictions = feedforwardNeuralNetwork.predict(inputs);
+<span class="hljs-built_in">console</span>.log(predictions.toArray());
+<span class="hljs-comment">// [ [ 0.9943559154265011 ], [ 0.012148393118769857 ], [ 0.013640408487437417 ], [ 0.9816837627444868 ] ]</span>
 </code></pre>
 				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_feedforwardneuralnetwork_.feedforwardneuralnetwork.html">FeedforwardNeuralNetwork class documentation</a></p>
 				<h3 id="linear-regression">Linear Regression</h3>
@@ -106,19 +102,15 @@ feedforwardNeuralNetwork.train();
 
 <span class="hljs-comment">// Linear Regression: y = 1000 + 200 * x</span>
 <span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">5</span>], [<span class="hljs-number">7</span>], [<span class="hljs-number">9</span>], [<span class="hljs-number">11</span>], [<span class="hljs-number">13</span>]]);
-<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">2000</span>], [<span class="hljs-number">2400</span>], [<span class="hljs-number">2800</span>], [<span class="hljs-number">3200</span>], [<span class="hljs-number">3600</span>]]);
+<span class="hljs-keyword">const</span> targets = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">2000</span>], [<span class="hljs-number">2400</span>], [<span class="hljs-number">2800</span>], [<span class="hljs-number">3200</span>], [<span class="hljs-number">3600</span>]]);
 
-<span class="hljs-keyword">const</span> linearRegression = <span class="hljs-keyword">new</span> ml.LinearRegression(inputs, outputs);
-linearRegression.setMaximumIterations(<span class="hljs-number">10000</span>);
+<span class="hljs-keyword">const</span> linearRegression = <span class="hljs-keyword">new</span> ml.LinearRegression();
+linearRegression.setNumberOfEpochs(<span class="hljs-number">10000</span>);
 linearRegression.setLearningRate(<span class="hljs-number">0.02</span>);
 
-<span class="hljs-keyword">const</span> predictionsBeforeTraining = linearRegression.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsBeforeTraining.toArray());
-<span class="hljs-comment">// [ [ 0 ], [ 0 ], [ 0 ], [ 0 ], [ 0 ] ]</span>
-
-linearRegression.train();
-<span class="hljs-keyword">const</span> predictionsAfterTraining = linearRegression.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsAfterTraining.toArray());
+linearRegression.train(inputs, targets);
+<span class="hljs-keyword">const</span> predictions = linearRegression.predict(inputs);
+<span class="hljs-built_in">console</span>.log(predictions.toArray());
 <span class="hljs-comment">// [ [ 1999.999991189672 ], [ 2399.9999948012005 ], [ 2799.999998412729 ], [ 3200.0000020242574 ], [ 3600.000005635786 ] ]</span>
 </code></pre>
 				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_linearregression_.linearregression.html">LinearRegression class documentation</a></p>
@@ -127,19 +119,15 @@ linearRegression.train();
 
 <span class="hljs-comment">// Logistic Regression: determine if second input is higher than first input</span>
 <span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1000</span>, <span class="hljs-number">1100</span>], [<span class="hljs-number">4500</span>, <span class="hljs-number">3000</span>], [<span class="hljs-number">700</span>, <span class="hljs-number">1300</span>], [<span class="hljs-number">1150</span>, <span class="hljs-number">700</span>], [<span class="hljs-number">1300</span>, <span class="hljs-number">1200</span>], [<span class="hljs-number">600</span>, <span class="hljs-number">650</span>]]);
-<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>]]);
+<span class="hljs-keyword">const</span> targets = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">0</span>], [<span class="hljs-number">1</span>]]);
 
-<span class="hljs-keyword">const</span> logisticRegression = <span class="hljs-keyword">new</span> ml.LogisticRegression(inputs, outputs);
-logisticRegression.setMaximumIterations(<span class="hljs-number">1000</span>);
+<span class="hljs-keyword">const</span> logisticRegression = <span class="hljs-keyword">new</span> ml.LogisticRegression();
+logisticRegression.setNumberOfEpochs(<span class="hljs-number">1000</span>);
 logisticRegression.setLearningRate(<span class="hljs-number">0.01</span>);
 
-<span class="hljs-keyword">const</span> predictionsBeforeTraining = logisticRegression.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsBeforeTraining.toArray());
-<span class="hljs-comment">// [ [ 0.5 ], [ 0.5 ], [ 0.5 ], [ 0.5 ], [ 0.5 ], [ 0.5 ] ]</span>
-
-logisticRegression.train();
-<span class="hljs-keyword">const</span> predictionsAfterTraining = logisticRegression.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsAfterTraining.toArray());
+logisticRegression.train(inputs, targets);
+<span class="hljs-keyword">const</span> predictions = logisticRegression.predict(inputs);
+<span class="hljs-built_in">console</span>.log(predictions.toArray());
 <span class="hljs-comment">// [ [ 1 ], [ 0 ], [ 1 ], [ 0 ], [ 0 ], [ 1 ] ]</span>
 </code></pre>
 				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_logisticregression_.logisticregression.html">LogisticRegression class documentation</a></p>
@@ -148,19 +136,15 @@ logisticRegression.train();
 
 <span class="hljs-comment">// Multiclass Logistic Regression: determine the highest value</span>
 <span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">4500</span>, <span class="hljs-number">1200</span>, <span class="hljs-number">3000</span>], [<span class="hljs-number">700</span>, <span class="hljs-number">890</span>, <span class="hljs-number">800</span>], [<span class="hljs-number">700</span>, <span class="hljs-number">1200</span>, <span class="hljs-number">1300</span>], [<span class="hljs-number">1150</span>, <span class="hljs-number">600</span>, <span class="hljs-number">700</span>], [<span class="hljs-number">600</span>, <span class="hljs-number">1500</span>, <span class="hljs-number">1650</span>], [<span class="hljs-number">400</span>, <span class="hljs-number">401</span>, <span class="hljs-number">400</span>]]);
-<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]]);
+<span class="hljs-keyword">const</span> targets = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]]);
 
-<span class="hljs-keyword">const</span> multiclassLogisticRegression = <span class="hljs-keyword">new</span> ml.MulticlassLogisticRegression(inputs, outputs);
-multiclassLogisticRegression.setMaximumIterations(<span class="hljs-number">10000</span>);
+<span class="hljs-keyword">const</span> multiclassLogisticRegression = <span class="hljs-keyword">new</span> ml.MulticlassLogisticRegression();
+multiclassLogisticRegression.setNumberOfEpochs(<span class="hljs-number">10000</span>);
 multiclassLogisticRegression.setLearningRate(<span class="hljs-number">0.1</span>);
 
-<span class="hljs-keyword">const</span> predictionsBeforeTraining = multiclassLogisticRegression.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsBeforeTraining.toArray());
-<span class="hljs-comment">// [ [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ], [ 0.5, 0.5, 0.5 ] ]</span>
-
-multiclassLogisticRegression.train();
-<span class="hljs-keyword">const</span> predictionsAfterTraining = multiclassLogisticRegression.predict(inputs);
-<span class="hljs-built_in">console</span>.log(predictionsAfterTraining.toArray());
+multiclassLogisticRegression.train(inputs, targets);
+<span class="hljs-keyword">const</span> predictions = multiclassLogisticRegression.predict(inputs);
+<span class="hljs-built_in">console</span>.log(predictions.toArray());
 <span class="hljs-comment">// [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ], [ 1, 0, 0 ], [ 0, 0, 1 ], [ 0, 1, 0 ] ]</span>
 </code></pre>
 				<p>For more detailed information, access the <a href="http://platformj.com/classes/_machine_learning_supervised_multiclasslogisticregression_.multiclasslogisticregression.html">MulticlassLogisticRegression class documentation</a></p>
@@ -169,9 +153,9 @@ multiclassLogisticRegression.train();
 
 <span class="hljs-comment">// Nearest neighbors: Equidistant examples, breaks ties by considering multiple neighbors even though number set to 1</span>
 <span class="hljs-keyword">const</span> inputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">2</span>, <span class="hljs-number">2</span>]]);
-<span class="hljs-keyword">const</span> outputs = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]]);
+<span class="hljs-keyword">const</span> targets = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>], [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]]);
 
-<span class="hljs-keyword">const</span> nearestNeighbors = <span class="hljs-keyword">new</span> ml.NearestNeighbors(inputs, outputs);
+<span class="hljs-keyword">const</span> nearestNeighbors = <span class="hljs-keyword">new</span> ml.NearestNeighbors(inputs, targets);
 nearestNeighbors.setNumberOfNeighbors(<span class="hljs-number">1</span>);
 
 <span class="hljs-keyword">const</span> unknowns = <span class="hljs-keyword">new</span> ml.Matrix([[<span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>], [<span class="hljs-number">1.5</span>, <span class="hljs-number">1.5</span>], [<span class="hljs-number">1.75</span>, <span class="hljs-number">1.75</span>]]);

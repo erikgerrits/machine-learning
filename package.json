@@ -1,7 +1,7 @@
 {
   "name": "machine-learning",
-  "version": "0.1.9",
-  "description": "TypeScript machine learning library",
+  "version": "0.2.0",
+  "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
   "scripts": {
@@ -17,7 +17,12 @@
     "matrix",
     "neural network",
     "linear regression",
-    "logistic regression"
+    "logistic regression",
+    "nearest neighbors",
+    "k-nearest neighbors",
+    "k nearest neighbors",
+    "k-NN",
+    "KNN"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

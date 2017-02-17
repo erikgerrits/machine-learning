@@ -1,5 +1,6 @@
 import * as nblas from 'nblas';
 import { Chance } from 'chance';
+import {start} from "repl";
 
 export default class Matrix {
 
@@ -249,28 +250,6 @@ export default class Matrix {
         return this;
     }
 
-    public deleteRows (rowIndeces: number[]) {
-        const newRowCount = this.rowCount - rowIndeces.length;
-        const columnCount = this.columnCount;
-
-        const data = new Float64Array(newRowCount * columnCount);
-
-        let offset = 0;
-        for (let rowIndex = 0; rowIndex < this.rowCount; rowIndex++) {
-            if (rowIndeces.includes(rowIndex)) {
-                continue;
-            }
-
-            const start = rowIndex * columnCount;
-            data.set(this.data.slice(start, start + columnCount), offset);
-
-            offset += columnCount;
-        }
-
-        this.data = data;
-        this.rowCount = newRowCount;
-    }
-
     public multiply (matrix: Matrix): Matrix;
     public multiply (scalar: number): Matrix;
     public multiply (operand: any) {
@@ -283,14 +262,6 @@ export default class Matrix {
         }
 
         return this.transform((element, rowIndex, columnIndex) => element * matrix.getElement(rowIndex, columnIndex));
-    }
-
-    public removeRows (rowIndeces: number[]) {
-        const rows = this.getRows(rowIndeces);
-
-        this.deleteRows(rowIndeces);
-
-        return rows;
     }
 
     public setElement (rowIndex: number, columnIndex: number, value: number) {
@@ -485,18 +456,17 @@ export default class Matrix {
         return new Matrix(this.data.slice(start, start + columnCount), 1, columnCount);
     }
 
-    public getRows (rowIndeces: number[]) {
-        const resultRowCount = rowIndeces.length;
-        const columnCount = this.columnCount;
-
-        const data = new Float64Array(resultRowCount * columnCount);
-
-        for (let rowIndecesIndex = 0; rowIndecesIndex < resultRowCount; rowIndecesIndex++) {
-            const start = rowIndeces[rowIndecesIndex] * columnCount;
-            data.set(this.data.slice(start, start + columnCount), rowIndecesIndex * columnCount);
+    public getRows (startRowIndex: number, endRowIndex?: number) {
+        if (endRowIndex === undefined) {
+            endRowIndex = this.rowCount - 1;
         }
 
-        return new Matrix(data, resultRowCount, columnCount);
+        const columnCount = this.columnCount;
+        const newRowCount = endRowIndex - startRowIndex + 1;
+
+        const data = this.data.slice(startRowIndex * columnCount, endRowIndex * columnCount + columnCount);
+
+        return new Matrix(data, newRowCount, columnCount);
     }
 
     public getRowCount () {

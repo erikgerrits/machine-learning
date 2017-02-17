@@ -3,14 +3,30 @@ import Matrix from "../../math/linear-algebra/Matrix";
 
 export default class MulticlassLogisticRegression {
 
+    private numberOfEpochs = 1000;
+    private batchSize = 0;
+    private learningRate = 0.001;
+    private regularizationFactor = 0;
+
     private logisticRegressions: LogisticRegression[];
 
-    public constructor (private inputs: Matrix, private outputs: Matrix) {
-        this.resetHypothesis();
-    }
+    public constructor () {}
 
-    public train () {
-        this.logisticRegressions.forEach(logisticRegression => logisticRegression.train());
+    public train (inputs: Matrix, targets: Matrix) {
+        if (this.logisticRegressions === undefined) {
+            this.logisticRegressions = [];
+
+            for (let i = 0; i < targets.getColumnCount(); i++) {
+                const logisticRegression = new LogisticRegression();
+                logisticRegression.setNumberOfEpochs(this.numberOfEpochs);
+                logisticRegression.setBatchSize(this.batchSize);
+                logisticRegression.setLearningRate(this.learningRate);
+                logisticRegression.setRegularizationFactor(this.regularizationFactor);
+                this.logisticRegressions.push(logisticRegression);
+            }
+        }
+
+        this.logisticRegressions.forEach((logisticRegression, i) => logisticRegression.train(inputs, targets.getColumn(i)));
     }
 
     public predict (inputs: Matrix) {
@@ -20,19 +36,28 @@ export default class MulticlassLogisticRegression {
 
     /* Parameter setters */
 
-    public setLearningRate (learningRate: number) {
-        this.logisticRegressions.forEach(logisticRegression => logisticRegression.setLearningRate(learningRate));
-        return this;
+    /**
+     * Set batch size to
+     * - 0 for batch gradient descent
+     * - 1 for stochastic gradient descent
+     * - >1 for mini-batch gradient descent
+     *
+     * @param batchSize
+     */
+    public setBatchSize (batchSize = 0) {
+        this.batchSize = batchSize;
     }
 
-    public setMaximumIterations (maximumIterations: number) {
-        this.logisticRegressions.forEach(logisticRegression => logisticRegression.setMaximumIterations(maximumIterations));
-        return this;
+    public setLearningRate (learningRate: number) {
+        this.learningRate = learningRate;
+    }
+
+    public setNumberOfEpochs (numberOfEpochs: number) {
+        this.numberOfEpochs = numberOfEpochs;
     }
 
     public setRegularizationFactor (regularizationFactor: number) {
-        this.logisticRegressions.forEach(logisticRegression => logisticRegression.setRegularizationFactor(regularizationFactor));
-        return this;
+        this.regularizationFactor = regularizationFactor;
     }
 
     public setHypothesis (hypothesesPerClass: Matrix[]) {
@@ -40,25 +65,25 @@ export default class MulticlassLogisticRegression {
     }
 
     public resetHypothesis () {
-        this.logisticRegressions = [];
-
-        for (let i = 0; i < this.outputs.getColumnCount(); i++) {
-            this.logisticRegressions.push(new LogisticRegression(this.inputs, this.outputs.getColumn(i)));
-        }
+        this.logisticRegressions = undefined;
     }
 
     /* Parameter getters */
 
-    public getLearningRate () {
-        return this.logisticRegressions[0].getLearningRate();
+    public getBatchSize () {
+        return this.batchSize;
     }
 
-    public getMaximumIterations () {
-        return this.logisticRegressions[0].getMaximumIterations();
+    public getLearningRate () {
+        return this.learningRate;
+    }
+
+    public getNumberOfEpochs () {
+        return this.numberOfEpochs;
     }
 
     public getRegularizationFactor () {
-        return this.logisticRegressions[0].getRegularizationFactor();
+        return this.regularizationFactor;
     }
 
     public getHypothesis () {
