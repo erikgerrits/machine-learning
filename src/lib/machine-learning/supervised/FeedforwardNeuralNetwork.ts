@@ -11,6 +11,7 @@ export default class FeedforwardNeuralNetwork {
     // Use the sigmoid function as default activation function
     private activationFunction = (value: number) => 1.0 / (1.0 + Math.exp(-value));
     private activationGradientFunction = (value: number) => this.activationFunction(value) * (1 - this.activationFunction(value));
+    private activationCostFunction = (value: number, target: number) => target * Math.log(value) + (1 - target) * Math.log(1 - value);
 
     public constructor (numberOfNodesPerLayer: number[], randomSeed?: number) {
         for (let weightLayer = 0; weightLayer < numberOfNodesPerLayer.length - 1; weightLayer++) {
@@ -118,15 +119,16 @@ export default class FeedforwardNeuralNetwork {
             // Multiply the activations with the weights towards the next layer to compute the input to each node in the next layer
             incomingActivations[weightLayer + 1] = Matrix.multiply(activations[weightLayer], this.weightMatrices[weightLayer]);
 
-            // Apply the sigmoid function to activations to get the output signal of the nodes in the next layer
+            // Apply the activation function to activations to get the output signal of the nodes in the next layer
             activations[weightLayer + 1] = Matrix.transform(incomingActivations[weightLayer + 1], element => this.activationFunction(element));
         }
 
         return [activations, incomingActivations];
     }
 
-    private backPropagate (activations: Matrix[], incomingActivations: Matrix[], targets: Matrix) {
+    private calculateGradients (activations: Matrix[], incomingActivations: Matrix[], targets: Matrix) {
         const errors: Matrix[] = [];
+        const gradients: Matrix[] = [];
 
         // Calculate the errors in the output nodes by subtracting the expected desired activations from the actual activations
         errors[this.weightMatrices.length] = Matrix.subtract(activations[this.weightMatrices.length], targets);
@@ -141,9 +143,65 @@ export default class FeedforwardNeuralNetwork {
 
         for (let weightLayer = 0; weightLayer < this.weightMatrices.length; weightLayer++) {
             // Compute the gradient of the previous weightLayer based on the computed errors
-            const gradients = Matrix.transpose(activations[weightLayer]).multiply(errors[weightLayer + 1]).multiply(1 / targets.getRowCount());
-
-            this.weightMatrices[weightLayer].subtract(gradients.multiply(this.learningRate));
+            gradients.push(Matrix.transpose(activations[weightLayer]).multiply(errors[weightLayer + 1]).multiply(1 / targets.getRowCount()));
         }
+
+        return gradients;
+    }
+
+    private backPropagate (activations: Matrix[], incomingActivations: Matrix[], targets: Matrix) {
+        const gradients = this.calculateGradients(activations, incomingActivations, targets);
+
+        for (let weightLayer = 0; weightLayer < this.weightMatrices.length; weightLayer++) {
+            this.weightMatrices[weightLayer].subtract(gradients[weightLayer].multiply(this.learningRate));
+        }
+    }
+
+    private calculateError (outputs: Matrix, targets: Matrix) {
+        let totalError = 0;
+        const outputValues = outputs.toArray();
+        const targetValues = targets.toArray();
+
+        for (let i = 0; i < outputValues.length; i++) {
+            for (let j = 0; j < outputValues[0].length; j++) {
+                totalError -= this.activationCostFunction(outputValues[i][j], targetValues[i][j]);
+            }
+        }
+
+        return totalError / outputs.getRowCount();
+    }
+
+    public checkGradients () {
+        const inputs = Matrix.rand(1, this.weightMatrices[0].getRowCount() - 1);
+        const targets = Matrix.rand(1, this.weightMatrices[this.weightMatrices.length - 1].getColumnCount());
+
+        const [activations, incomingActivations] = this.forwardPropagate(inputs);
+        const realGradients = this.calculateGradients(activations, incomingActivations, targets);
+        const realError = this.calculateError(this.forwardPropagate(inputs)[0][this.weightMatrices.length], targets);
+
+        const originalWeightMatrices = this.weightMatrices;
+
+        //const numericGradients: Matrix[] = [];
+        for (let weightLayer = 0; weightLayer < this.weightMatrices.length; weightLayer++) {
+            //numericGradients.push(Matrix.zeros(this.weightMatrices[weightLayer].getRowCount(), this.weightMatrices[weightLayer].getColumnCount()));
+            for (let weightRow = 0; weightRow < this.weightMatrices[weightLayer].getRowCount(); weightRow++) {
+                for (let weightColumn = 0; weightColumn < this.weightMatrices[weightLayer].getColumnCount(); weightColumn++) {
+                    this.weightMatrices = originalWeightMatrices.map(weightMatrix => weightMatrix.getClone());
+                    this.weightMatrices[weightLayer].setElement(weightRow, weightColumn, this.weightMatrices[weightLayer].getElement(weightRow, weightColumn) + 0.0001);
+                    const error = this.calculateError(this.forwardPropagate(inputs)[0][this.weightMatrices.length], targets);
+                    //numericGradients[weightLayer].setElement(weightRow, weightColumn, (error - realError) * 10000);
+                    const numericGradient = (error - realError) * 10000;
+                    const differenceWithRealGradient = realGradients[weightLayer].getElement(weightRow, weightColumn) - numericGradient;
+
+                    if (Math.abs(differenceWithRealGradient) > 0.0001) {
+                        this.weightMatrices = originalWeightMatrices;
+                        return false;
+                    }
+                }
+            }
+        }
+
+        this.weightMatrices = originalWeightMatrices;
+        return true;
     }
 }

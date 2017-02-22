@@ -1,6 +1,5 @@
 import * as nblas from 'nblas';
 import { Chance } from 'chance';
-import {start} from "repl";
 
 export default class Matrix {
 
@@ -611,7 +610,7 @@ export default class Matrix {
         const otherColumnCount = other.columnCount;
 
         if (columnCount !== otherRowCont) {
-            throw Error('Cannot scale ' + rowCount + 'x' + columnCount + ' matrix with ' + otherRowCont + 'x' + otherColumnCount + ' matrix.');
+            throw Error('Cannot multiply ' + rowCount + 'x' + columnCount + ' matrix with ' + otherRowCont + 'x' + otherColumnCount + ' matrix.');
         }
 
         const newData = new Float64Array(rowCount * otherColumnCount);

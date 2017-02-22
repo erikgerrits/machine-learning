@@ -75,3 +75,10 @@ import * as ml from '../lib/index';
     console.log(predictions.toArray());
     // [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
 }
+
+{
+    const nn = new ml.FeedforwardNeuralNetwork([40, 40, 40, 40, 40]);
+    console.log('');
+    console.log('Checking FeedforwardNeuralNetwork gradients...');
+    console.log(nn.checkGradients() ? 'OK' : 'GRADIENTS NOT OK!!!');
+}
