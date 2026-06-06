@@ -28,3 +28,20 @@ export function mse(predictions: number[][], targets: number[][]): number {
     }
     return sum / predictions.length;
 }
+
+/**
+ * Average binary cross-entropy between sigmoid predictions and 0/1 targets — the loss logistic
+ * regression minimises. Predictions are clamped away from 0 and 1 so log() stays finite.
+ */
+export function crossEntropy(predictions: number[][], targets: number[][]): number {
+    if (predictions.length === 0) return 0;
+
+    const eps = 1e-7;
+    let sum = 0;
+    for (let i = 0; i < predictions.length; i++) {
+        const p = Math.min(1 - eps, Math.max(eps, predictions[i][0]));
+        const y = targets[i][0];
+        sum -= y * Math.log(p) + (1 - y) * Math.log(1 - p);
+    }
+    return sum / predictions.length;
+}

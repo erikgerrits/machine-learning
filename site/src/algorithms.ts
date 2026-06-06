@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { NeuralNetworkPlayground } from './components/NeuralNetworkPlayground';
 import { LinearRegressionPlayground } from './components/LinearRegressionPlayground';
+import { LogisticRegressionPlayground } from './components/LogisticRegressionPlayground';
 
 /**
  * The catalog of algorithms the site covers. The neural network is live (flagship); the rest
@@ -38,7 +39,8 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         path: '/logistic-regression',
         title: 'Logistic Regression',
         tagline: 'Splits two classes with a straight decision boundary.',
-        status: 'soon',
+        status: 'live',
+        Playground: LogisticRegressionPlayground,
     },
     {
         id: 'multiclass-logistic-regression',

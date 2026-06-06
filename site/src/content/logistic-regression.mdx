@@ -1,0 +1,60 @@
+import { LogisticRegressionPlayground } from '../components/LogisticRegressionPlayground';
+
+# Logistic Regression
+
+Logistic regression is linear regression's classifying cousin: instead of predicting a number,
+it predicts the **probability** that a point belongs to a class. Below is the real
+[`LogisticRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/LogisticRegression.ts)
+model, training live. Press **Train** and watch the colored regions settle — then switch
+datasets to see exactly where a straight line runs out of road.
+
+<div className="breakout">
+  <LogisticRegressionPlayground />
+</div>
+
+## From a line to a probability
+
+It starts just like linear regression — a weighted sum of the inputs (with the bias folded in) —
+but then squashes that number through the **sigmoid** so the output lands in `(0, 1)` and reads
+as a probability:
+
+$$
+\hat{y} = \sigma(\mathbf{w} \cdot \mathbf{x}), \qquad \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+That one extra step is the *entire* difference from linear regression in the source:
+
+```ts
+protected predictFromEnrichedInputs(inputs: Matrix) {
+    return Matrix.multiply(inputs, this.getHypothesis()).transform(z => 1 / (1 + Math.exp(-z)));
+}
+```
+
+Everything else — the bias trick, the gradient-descent training loop in `Regression.train` — is
+shared with linear regression. To turn a probability into a class, threshold at `0.5`.
+
+## The loss: cross-entropy
+
+Squared error is the wrong yardstick for probabilities; logistic regression minimises
+**cross-entropy** instead, which rewards confident-and-correct and heavily punishes
+confident-and-wrong:
+
+$$
+L = -\frac{1}{m}\sum_{i=1}^{m}\Big[\,y_i \log \hat{y}_i + (1-y_i)\log(1-\hat{y}_i)\,\Big]
+$$
+
+That's the curve in the **Loss** panel.
+
+## What a straight line can — and can't — do
+
+The decision boundary of logistic regression is always a single straight line (in 2-D). That's
+its strength and its limit:
+
+- **Blobs** — two separated clusters. The line slides right between them: ~100% accuracy.
+- **Two moons** — the line catches most points but can't follow the curve: it plateaus around 85%.
+- **Circles** and **XNOR** — no straight line can separate these, so accuracy stalls near 50% and
+  the loss flattens at $\ln 2 \approx 0.69$. This is precisely the problem a
+  [neural network](/machine-learning/neural-network) solves by stacking non-linear layers.
+
+Flip between the datasets above and watch the boundary try — the failures are as instructive as
+the successes.

@@ -5,6 +5,7 @@ import { Landing } from './pages/Landing';
 import { NotFound } from './pages/NotFound';
 import NeuralNetworkTutorial from './content/neural-network.mdx';
 import LinearRegressionTutorial from './content/linear-regression.mdx';
+import LogisticRegressionTutorial from './content/logistic-regression.mdx';
 
 export function App() {
     return (
@@ -24,6 +25,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <LinearRegressionTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="logistic-regression"
+                    element={
+                        <TutorialPage>
+                            <LogisticRegressionTutorial />
                         </TutorialPage>
                     }
                 />
