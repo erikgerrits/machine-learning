@@ -10,11 +10,6 @@ import { drawLossCurve } from '../viz/lossCurve';
 import styles from './NeuralNetworkPlayground.module.css';
 
 const POINTS = 240;
-const BOUNDARY = 460;
-const NET_W = 360;
-const NET_H = 220;
-const LOSS_W = 360;
-const LOSS_H = 150;
 
 const HIDDEN_PRESETS = [
     { label: '1 × 4', layers: [4] },
@@ -85,28 +80,28 @@ export function NeuralNetworkPlayground() {
 
         const boundaryCanvas = boundaryCanvasRef.current;
         if (boundaryCanvas) {
-            const ctx = fitCanvas(boundaryCanvas, BOUNDARY, BOUNDARY);
+            const { ctx, width, height } = fitCanvas(boundaryCanvas);
             ctx.fillStyle = '#0b1120';
-            ctx.fillRect(0, 0, BOUNDARY, BOUNDARY);
+            ctx.fillRect(0, 0, width, height);
 
             const values = net.predict(grid.matrix).toArray().map(row => row[0]);
             if (!offscreenRef.current) offscreenRef.current = document.createElement('canvas');
             paintBoundary(offscreenRef.current, values, grid.size);
             ctx.imageSmoothingEnabled = true;
-            ctx.drawImage(offscreenRef.current, 0, 0, BOUNDARY, BOUNDARY);
-            drawPoints(ctx, data.inputs, data.targets, domainRef.current, BOUNDARY, BOUNDARY);
+            ctx.drawImage(offscreenRef.current, 0, 0, width, height);
+            drawPoints(ctx, data.inputs, data.targets, domainRef.current, width, height);
         }
 
         const netCanvas = netCanvasRef.current;
         if (netCanvas) {
-            const ctx = fitCanvas(netCanvas, NET_W, NET_H);
-            drawNetwork(ctx, NET_W, NET_H, net.getWeightMatrices().map(m => m.toArray()), archRef.current);
+            const { ctx, width, height } = fitCanvas(netCanvas);
+            drawNetwork(ctx, width, height, net.getWeightMatrices().map(m => m.toArray()), archRef.current);
         }
 
         const lossCanvas = lossCanvasRef.current;
         if (lossCanvas) {
-            const ctx = fitCanvas(lossCanvas, LOSS_W, LOSS_H);
-            drawLossCurve(ctx, LOSS_W, LOSS_H, lossRef.current);
+            const { ctx, width, height } = fitCanvas(lossCanvas);
+            drawLossCurve(ctx, width, height, lossRef.current);
         }
     }, []);
 
@@ -316,12 +311,12 @@ export function NeuralNetworkPlayground() {
 
                     <div className={styles.card}>
                         <h3>Network <span>weights pulse as it learns</span></h3>
-                        <canvas ref={netCanvasRef} />
+                        <canvas ref={netCanvasRef} className={styles.diagramCanvas} />
                     </div>
 
                     <div className={styles.card}>
                         <h3>Loss <span>cross-entropy per epoch</span></h3>
-                        <canvas ref={lossCanvasRef} />
+                        <canvas ref={lossCanvasRef} className={styles.lossCanvas} />
                     </div>
                 </div>
             </div>

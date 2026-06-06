@@ -1,22 +1,26 @@
 /**
- * Sizes a canvas's backing store to its CSS box × devicePixelRatio (for crisp rendering on
- * retina displays) and returns a 2D context already scaled so callers can draw in CSS pixels.
- * Safe to call every frame — it only resizes when the dimensions actually change.
+ * Matches a canvas's backing store to its actual laid-out CSS box × devicePixelRatio (crisp on
+ * retina, and responsive — it never forces a fixed size that its container would clip) and
+ * returns a context scaled so callers draw in CSS pixels, plus that measured width/height.
+ * Safe to call every frame: it only resizes the backing store when the box actually changes.
  */
-export function fitCanvas(canvas: HTMLCanvasElement, cssWidth: number, cssHeight: number): CanvasRenderingContext2D {
+export function fitCanvas(canvas: HTMLCanvasElement): {
+    ctx: CanvasRenderingContext2D;
+    width: number;
+    height: number;
+} {
     const dpr = window.devicePixelRatio || 1;
-    const w = Math.round(cssWidth * dpr);
-    const h = Math.round(cssHeight * dpr);
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
 
-    if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-        canvas.style.width = `${cssWidth}px`;
-        canvas.style.height = `${cssHeight}px`;
+    if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
     }
 
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('2D canvas context unavailable');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return ctx;
+    return { ctx, width, height };
 }
