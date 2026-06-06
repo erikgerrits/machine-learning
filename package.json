@@ -4,8 +4,17 @@
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
+  "files": [
+    "dist/lib"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "demo": "tsx examples/demo.ts",
+    "prepublishOnly": "yarn build"
   },
   "repository": {
     "type": "git",
@@ -35,8 +44,11 @@
     "chance": "^1.0.4"
   },
   "devDependencies": {
-    "@types/node": "^7.0.5",
-    "typescript": "^2.1.6"
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^4.1.8",
+    "tsx": "^4.22.4",
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.8"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

@@ -1,5 +1,6 @@
 .idea
 .vscode
+coverage
 dist
 node_modules
 npm-debug.log

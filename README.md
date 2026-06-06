@@ -100,8 +100,10 @@ import * as ml from 'machine-learning';
 const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [1, 1], [2, 2]]);
 const targets = new ml.Matrix([[0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]]);
 
-const nearestNeighbors = new ml.NearestNeighbors(inputs, targets);
+const nearestNeighbors = new ml.NearestNeighbors();
 nearestNeighbors.setNumberOfNeighbors(1);
+
+nearestNeighbors.train(inputs, targets);
 
 const unknowns = new ml.Matrix([[0.5, 0.5], [1.5, 1.5], [1.75, 1.75]]);
 
@@ -109,4 +111,18 @@ const predictions = nearestNeighbors.predict(unknowns);
 console.log(predictions.toArray());
 // [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
 
+```
+
+## Development
+
+This project is written in TypeScript and tested with [Vitest](https://vitest.dev/).
+
+```bash
+yarn install        # install dependencies
+yarn test           # run the test suite
+yarn test:watch     # run the tests in watch mode
+yarn coverage       # run the tests with a coverage report
+yarn typecheck      # type-check without emitting
+yarn build          # compile the library to dist/lib
+yarn demo           # run the runnable examples in examples/demo.ts
 ```
