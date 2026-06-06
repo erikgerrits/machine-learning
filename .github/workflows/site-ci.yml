@@ -1,0 +1,41 @@
+name: Site CI
+
+# Pre-merge signal for the playground app (the library has its own ci.yml). Runs on PRs that
+# touch the site or the library source it imports.
+on:
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'src/lib/**'
+      - '.github/workflows/site-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: |
+            yarn.lock
+            site/yarn.lock
+
+      # The site type-checks against the library's built declarations, so build the lib first.
+      - name: Build library
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+
+      - name: Type-check and build site
+        working-directory: site
+        run: |
+          yarn install --frozen-lockfile
+          yarn typecheck
+          yarn build
