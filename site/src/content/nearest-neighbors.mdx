@@ -1,0 +1,45 @@
+import { NearestNeighborsPlayground } from '../components/NearestNeighborsPlayground';
+
+# k-Nearest Neighbours
+
+Every other model on this site learns parameters by gradient descent. k-NN does something
+refreshingly different: it **doesn't really train at all**. It just remembers the examples, and
+to classify a new point it asks its `k` closest neighbours to vote. Below is the real
+[`NearestNeighbors`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/NearestNeighbors.ts)
+— drag **k** and switch datasets, and the boundary recomputes instantly (there are no epochs to wait for).
+
+<div className="breakout">
+  <NearestNeighborsPlayground />
+</div>
+
+## Lazy learning
+
+"Training" is a single line — store the data:
+
+```ts
+train(inputs: Matrix, targets: Matrix) {
+    this.inputs = inputs;
+    this.targets = targets;
+}
+```
+
+All the work happens at prediction time. For each query point, `NearestNeighbors` measures the
+distance to every stored example (squared Euclidean by default, but the metric is swappable via
+`setDistanceFunction`), keeps the closest `k`, and averages their labels. Above 0.5 → class 1.
+
+## The role of k
+
+`k` is the one knob, and it trades detail for smoothness:
+
+- **k = 1** — each point copies its single nearest neighbour. The boundary hugs the data
+  exactly: jagged, islanded, and prone to overfitting noise.
+- **larger k** — more neighbours vote, so the boundary smooths out and shrugs off outliers — at
+  the risk of washing out genuinely small regions.
+
+## The payoff: non-linear for free
+
+Switch to **moons**, **circles**, or the **spiral** — the shapes that
+[logistic regression](/machine-learning/logistic-regression) simply could not separate. k-NN
+follows every curve without any extra machinery, because its boundary is defined by the data
+itself rather than by a fixed equation. The cost is that it must keep all the training data and
+compare against it for every single prediction.
