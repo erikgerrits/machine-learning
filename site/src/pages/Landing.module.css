@@ -1,0 +1,143 @@
+.landing {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 32px;
+    align-items: center;
+    padding: 24px 0 8px;
+}
+
+.heroText h1 {
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.05;
+    margin: 0 0 18px;
+    background: linear-gradient(120deg, #e6edf6 30%, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.heroText p {
+    font-size: 18px;
+    color: var(--muted);
+    margin: 0 0 24px;
+    max-width: 30em;
+}
+
+.heroText strong {
+    color: var(--text);
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.cta {
+    background: linear-gradient(180deg, #0ea5e9, #0284c7);
+    color: #04121f;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 10px;
+}
+
+.cta:hover {
+    text-decoration: none;
+    filter: brightness(1.08);
+}
+
+.secondary {
+    color: var(--text);
+    padding: 12px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.secondary:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+}
+
+.install {
+    display: inline-block;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #aee1ff;
+}
+
+.heroArt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sectionTitle {
+    font-size: 22px;
+    margin: 0 0 18px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.card {
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    color: var(--text);
+}
+
+.live:hover {
+    text-decoration: none;
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    transition: transform 0.12s, border-color 0.12s;
+}
+
+.cardHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.cardTitle {
+    font-weight: 600;
+}
+
+.tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--border);
+    color: var(--muted);
+    padding: 2px 7px;
+    border-radius: 999px;
+}
+
+.cardTagline {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+@media (max-width: 820px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,135 @@
+.shell {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(11, 17, 32, 0.72);
+    backdrop-filter: blur(10px);
+    z-index: 20;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.brand:hover {
+    text-decoration: none;
+}
+
+.logo {
+    color: var(--accent);
+    font-size: 20px;
+}
+
+.gh {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.body {
+    flex: 1;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 8px;
+}
+
+.sidebar {
+    padding: 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    height: calc(100vh - 56px);
+}
+
+.navHeading {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding: 4px 12px 8px;
+}
+
+.navLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.navLink:hover {
+    background: var(--panel);
+    text-decoration: none;
+}
+
+.active {
+    background: var(--panel);
+    color: var(--accent);
+    box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.soon {
+    color: var(--muted);
+    cursor: default;
+}
+
+.soon:hover {
+    background: none;
+}
+
+.soonTag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--border);
+    color: var(--muted);
+    padding: 2px 6px;
+    border-radius: 999px;
+}
+
+.content {
+    padding: 28px 28px 80px;
+    min-width: 0;
+}
+
+@media (max-width: 820px) {
+    .body {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .navHeading {
+        width: 100%;
+    }
+}

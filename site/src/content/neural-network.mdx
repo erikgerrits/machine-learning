@@ -1,0 +1,151 @@
+import { NeuralNetworkPlayground } from '../components/NeuralNetworkPlayground';
+
+# Neural Networks, from scratch
+
+A neural network is a stack of simple parts that, together, can learn shapes a straight line
+never could. Below is a real one — the [`FeedforwardNeuralNetwork`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/FeedforwardNeuralNetwork.ts)
+from this library, training **live in your browser**. Press **Train** and watch the decision
+boundary bend itself around the data while the weights pulse and the loss falls.
+
+<div className="breakout">
+  <NeuralNetworkPlayground />
+</div>
+
+Everything below explains exactly what you just watched — and points at the lines of code that
+make it happen.
+
+## The idea
+
+We have points on a plane, each belonging to class **0** or class **1**, and we want a function
+that takes a point $(x_1, x_2)$ and returns how likely it is to be class 1. A single straight
+line can only split the plane in two. The XNOR and spiral datasets above can't be split that way
+— so we stack several simple "neurons" into layers and let them bend the boundary.
+
+The network is just a list of layer sizes. `[2, 8, 1]` means two inputs, one hidden layer of
+eight neurons, and one output:
+
+```ts
+const net = new FeedforwardNeuralNetwork([2, 8, 1], /* seed */ 0);
+net.setLearningRate(1);
+net.train(inputs, targets); // inputs: N×2, targets: N×1
+net.predict(inputs);        // N×1, each in (0, 1)
+```
+
+## A single neuron
+
+One neuron takes its inputs, multiplies each by a **weight**, adds a **bias**, and squashes the
+result through an **activation function**. With weights $w$, bias $b$, and inputs $x$:
+
+$$
+a = \sigma(w \cdot x + b), \qquad \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+The sigmoid $\sigma$ maps any number into $(0, 1)$, so the output reads like a probability. In
+the library it's the default activation:
+
+```ts
+private activationFunction = (value) => 1.0 / (1.0 + Math.exp(-value));
+```
+
+Stack non-linear neurons and the network can carve out curved, even closed regions — which is
+exactly why the **Circles** dataset becomes learnable.
+
+## The forward pass
+
+To make a prediction, signal flows forward layer by layer: prepend a bias input, multiply by
+the layer's weight matrix, apply the activation, repeat. That's `forwardPropagate`:
+
+```ts
+// Add bias nodes to the activations
+activations[layer].appendLeft(Matrix.ones(rows, 1));
+// Multiply by the weights to get each next-layer neuron's input
+incoming[layer + 1] = Matrix.multiply(activations[layer], weightMatrices[layer]);
+// Squash to get the next layer's output signal
+activations[layer + 1] = Matrix.transform(incoming[layer + 1], activationFunction);
+```
+
+For `[2, 8, 1]` the shapes go `N×2 → N×8 → N×1`. The final column is the prediction you see
+shaded across the plane in the heatmap above.
+
+## Measuring wrongness: cross-entropy
+
+To improve, the network needs a number for how wrong it is. For probabilities we use
+**cross-entropy** (negative log-likelihood), averaged over the $m$ examples:
+
+$$
+L = -\frac{1}{m} \sum_{i=1}^{m} \Big[\, y_i \log \hat{y}_i + (1 - y_i)\log(1 - \hat{y}_i) \,\Big]
+$$
+
+That's the curve in the **Loss** panel. It's computed by `computeLoss`, which the playground
+samples every epoch:
+
+```ts
+net.computeLoss(inputs, targets); // → average cross-entropy, lower is better
+```
+
+> Because of the $\log \hat{y}$ term, the output must live in $(0, 1)$ — which is why the output
+> layer uses a sigmoid. Swap in an activation that can output 0 or negatives and the loss breaks.
+
+## Learning: gradient descent and backpropagation
+
+Training nudges every weight a little in the direction that *reduces* the loss. The size of the
+nudge is the **learning rate** — the slider you've been dragging. Each step:
+
+$$
+w \leftarrow w - \eta \, \frac{\partial L}{\partial w}
+$$
+
+The partial derivatives come from **backpropagation**: compute the error at the output, then
+pass it backwards through the layers (using the transposed weight matrices) to find each
+weight's share of the blame. That's `calculateGradients` and `backPropagate`:
+
+```ts
+// Error at the output: how far predictions are from targets
+errors[last] = Matrix.subtract(activations[last], targets);
+// ...propagate backwards through transposed weights, then step downhill:
+weightMatrices[layer].subtract(gradients[layer].multiply(learningRate));
+```
+
+Because the weights persist on the network between calls, this playground sets the epoch count
+to **1** and calls `train()` once per animation frame — so you're literally watching one
+gradient-descent step per frame.
+
+## The bias trick
+
+Notice the `appendLeft(Matrix.ones(...))` above. Rather than track a separate bias term, we glue
+a constant column of `1`s onto the inputs; the bias then becomes just another weight in the
+matrix and rides along for free in the multiply. (The regression models in this library use the
+same trick.)
+
+## Smart initialization
+
+If every weight started at zero, every neuron would learn the same thing. They're seeded with
+small random values scaled by **Xavier/Glorot** initialization, which keeps the signal from
+exploding or vanishing as it flows through the layers:
+
+```ts
+const epsilon = Math.sqrt(6) / Math.sqrt(incomingNodes + outgoingNodes);
+weightMatrices.push(Matrix.rand(incomingNodes + 1, outgoingNodes, epsilon, seed));
+```
+
+Because it's seeded, the same seed reproduces the exact same run — try changing the **seed** in
+the playground and watch a different path to the same solution.
+
+## Trust, but verify: gradient checking
+
+Backprop is easy to get subtly wrong. The library ships a `checkGradients()` method that nudges
+each weight by a tiny amount, measures how the loss actually changes (a finite-difference
+estimate of the gradient), and compares it to the analytic gradient — failing if they disagree by
+more than `1e-4`. That's the green **✓ Gradients verified** badge in the playground: a live proof
+that the math is implemented correctly.
+
+## Try it yourself
+
+- Switch to the **Spiral** and crank the **speed** — a deeper network slowly untangles the arms.
+- Drop the **learning rate** very low and watch the descent crawl; raise it too high and watch it
+  thrash.
+- Compare **Batch** vs **Mini-batch** vs **SGD** and see how the loss curve gets noisier.
+
+<div className="breakout">
+  <NeuralNetworkPlayground />
+</div>

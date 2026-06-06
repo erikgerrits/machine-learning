@@ -1,0 +1,230 @@
+.playground {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.controls {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: 20px;
+}
+
+.transport {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+}
+
+.btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    padding: 9px 6px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.05s;
+}
+
+.btn:hover {
+    border-color: var(--accent);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.primary {
+    grid-column: span 1;
+    background: linear-gradient(180deg, #0ea5e9, #0284c7);
+    border-color: transparent;
+    color: #04121f;
+    font-weight: 600;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.field span {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.field em {
+    color: var(--text);
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 12px;
+}
+
+.field select,
+.field input[type='number'] {
+    appearance: none;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 13px;
+}
+
+.field input[type='range'] {
+    width: 100%;
+    accent-color: var(--accent);
+}
+
+.blurb {
+    margin: -6px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.stage {
+    display: grid;
+    grid-template-columns: minmax(0, 460px) minmax(280px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.boundaryWrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px -30px rgba(56, 189, 248, 0.5);
+    aspect-ratio: 1 / 1;
+}
+
+.boundary {
+    width: 100%;
+    height: 100%;
+}
+
+.activation {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    background: rgba(11, 17, 32, 0.6);
+    padding: 4px 10px;
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
+}
+
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.metric {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.metricLabel {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+}
+
+.metricValue {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.badge {
+    align-self: flex-start;
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: var(--good);
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 999px;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+}
+
+.card h3 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.card h3 span {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.diagramCanvas {
+    display: block;
+    width: 100%;
+    height: 200px;
+}
+
+.lossCanvas {
+    display: block;
+    width: 100%;
+    height: 140px;
+}
+
+@media (max-width: 900px) {
+    .playground {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        position: static;
+    }
+
+    .stage {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,5 +1,26 @@
 import Matrix from "../../math/linear-algebra/Matrix";
 
+/**
+ * A fully-connected feedforward neural network trained by back-propagation.
+ *
+ * Each layer is a linear map (a weight matrix, with the bias folded in as an extra input that
+ * is always 1) followed by a non-linear activation — sigmoid by default. Stacking non-linear
+ * layers lets the network learn boundaries a single straight line never could: XNOR, two
+ * interleaving moons, a spiral.
+ *
+ * Training is gradient descent. Repeatedly: run the data forward, measure the cross-entropy
+ * loss, back-propagate the error to every weight, and nudge each weight downhill. Weights are
+ * instance state and are NOT reset by `train()`, so calling `setNumberOfEpochs(1)` and then
+ * `train()` in a loop steps the network one epoch at a time — handy for live visualisation.
+ *
+ * @example
+ * // Learn XNOR: 2 inputs → 5 hidden neurons → 1 output.
+ * const net = new FeedforwardNeuralNetwork([2, 5, 1], 0);
+ * net.setLearningRate(1);
+ * net.setNumberOfEpochs(1000);
+ * net.train(new Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]), new Matrix([[1], [0], [0], [1]]));
+ * net.predict(new Matrix([[0, 0]])); // ≈ [[0.99]]
+ */
 export default class FeedforwardNeuralNetwork {
 
     private weightMatrices: Matrix[] = [];
@@ -11,6 +32,9 @@ export default class FeedforwardNeuralNetwork {
     // Use the sigmoid function as default activation function
     private activationFunction = (value: number) => 1.0 / (1.0 + Math.exp(-value));
     private activationGradientFunction = (value: number) => this.activationFunction(value) * (1 - this.activationFunction(value));
+    // Cross-entropy (negative log-likelihood) for one output. The log terms reward confident,
+    // correct predictions and punish confident, wrong ones — and require outputs in (0, 1),
+    // which is exactly what the sigmoid output layer provides.
     private activationCostFunction = (value: number, target: number) => target * Math.log(value) + (1 - target) * Math.log(1 - value);
 
     public constructor (numberOfNodesPerLayer: number[], randomSeed?: number) {
@@ -42,6 +66,17 @@ export default class FeedforwardNeuralNetwork {
         const [activations] = this.forwardPropagate(inputs);
 
         return activations[this.weightMatrices.length];
+    }
+
+    /**
+     * Computes the network's average cross-entropy loss on the given data without changing
+     * any weights — a forward pass followed by the negative log-likelihood per example. This
+     * is the exact quantity training minimises, exposed for monitoring (e.g. a loss curve).
+     *
+     * Assumes a sigmoid output layer (outputs in (0, 1)), which the default activation gives.
+     */
+    public computeLoss (inputs: Matrix, targets: Matrix): number {
+        return this.calculateError(this.predict(inputs), targets);
     }
 
     /* Parameter setters */
@@ -99,6 +134,15 @@ export default class FeedforwardNeuralNetwork {
 
     public getNumberOfEpochs () {
         return this.numberOfEpochs;
+    }
+
+    /**
+     * Returns the network's weight matrices, one per layer transition. Each matrix has shape
+     * (incomingNodes + 1) × outgoingNodes, where row 0 holds the bias weights. Clones are
+     * returned so callers (e.g. a visualisation) cannot mutate the network's internal state.
+     */
+    public getWeightMatrices (): Matrix[] {
+        return this.weightMatrices.map(weightMatrix => weightMatrix.getClone());
     }
 
     /* Private methods */
