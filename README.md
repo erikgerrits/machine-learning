@@ -11,7 +11,7 @@ The TypeScript source files can be found on [GitHub](https://github.com/erikgerr
 
 ## Documentation
 
-Below are some simple code usage examples. TypeDocs for all classes can be found [here](http://platformj.com).
+Below are some simple code usage examples.
 
 * [Feedforward Neural Network](#feedforward-neural-network)
 * [Linear Regression](#linear-regression)
@@ -38,8 +38,6 @@ console.log(predictions.toArray());
 
 ```
 
-For more detailed information, access the [FeedforwardNeuralNetwork class documentation](http://platformj.com/classes/_machine_learning_supervised_feedforwardneuralnetwork_.feedforwardneuralnetwork.html)
-
 ### Linear Regression
 
 ```TypeScript
@@ -60,8 +58,6 @@ console.log(predictions.toArray());
 
 ```
 
-For more detailed information, access the [LinearRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_linearregression_.linearregression.html)
-
 ### Logistic Regression
 ```TypeScript
 import * as ml from 'machine-learning';
@@ -80,8 +76,6 @@ console.log(predictions.toArray());
 // [ [ 1 ], [ 0 ], [ 1 ], [ 0 ], [ 0 ], [ 1 ] ]
 
 ```
-
-For more detailed information, access the [LogisticRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_logisticregression_.logisticregression.html)
 
 ### Multiclass Logistic Regression
 ```TypeScript
@@ -102,8 +96,6 @@ console.log(predictions.toArray());
 
 ```
 
-For more detailed information, access the [MulticlassLogisticRegression class documentation](http://platformj.com/classes/_machine_learning_supervised_multiclasslogisticregression_.multiclasslogisticregression.html)
-
 ### Nearest Neighbors
 ```TypeScript
 import * as ml from 'machine-learning';
@@ -122,5 +114,3 @@ console.log(predictions.toArray());
 // [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
 
 ```
-
-For more detailed information, access the [NearestNeighbors class documentation](http://platformj.com/classes/_machine_learning_supervised_nearestneighbors_.nearestneighbors.html)
