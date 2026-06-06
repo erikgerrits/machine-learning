@@ -40,9 +40,30 @@ describe('LinearRegression', () => {
 
     it('exposes its hyperparameters', () => {
         const regression = new LinearRegression();
-        regression.setLearningRate(0.05).setNumberOfEpochs(42);
+        regression.setLearningRate(0.05).setNumberOfEpochs(42).setBatchSize(3);
 
         expect(regression.getLearningRate()).toBe(0.05);
         expect(regression.getNumberOfEpochs()).toBe(42);
+        expect(regression.getRegularizationFactor()).toBe(0);
+    });
+
+    it('applies L2 regularization when a factor is set', () => {
+        const train = (regularizationFactor: number) => {
+            const regression = new LinearRegression();
+            regression.setNumberOfEpochs(5000).setLearningRate(0.02).setRegularizationFactor(regularizationFactor);
+            regression.train(new Matrix(LINEAR_INPUTS), new Matrix(LINEAR_TARGETS));
+            return regression;
+        };
+
+        const regularized = train(0.5);
+        expect(regularized.getRegularizationFactor()).toBe(0.5);
+
+        // The penalty shrinks the weights, so the slope (excluding the bias) ends up smaller than
+        // the unregularized fit — but the predictions still increase with the input.
+        const slope = (model: LinearRegression) => model.getHypothesis().getElement(1, 0);
+        expect(Math.abs(slope(regularized))).toBeLessThan(Math.abs(slope(train(0))));
+
+        const predictions = regularized.predict(new Matrix(LINEAR_INPUTS)).toArray();
+        expect(predictions[4][0]).toBeGreaterThan(predictions[0][0]);
     });
 });

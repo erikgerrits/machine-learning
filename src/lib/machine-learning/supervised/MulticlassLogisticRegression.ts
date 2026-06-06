@@ -52,26 +52,32 @@ export default class MulticlassLogisticRegression {
      */
     public setBatchSize (batchSize = 0) {
         this.batchSize = batchSize;
+        return this;
     }
 
     public setLearningRate (learningRate: number) {
         this.learningRate = learningRate;
+        return this;
     }
 
     public setNumberOfEpochs (numberOfEpochs: number) {
         this.numberOfEpochs = numberOfEpochs;
+        return this;
     }
 
     public setRegularizationFactor (regularizationFactor: number) {
         this.regularizationFactor = regularizationFactor;
+        return this;
     }
 
     public setHypothesis (hypothesesPerClass: Matrix[]) {
         this.logisticRegressions.forEach((logisticRegression, i) => logisticRegression.setHypothesis(hypothesesPerClass[i]));
+        return this;
     }
 
     public resetHypothesis () {
         this.logisticRegressions = undefined;
+        return this;
     }
 
     /* Parameter getters */

@@ -35,10 +35,12 @@ export default class NearestNeighbors {
 
     public setDistanceFunction (distanceFunction: (x: Matrix, y: Matrix) => number) {
         this.distanceFunction = distanceFunction;
+        return this;
     }
 
     public setNumberOfNeighbors (numberOfNeighbors: number) {
         this.numberOfNeighbors = numberOfNeighbors;
+        return this;
     }
 
     /* Parameter getters */

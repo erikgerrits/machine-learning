@@ -57,6 +57,7 @@ abstract class Regression {
      */
     public setBatchSize (batchSize = 0) {
         this.batchSize = batchSize;
+        return this;
     }
 
     public setLearningRate (learningRate: number) {
@@ -76,10 +77,12 @@ abstract class Regression {
 
     public setHypothesis (hypothesis: Matrix) {
         this.hypothesis = hypothesis;
+        return this;
     }
 
     public resetHypothesis () {
         this.hypothesis = undefined;
+        return this;
     }
 
     /* Parameter getters */

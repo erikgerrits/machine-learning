@@ -36,4 +36,32 @@ describe('MulticlassLogisticRegression', () => {
 
         expect(regression.getHypothesis()).toHaveLength(MULTICLASS_TARGETS[0].length);
     });
+
+    it('round-trips its hyperparameters', () => {
+        const regression = new MulticlassLogisticRegression();
+        regression.setBatchSize(4).setLearningRate(0.05).setNumberOfEpochs(42).setRegularizationFactor(0.2);
+
+        expect(regression.getBatchSize()).toBe(4);
+        expect(regression.getLearningRate()).toBe(0.05);
+        expect(regression.getNumberOfEpochs()).toBe(42);
+        expect(regression.getRegularizationFactor()).toBe(0.2);
+    });
+
+    it('round-trips per-class hypotheses and resetHypothesis clears them', () => {
+        const inputs = new Matrix(MULTICLASS_INPUTS);
+        const targets = new Matrix(MULTICLASS_TARGETS);
+
+        const regression = new MulticlassLogisticRegression();
+        regression.setNumberOfEpochs(50).train(inputs, targets);
+
+        const learned = regression.getHypothesis();
+        regression.setHypothesis(learned);
+        expect(regression.getHypothesis().map(hypothesis => hypothesis.toArray()))
+            .toEqual(learned.map(hypothesis => hypothesis.toArray()));
+
+        // After a reset the next train() rebuilds one classifier per class from scratch.
+        regression.resetHypothesis();
+        regression.train(inputs, targets);
+        expect(regression.getHypothesis()).toHaveLength(MULTICLASS_TARGETS[0].length);
+    });
 });
