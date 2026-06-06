@@ -1,4 +1,4 @@
-import * as ml from '../lib/index';
+import * as ml from '../src/lib';
 
 {
     // Feedforward neural network: solve XNOR problem (opposite of XOR)
