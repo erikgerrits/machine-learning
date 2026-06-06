@@ -7,6 +7,18 @@ import { fitCanvas } from '../viz/canvas';
 import { drawPoints, makeGrid, paintBoundary, type Grid } from '../viz/decisionBoundary';
 import { drawNetwork } from '../viz/network';
 import { drawLossCurve } from '../viz/lossCurve';
+import {
+    Badge,
+    Card,
+    ControlPanel,
+    Hint,
+    Metric,
+    MetricsRow,
+    NumberField,
+    RunControls,
+    Select,
+    Slider,
+} from './controls/Controls';
 import styles from './NeuralNetworkPlayground.module.css';
 
 const POINTS = 240;
@@ -182,101 +194,68 @@ export function NeuralNetworkPlayground() {
         setRunning(false);
         rebuild();
     };
+    const handleDataset = (id: string) => {
+        const next = DATASETS.find(d => d.id === id);
+        if (!next) return;
+        // Selecting a dataset applies a known-good architecture + learning rate so it converges
+        // impressively out of the box (still fully tweakable afterwards).
+        setDatasetId(next.id);
+        setHidden(next.recommendedHidden);
+        setSliderLR(lrToSlider(next.recommendedLr));
+    };
+    const handleHidden = (value: string) => {
+        const preset = HIDDEN_PRESETS.find(p => p.layers.join('-') === value);
+        if (preset) setHidden(preset.layers);
+    };
+
+    const dataset = DATASETS.find(d => d.id === datasetId);
 
     return (
         <div className={styles.playground}>
-            <aside className={styles.controls}>
-                <div className={styles.transport}>
-                    <button
-                        className={`${styles.btn} ${styles.primary}`}
-                        onClick={() => setRunning(r => !r)}
-                    >
-                        {running ? '❚❚ Pause' : '▶ Train'}
-                    </button>
-                    <button className={styles.btn} onClick={handleStep} disabled={running}>
-                        Step
-                    </button>
-                    <button className={styles.btn} onClick={handleReset}>
-                        Reset
-                    </button>
-                </div>
-
-                <label className={styles.field}>
-                    <span>Dataset</span>
-                    <select
-                        value={datasetId}
-                        onChange={e => {
-                            const next = DATASETS.find(d => d.id === e.target.value);
-                            if (!next) return;
-                            // Selecting a dataset applies a known-good architecture + learning rate
-                            // so it converges impressively out of the box (still fully tweakable).
-                            setDatasetId(next.id);
-                            setHidden(next.recommendedHidden);
-                            setSliderLR(lrToSlider(next.recommendedLr));
-                        }}
-                    >
-                        {DATASETS.map(d => (
-                            <option key={d.id} value={d.id}>{d.label}</option>
-                        ))}
-                    </select>
-                </label>
-                <p className={styles.blurb}>{DATASETS.find(d => d.id === datasetId)?.blurb}</p>
-
-                <label className={styles.field}>
-                    <span>Hidden layers</span>
-                    <select
-                        value={hidden.join('-')}
-                        onChange={e => {
-                            const preset = HIDDEN_PRESETS.find(p => p.layers.join('-') === e.target.value);
-                            if (preset) setHidden(preset.layers);
-                        }}
-                    >
-                        {HIDDEN_PRESETS.map(p => (
-                            <option key={p.label} value={p.layers.join('-')}>{p.label}</option>
-                        ))}
-                    </select>
-                </label>
-
-                <label className={styles.field}>
-                    <span>Learning rate <em>{learningRate.toFixed(3)}</em></span>
-                    <input
-                        type="range"
-                        min={0}
-                        max={1000}
-                        value={sliderLR}
-                        onChange={e => setSliderLR(Number(e.target.value))}
-                    />
-                </label>
-
-                <label className={styles.field}>
-                    <span>Speed <em>{stepsPerFrame} epochs / frame</em></span>
-                    <input
-                        type="range"
-                        min={1}
-                        max={30}
-                        value={stepsPerFrame}
-                        onChange={e => setStepsPerFrame(Number(e.target.value))}
-                    />
-                </label>
-
-                <label className={styles.field}>
-                    <span>Gradient descent</span>
-                    <select value={batchSize} onChange={e => setBatchSize(Number(e.target.value))}>
-                        {BATCH_MODES.map(m => (
-                            <option key={m.label} value={m.value}>{m.label}</option>
-                        ))}
-                    </select>
-                </label>
-
-                <label className={styles.field}>
-                    <span>Random seed</span>
-                    <input
-                        type="number"
-                        value={seed}
-                        onChange={e => setSeed(Number(e.target.value))}
-                    />
-                </label>
-            </aside>
+            <ControlPanel>
+                <RunControls
+                    running={running}
+                    onToggle={() => setRunning(r => !r)}
+                    onStep={handleStep}
+                    onReset={handleReset}
+                />
+                <Select
+                    label="Dataset"
+                    value={datasetId}
+                    options={DATASETS.map(d => ({ value: d.id, label: d.label }))}
+                    onChange={handleDataset}
+                />
+                {dataset && <Hint>{dataset.blurb}</Hint>}
+                <Select
+                    label="Hidden layers"
+                    value={hidden.join('-')}
+                    options={HIDDEN_PRESETS.map(p => ({ value: p.layers.join('-'), label: p.label }))}
+                    onChange={handleHidden}
+                />
+                <Slider
+                    label="Learning rate"
+                    value={sliderLR}
+                    display={learningRate.toFixed(3)}
+                    min={0}
+                    max={1000}
+                    onChange={setSliderLR}
+                />
+                <Slider
+                    label="Speed"
+                    value={stepsPerFrame}
+                    display={`${stepsPerFrame} epochs / frame`}
+                    min={1}
+                    max={30}
+                    onChange={setStepsPerFrame}
+                />
+                <Select
+                    label="Gradient descent"
+                    value={String(batchSize)}
+                    options={BATCH_MODES.map(m => ({ value: String(m.value), label: m.label }))}
+                    onChange={v => setBatchSize(Number(v))}
+                />
+                <NumberField label="Random seed" value={seed} onChange={setSeed} />
+            </ControlPanel>
 
             <div className={styles.stage}>
                 <div className={styles.boundaryWrap}>
@@ -288,36 +267,21 @@ export function NeuralNetworkPlayground() {
                 </div>
 
                 <div className={styles.side}>
-                    <div className={styles.metrics}>
-                        <div className={styles.metric}>
-                            <span className={styles.metricLabel}>Epoch</span>
-                            <span className={styles.metricValue}>{metrics.epoch}</span>
-                        </div>
-                        <div className={styles.metric}>
-                            <span className={styles.metricLabel}>Loss</span>
-                            <span className={styles.metricValue}>{metrics.loss.toFixed(4)}</span>
-                        </div>
-                        <div className={styles.metric}>
-                            <span className={styles.metricLabel}>Accuracy</span>
-                            <span className={styles.metricValue}>{(metrics.acc * 100).toFixed(0)}%</span>
-                        </div>
-                    </div>
+                    <MetricsRow>
+                        <Metric label="Epoch" value={String(metrics.epoch)} />
+                        <Metric label="Loss" value={metrics.loss.toFixed(4)} />
+                        <Metric label="Accuracy" value={`${(metrics.acc * 100).toFixed(0)}%`} />
+                    </MetricsRow>
 
-                    {gradOk && (
-                        <div className={styles.badge} title="Backprop verified against finite-difference gradients">
-                            ✓ Gradients verified
-                        </div>
-                    )}
+                    {gradOk && <Badge>✓ Gradients verified</Badge>}
 
-                    <div className={styles.card}>
-                        <h3>Network <span>weights pulse as it learns</span></h3>
+                    <Card title="Network" subtitle="weights pulse as it learns">
                         <canvas ref={netCanvasRef} className={styles.diagramCanvas} />
-                    </div>
+                    </Card>
 
-                    <div className={styles.card}>
-                        <h3>Loss <span>cross-entropy per epoch</span></h3>
+                    <Card title="Loss" subtitle="cross-entropy per epoch">
                         <canvas ref={lossCanvasRef} className={styles.lossCanvas} />
-                    </div>
+                    </Card>
                 </div>
             </div>
         </div>

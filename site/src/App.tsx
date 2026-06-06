@@ -4,6 +4,7 @@ import { TutorialPage } from './components/TutorialPage';
 import { Landing } from './pages/Landing';
 import { NotFound } from './pages/NotFound';
 import NeuralNetworkTutorial from './content/neural-network.mdx';
+import LinearRegressionTutorial from './content/linear-regression.mdx';
 
 export function App() {
     return (
@@ -15,6 +16,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <NeuralNetworkTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="linear-regression"
+                    element={
+                        <TutorialPage>
+                            <LinearRegressionTutorial />
                         </TutorialPage>
                     }
                 />

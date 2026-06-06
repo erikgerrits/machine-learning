@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import { NeuralNetworkPlayground } from './components/NeuralNetworkPlayground';
+import { LinearRegressionPlayground } from './components/LinearRegressionPlayground';
 
 /**
  * The catalog of algorithms the site covers. The neural network is live (flagship); the rest
@@ -29,7 +30,8 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         path: '/linear-regression',
         title: 'Linear Regression',
         tagline: 'Fits the best straight line through a cloud of points.',
-        status: 'soon',
+        status: 'live',
+        Playground: LinearRegressionPlayground,
     },
     {
         id: 'logistic-regression',

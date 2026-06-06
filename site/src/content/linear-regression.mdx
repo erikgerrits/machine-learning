@@ -1,0 +1,70 @@
+import { LinearRegressionPlayground } from '../components/LinearRegressionPlayground';
+
+# Linear Regression
+
+Linear regression is the "hello world" of machine learning: given a cloud of points, find the
+straight line that best fits them. Below is the real
+[`LinearRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/LinearRegression.ts)
+model, fitting a line by gradient descent — live. Press **Train** and watch the orange line
+rotate into place as the loss falls.
+
+<div className="breakout">
+  <LinearRegressionPlayground />
+</div>
+
+The faint vertical lines are the **residuals** — the gap between each point and the line. Their
+squared lengths are exactly what training is shrinking.
+
+## The model
+
+A line in one variable is just `y = slope · x + intercept`. Linear regression learns those two
+numbers. The prediction is a plain matrix product of the (bias-enriched) inputs with the
+weight vector — that's the whole of `LinearRegression`:
+
+```ts
+protected predictFromEnrichedInputs(inputs: Matrix) {
+    return Matrix.multiply(inputs, this.getHypothesis());
+}
+```
+
+The "bias-enriched" part is a trick worth knowing: a leading column of `1`s is glued onto the
+inputs so the intercept becomes just another weight, folded into the same multiply (see
+`Regression.enrichedWithBiases`).
+
+## Measuring fit: mean squared error
+
+How good is a line? Average the squared residuals — the **mean squared error**:
+
+$$
+\text{MSE} = \frac{1}{m} \sum_{i=1}^{m} \big(\hat{y}_i - y_i\big)^2
+$$
+
+Squaring punishes big misses more than small ones and keeps the error positive. That's the
+curve in the **Loss** panel.
+
+## Learning by gradient descent
+
+Training starts from a flat line (slope and intercept both zero) and repeatedly nudges the
+weights downhill on the MSE surface. The shared `Regression.train` loop computes the error,
+turns it into a gradient, and steps:
+
+```ts
+const errors = predictions.subtract(targets).transpose();
+const gradient = errors.multiply(inputs).transpose();
+this.hypothesis = Matrix.subtract(this.hypothesis, gradient.multiply(learningRate / exampleCount));
+```
+
+The **learning rate** sets the step size. Too small and the line crawls toward the data; too
+large and it overshoots and oscillates. Try dragging it on the **Steep** dataset to feel both
+failure modes.
+
+> Linear regression and logistic regression share this exact training loop — the only
+> difference is that logistic regression squashes the output through a sigmoid to predict a
+> class instead of a continuous value.
+
+## Try it yourself
+
+- Switch to **Noisy** — the line settles on the best *average* trend, but the MSE never reaches
+  zero, because no line can pass through scattered points.
+- Lower the **learning rate** and watch the line approach its final angle in slow motion.
+- Change the **seed** to resample the data and confirm the fit is reproducible.
