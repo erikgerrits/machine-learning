@@ -1,5 +1,11 @@
 import Matrix from "../../math/linear-algebra/Matrix";
 
+/**
+ * k-nearest-neighbours: a "lazy" model that doesn't really train — it just memorises the
+ * examples. To predict, it finds the `k` stored points closest to the query (by a configurable
+ * distance, Euclidean by default) and averages their targets. Simple, surprisingly strong, and
+ * a nice contrast to the iterative models: there is no loss and no gradient descent here.
+ */
 export default class NearestNeighbors {
 
     private distanceFunction = (x: Matrix, y: Matrix) => Matrix.subtract(x, y).transform(value => value * value).getSum();

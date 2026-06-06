@@ -1,5 +1,19 @@
 # machine-learning
 
+[![CI](https://github.com/erikgerrits/machine-learning/actions/workflows/ci.yml/badge.svg)](https://github.com/erikgerrits/machine-learning/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/machine-learning.svg)](https://www.npmjs.com/package/machine-learning)
+[![license](https://img.shields.io/npm/l/machine-learning.svg)](./LICENSE)
+
+A small, dependency-free TypeScript machine learning library — built to be **read, understood, and watched**.
+
+## 🚀 Interactive playground
+
+**[Open the live playground & tutorials →](https://erikgerrits.github.io/machine-learning/)**
+
+Train each model live in your browser and watch the decision boundary form, the loss fall, and
+the network's weights pulse in real time. Each algorithm comes with a tutorial that maps the math
+straight onto the library's source. (The site lives in [`site/`](./site) and deploys to GitHub Pages.)
+
 ## Important notes
 This library is in an early development phase and many **breaking changes are to be expected**.
 
@@ -126,3 +140,20 @@ yarn typecheck      # type-check without emitting
 yarn build          # compile the library to dist/lib
 yarn demo           # run the runnable examples in examples/demo.ts
 ```
+
+### Playground site
+
+The interactive playground and tutorials are a self-contained Vite + React app in
+[`site/`](./site) with its own dependencies (it imports the library straight from source via a
+Vite alias, so it never ships to npm).
+
+```bash
+yarn build              # build the library first — the site type-checks against dist/lib
+cd site
+yarn install            # install the site's dependencies
+yarn dev                # start the playground at http://localhost:5173/machine-learning/
+yarn build              # production build (deployed to GitHub Pages by deploy-site.yml)
+```
+
+> **Enabling the live site:** in the repo, go to **Settings → Pages → Build and deployment →
+> Source: "GitHub Actions"**. Pushes to `master` then deploy automatically.

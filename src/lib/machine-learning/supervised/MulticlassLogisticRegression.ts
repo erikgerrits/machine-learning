@@ -1,6 +1,12 @@
 import LogisticRegression from "./LogisticRegression";
 import Matrix from "../../math/linear-algebra/Matrix";
 
+/**
+ * Extends binary {@link LogisticRegression} to many classes with the **one-vs-rest** strategy:
+ * train one logistic classifier per class (each learning "this class vs. everything else"), then
+ * predict by taking the class whose classifier is most confident. Targets are one-hot encoded
+ * (one column per class); the predicted class is the argmax across the output columns.
+ */
 export default class MulticlassLogisticRegression {
 
     private numberOfEpochs = 1000;

@@ -57,4 +57,61 @@ describe('FeedforwardNeuralNetwork', () => {
             expect(network.getBatchSize()).toBe(4);
         });
     });
+
+    describe('getWeightMatrices', () => {
+        it('returns one clone per layer transition with bias-augmented shapes', () => {
+            const network = new FeedforwardNeuralNetwork([2, 5, 1]);
+
+            const weights = network.getWeightMatrices();
+
+            expect(weights).toHaveLength(2);
+            // (incomingNodes + 1) × outgoingNodes — row 0 holds the bias weights.
+            expect([weights[0].getRowCount(), weights[0].getColumnCount()]).toEqual([3, 5]);
+            expect([weights[1].getRowCount(), weights[1].getColumnCount()]).toEqual([6, 1]);
+        });
+
+        it('returns clones — mutating them does not affect the network', () => {
+            const network = new FeedforwardNeuralNetwork([2, 3, 1], FIXED_SEED);
+            const before = network.predict(new Matrix(XNOR_INPUTS)).toArray();
+
+            network.getWeightMatrices().forEach(weightMatrix => weightMatrix.transform(() => 999));
+
+            expect(network.predict(new Matrix(XNOR_INPUTS)).toArray()).toEqual(before);
+        });
+    });
+
+    describe('computeLoss', () => {
+        it('returns a finite, non-negative loss', () => {
+            const network = new FeedforwardNeuralNetwork([2, 5, 1], FIXED_SEED);
+
+            const loss = network.computeLoss(new Matrix(XNOR_INPUTS), new Matrix(XNOR_TARGETS));
+
+            expect(Number.isFinite(loss)).toBe(true);
+            expect(loss).toBeGreaterThanOrEqual(0);
+        });
+
+        it('decreases after training on XNOR', () => {
+            const network = new FeedforwardNeuralNetwork([2, 5, 1], FIXED_SEED);
+            const inputs = new Matrix(XNOR_INPUTS);
+            const targets = new Matrix(XNOR_TARGETS);
+
+            const lossBefore = network.computeLoss(inputs, targets);
+
+            network.setNumberOfEpochs(1000);
+            network.setLearningRate(1);
+            network.train(inputs, targets);
+
+            expect(network.computeLoss(inputs, targets)).toBeLessThan(lossBefore);
+        });
+
+        it('does not change predictions (read-only)', () => {
+            const network = new FeedforwardNeuralNetwork([2, 4, 1], FIXED_SEED);
+            const inputs = new Matrix(XNOR_INPUTS);
+
+            const before = network.predict(inputs).toArray();
+            network.computeLoss(inputs, new Matrix(XNOR_TARGETS));
+
+            expect(network.predict(inputs).toArray()).toEqual(before);
+        });
+    });
 });

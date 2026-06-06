@@ -1,5 +1,15 @@
 import Matrix from "../../math/linear-algebra/Matrix";
 
+/**
+ * Shared gradient-descent engine for the regression-style models. Subclasses only differ in how
+ * they turn the linear combination `inputs · hypothesis` into a prediction (`predictFromEnriched-
+ * Inputs`): linear regression returns it directly, logistic regression squashes it with a sigmoid.
+ *
+ * `train` repeatedly predicts, measures the error against the targets, and steps the hypothesis
+ * (the weight vector) downhill. Inputs are "enriched" with a leading column of 1s so the bias
+ * term rides along as just another weight. Batch size selects batch / mini-batch / stochastic
+ * gradient descent, and an optional L2 regularization factor discourages large weights.
+ */
 abstract class Regression {
 
     private hypothesis: Matrix;

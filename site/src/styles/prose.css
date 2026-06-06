@@ -1,0 +1,98 @@
+.prose {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.prose h1 {
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1.1;
+    margin: 0 0 12px;
+    background: linear-gradient(120deg, #e6edf6, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.prose h2 {
+    font-size: 24px;
+    margin: 44px 0 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.prose h3 {
+    font-size: 18px;
+    margin: 28px 0 8px;
+}
+
+/* Autolinked headings wrap their text in an <a> — keep it looking like a heading. */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a {
+    color: inherit;
+}
+
+.prose h1 a:hover,
+.prose h2 a:hover,
+.prose h3 a:hover {
+    text-decoration: none;
+}
+
+.prose p,
+.prose li {
+    color: #cdd9e8;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.prose strong {
+    color: var(--text);
+}
+
+.prose code {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 13px;
+    color: #aee1ff;
+}
+
+.prose pre {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    overflow-x: auto;
+}
+
+.prose pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #d6e4f5;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.prose blockquote {
+    margin: 18px 0;
+    padding: 2px 16px;
+    border-left: 3px solid var(--accent);
+    background: rgba(56, 189, 248, 0.06);
+    border-radius: 0 8px 8px 0;
+    color: var(--muted);
+}
+
+.prose .katex-display {
+    margin: 18px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 0;
+}
+
+/* Let an embedded playground break out of the narrow prose column. */
+.prose .breakout {
+    max-width: none;
+    margin: 28px 0;
+}

@@ -1,5 +1,20 @@
 import { Chance } from 'chance';
 
+/**
+ * A dense 2-D matrix of numbers — the workhorse every algorithm in this library is built on.
+ *
+ * Values are stored in a flat `Float64Array` in row-major order (element `(r, c)` lives at
+ * index `r * columnCount + c`), which is fast and cache-friendly. Operations come in two
+ * flavours: the **static** methods (`Matrix.add`, `Matrix.multiply`, …) return a new matrix and
+ * leave their inputs untouched, while the **instance** methods (`matrix.add`, `matrix.multiply`,
+ * …) mutate the matrix in place and return `this` so calls can be chained.
+ *
+ * @example
+ * const a = new Matrix([[1, 2], [3, 4]]);
+ * const b = Matrix.transpose(a);          // a is unchanged
+ * a.multiply(2);                           // a is now [[2, 4], [6, 8]]
+ * Matrix.identity(3);                      // 3×3 identity
+ */
 export default class Matrix {
 
     private data: Float64Array;
@@ -354,9 +369,13 @@ export default class Matrix {
         }
 
         if (rowCount === 2) {
+            // Closed form: ad − bc.
             return this.data[0] * this.data[3] - this.data[1] * this.data[2];
         }
 
+        // Larger matrices: Laplace (cofactor) expansion along the first row. Each term is a
+        // top-row entry times its cofactor — the signed determinant of the submatrix left when
+        // that entry's row and column are removed — computed recursively down to the 2×2 case.
         let sum = 0;
         for (let j = 0; j < columnCount; j++) {
             sum += this.data[j] * this.getCofactor(0, j);
@@ -383,6 +402,9 @@ export default class Matrix {
             throw new Error('Cannot compute the inverse of a matrix with a zero determinant.');
         }
 
+        // Closed-form inverse: A⁻¹ = adj(A) / det(A), where the adjugate adj(A) is the transpose
+        // of the cofactor matrix. Direct and clear for the small matrices used here (it is O(n!)
+        // via cofactor expansion, so it is not meant for large matrices).
         return this.getAdjoint().multiply(1 / determinant);
     }
 
@@ -528,6 +550,9 @@ export default class Matrix {
         const rowCount = this.rowCount;
         const columnCount = this.columnCount;
 
+        // Applies the (−1)^(i+j) sign pattern that turns a matrix of minors into the matrix of
+        // cofactors: flip every other entry in a checkerboard. On even rows the first flip is at
+        // column 1, on odd rows at column 0 — that's what `(i % 2 - 1) * -1` computes.
         for (let i = 0; i < rowCount; i++) {
             const rowStartIndex = i * columnCount;
 
@@ -578,6 +603,10 @@ export default class Matrix {
 
         const columnCount = this.columnCount;
 
+        // The minor M(r, c) is the determinant of the submatrix left when row r and column c
+        // are deleted. We only ever take minors of square matrices (determinant/inverse require
+        // them, and every sub-minor of a square matrix is itself square), so the source stride
+        // below uses columnCount — which equals rowCount here.
         const minorRowCount = this.rowCount - 1;
         const minorColumnCount = this.columnCount - 1;
         const minorData = new Float64Array(minorRowCount * minorColumnCount);
@@ -586,7 +615,7 @@ export default class Matrix {
         for (let i = 0; i < rowCount; i++) {
             for (let j = 0; j < columnCount; j++) {
                 if (i !== rowIndex && j !== columnIndex) {
-                    minorData[dataIndex++] = this.data[i * rowCount + j];
+                    minorData[dataIndex++] = this.data[i * columnCount + j];
                 }
             }
         }
