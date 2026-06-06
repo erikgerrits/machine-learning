@@ -31,5 +31,11 @@ export const KNN_EXPECTED = [
     [0, 0, 0, 1],
 ];
 
-/** A fixed seed makes seeded models (Matrix.rand, FeedforwardNeuralNetwork) reproducible. */
+/** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
+export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
+/** The mean of each blob — what the two centroids should converge to. */
+export const KMEANS_LOW_BLOB_MEAN = [1 / 3, 1 / 3];
+export const KMEANS_HIGH_BLOB_MEAN = [31 / 3, 31 / 3];
+
+/** A fixed seed makes seeded models (Matrix.rand, FeedforwardNeuralNetwork, KMeans) reproducible. */
 export const FIXED_SEED = 0;

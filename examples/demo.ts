@@ -77,6 +77,24 @@ import * as ml from '../src/lib';
 }
 
 {
+    // k-Means clustering (unsupervised): group points into 2 clusters — note there are no targets.
+    const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]]);
+
+    const kMeans = new ml.KMeans();
+    kMeans.setNumberOfClusters(2);
+    kMeans.setSeed(0);
+
+    kMeans.train(inputs);
+    const predictions = kMeans.predict(inputs);
+    console.log(predictions.toArray());
+    // one-hot cluster membership per point (the low blob is cluster 1, the high blob cluster 0):
+    // [ [ 0, 1 ], [ 0, 1 ], [ 0, 1 ], [ 1, 0 ], [ 1, 0 ], [ 1, 0 ] ]
+    console.log(kMeans.getCentroids().toArray());
+    // the two cluster centres (each blob's mean):
+    // [ [ 10.333333333333332, 10.333333333333332 ], [ 0.3333333333333333, 0.3333333333333333 ] ]
+}
+
+{
     const nn = new ml.FeedforwardNeuralNetwork([40, 40, 40, 40, 40]);
     console.log('');
     console.log('Checking FeedforwardNeuralNetwork gradients...');
