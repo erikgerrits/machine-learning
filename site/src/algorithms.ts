@@ -2,6 +2,8 @@ import type { ComponentType } from 'react';
 import { NeuralNetworkPlayground } from './components/NeuralNetworkPlayground';
 import { LinearRegressionPlayground } from './components/LinearRegressionPlayground';
 import { LogisticRegressionPlayground } from './components/LogisticRegressionPlayground';
+import { MulticlassLogisticRegressionPlayground } from './components/MulticlassLogisticRegressionPlayground';
+import { NearestNeighborsPlayground } from './components/NearestNeighborsPlayground';
 
 /**
  * The catalog of algorithms the site covers. The neural network is live (flagship); the rest
@@ -47,13 +49,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         path: '/multiclass-logistic-regression',
         title: 'Multiclass Logistic',
         tagline: 'One-vs-rest classifiers carve up many classes.',
-        status: 'soon',
+        status: 'live',
+        Playground: MulticlassLogisticRegressionPlayground,
     },
     {
         id: 'nearest-neighbors',
         path: '/nearest-neighbors',
         title: 'Nearest Neighbors',
         tagline: 'Classifies each point by the company it keeps.',
-        status: 'soon',
+        status: 'live',
+        Playground: NearestNeighborsPlayground,
     },
 ];

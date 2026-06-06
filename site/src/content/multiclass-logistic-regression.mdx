@@ -1,0 +1,45 @@
+import { MulticlassLogisticRegressionPlayground } from '../components/MulticlassLogisticRegressionPlayground';
+
+# Multiclass Logistic Regression
+
+[Logistic regression](/machine-learning/logistic-regression) only knows two classes. To handle
+three or more, this library uses the **one-vs-rest** trick: train one binary classifier per
+class, each answering "is this point my class, or not?", and let the most confident one win.
+Below is the real
+[`MulticlassLogisticRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/MulticlassLogisticRegression.ts)
+training live across three classes.
+
+<div className="breakout">
+  <MulticlassLogisticRegressionPlayground />
+</div>
+
+## One-vs-rest
+
+The targets are **one-hot**: each row is `[1,0,0]`, `[0,1,0]`, or `[0,0,1]`. Training spins up one
+`LogisticRegression` per column and trains each on its own slice — class _i_ versus everyone else:
+
+```ts
+this.logisticRegressions.forEach((classifier, i) =>
+    classifier.train(inputs, targets.getColumn(i)),
+);
+```
+
+To predict, every classifier produces a probability and the columns are stacked back together;
+the winner is the **argmax** — the class whose classifier is most confident:
+
+```ts
+predictions.getMaximumRowIndeces(); // index of the largest value in each row
+```
+
+That argmax is exactly what colors each cell of the map above.
+
+## What the boundaries look like
+
+Because each underlying classifier draws a straight line, the regions meet along straight
+seams — you can see the plane carved into wedges. On well-separated **blobs** or horizontal
+**stripes** that's a near-perfect fit; on the **pinwheel** the straight seams can only roughly
+follow the curved class borders, so a few points near the center get misfiled.
+
+> For boundaries that genuinely curve, you need a non-linear model — that's the
+> [neural network](/machine-learning/neural-network), or the local voting of
+> [k-nearest neighbours](/machine-learning/nearest-neighbors).
