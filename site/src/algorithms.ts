@@ -4,6 +4,7 @@ import { LinearRegressionPlayground } from './components/LinearRegressionPlaygro
 import { LogisticRegressionPlayground } from './components/LogisticRegressionPlayground';
 import { MulticlassLogisticRegressionPlayground } from './components/MulticlassLogisticRegressionPlayground';
 import { NearestNeighborsPlayground } from './components/NearestNeighborsPlayground';
+import { KMeansPlayground } from './components/KMeansPlayground';
 
 /**
  * The catalog of algorithms the site covers. The neural network is live (flagship); the rest
@@ -59,5 +60,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         tagline: 'Classifies each point by the company it keeps.',
         status: 'live',
         Playground: NearestNeighborsPlayground,
+    },
+    {
+        id: 'k-means',
+        path: '/k-means',
+        title: 'k-Means',
+        tagline: 'Finds clusters in unlabelled data all on its own.',
+        status: 'live',
+        Playground: KMeansPlayground,
     },
 ];

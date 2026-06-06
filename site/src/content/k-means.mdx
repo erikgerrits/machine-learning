@@ -1,0 +1,68 @@
+import { KMeansPlayground } from '../components/KMeansPlayground';
+
+# k-Means Clustering
+
+Every other model on this site is **supervised** — it learns from inputs paired with the right
+answers. k-means is different: it's **unsupervised**. You hand it a pile of points with _no
+labels_ and it discovers the groups on its own. Below is the real
+[`KMeans`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/KMeans.ts)
+clustering live — press **Train** and watch the centroids slide into place.
+
+<div className="breakout">
+  <KMeansPlayground />
+</div>
+
+## Lloyd's algorithm
+
+k-means starts by scattering `k` **centroids** onto random data points, then repeats two steps
+until nothing changes:
+
+1. **Assign** every point to its nearest centroid — those are the coloured regions.
+2. **Move** every centroid to the mean of the points now assigned to it.
+
+That's the whole training loop, straight from the source:
+
+```ts
+for (let iteration = 0; iteration < this.numberOfIterations; iteration++) {
+    const assignments = this.assign(inputs);             // step 1: nearest centroid
+    const newCentroids = this.recomputeCentroids(inputs, assignments); // step 2: the means
+
+    // Stop early once the centroids stop moving — the clustering has converged.
+    const converged = this.centroidsEqual(this.centroids, newCentroids);
+    this.centroids = newCentroids;
+    if (converged) break;
+}
+```
+
+Because each round can only ever lower the total distance from points to their centroids, the
+**inertia** curve on the right falls monotonically and then flattens — that flat line is
+convergence.
+
+## No targets, just inputs
+
+Look at the signature: `train(inputs)` takes a single matrix. There is no `targets` argument
+anywhere, which is what makes this unsupervised. `predict` then hands back **one-hot membership**
+— a `1` in the column of each point's cluster:
+
+```ts
+kmeans.train(new Matrix([[0, 0], [0, 1], [10, 10], [10, 11]]));
+kmeans.predict(new Matrix([[0, 0], [10, 10]])); // e.g. [[1, 0], [0, 1]]
+kmeans.getCentroids();                          // the cluster centres themselves
+```
+
+## Where it shines, and where it doesn't
+
+On the **blobs** datasets, k-means is near-perfect once `k` matches the number of real clusters.
+But it always carves the plane into straight-edged Voronoi cells around round centres, so:
+
+- On **uniform scatter** there's no real structure — it still tiles the plane into `k` arbitrary cells.
+- On **two moons** the round-cluster assumption breaks: it slices each crescent in half instead of
+  following the curve.
+
+The starting centroids are random, so the **seed** matters: a bad initialisation can settle into a
+worse grouping. Nudge the seed slider and watch the final clusters — and the converged inertia —
+change.
+
+> For clusters that curve, or labels you actually have, reach for a non-linear
+> [neural network](/machine-learning/neural-network) or the local voting of
+> [k-nearest neighbours](/machine-learning/nearest-neighbors).
