@@ -1,4 +1,3 @@
-import * as nblas from 'nblas';
 import { Chance } from 'chance';
 
 export default class Matrix {
@@ -6,7 +5,6 @@ export default class Matrix {
     private data: Float64Array;
     private rowCount: number;
     private columnCount: number;
-    private blasEnabled = true;
 
     public constructor (data: Float64Array, rowCount: number, columnCount: number);
     public constructor (elements: number[][]);
@@ -509,14 +507,9 @@ export default class Matrix {
             throw Error('Cannot add matrices with different number of columns.');
         }
 
-        if (this.blasEnabled) {
-            nblas.axpy(matrix.data, this.data, 1);
-
-        } else {
-            const size = this.data.length;
-            for (let elementIndex = 0; elementIndex < size; elementIndex++) {
-                this.data[elementIndex] += matrix.data[elementIndex]
-            }
+        const size = this.data.length;
+        for (let elementIndex = 0; elementIndex < size; elementIndex++) {
+            this.data[elementIndex] += matrix.data[elementIndex]
         }
 
         return this;
@@ -615,21 +608,14 @@ export default class Matrix {
 
         const newData = new Float64Array(rowCount * otherColumnCount);
 
-        if (this.blasEnabled) {
-            nblas.gemm(this.data, other.data, newData, rowCount, otherColumnCount, columnCount);
-
-        } else {
-            const newData = new Float64Array(rowCount * otherColumnCount);
-
-            let elementIndex = 0;
-            for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                for (let otherColumnIndex = 0; otherColumnIndex < otherColumnCount; otherColumnIndex++) {
-                    let sum = 0;
-                    for (let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-                        sum += this.getElement(rowIndex, columnIndex) * other.getElement(columnIndex, otherColumnIndex);
-                    }
-                    newData[elementIndex++] = sum;
+        let elementIndex = 0;
+        for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+            for (let otherColumnIndex = 0; otherColumnIndex < otherColumnCount; otherColumnIndex++) {
+                let sum = 0;
+                for (let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+                    sum += this.getElement(rowIndex, columnIndex) * other.getElement(columnIndex, otherColumnIndex);
                 }
+                newData[elementIndex++] = sum;
             }
         }
 
@@ -640,13 +626,9 @@ export default class Matrix {
     }
 
     private multiplyWithScalar (scalar: number) {
-        if (this.blasEnabled) {
-            nblas.scal(this.data, scalar);
-        } else {
-            const size = this.data.length;
-            for (let elementIndex = 0; elementIndex < size; elementIndex++) {
-                this.data[elementIndex] *= scalar;
-            }
+        const size = this.data.length;
+        for (let elementIndex = 0; elementIndex < size; elementIndex++) {
+            this.data[elementIndex] *= scalar;
         }
 
         return this;
@@ -657,14 +639,9 @@ export default class Matrix {
             throw Error('Cannot subtract ' + matrix.rowCount + 'x' + matrix.columnCount + ' matrix from ' + this.rowCount + 'x' + this.columnCount + ' matrix.');
         }
 
-        if (this.blasEnabled) {
-            nblas.axpy(matrix.data, this.data, -1);
-
-        } else {
-            const size = this.data.length;
-            for (let elementIndex = 0; elementIndex < size; elementIndex++) {
-                this.data[elementIndex] -= matrix.data[elementIndex]
-            }
+        const size = this.data.length;
+        for (let elementIndex = 0; elementIndex < size; elementIndex++) {
+            this.data[elementIndex] -= matrix.data[elementIndex]
         }
 
         return this;
