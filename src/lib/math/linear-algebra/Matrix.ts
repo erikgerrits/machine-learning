@@ -1,4 +1,4 @@
-import { Chance } from 'chance';
+import mulberry32 from "../random/mulberry32";
 
 /**
  * A dense 2-D matrix of numbers — the workhorse every algorithm in this library is built on.
@@ -100,12 +100,13 @@ export default class Matrix {
     }
 
     public static rand (rowCount: number, columnCount: number, epsilon = 1, seed: number = undefined) {
-        const chance = seed !== undefined ? new Chance(seed) : new Chance();
+        // Seeded for reproducibility; an undefined seed falls back to a random one (as before).
+        const random = mulberry32(seed !== undefined ? seed : Math.floor(Math.random() * 0x100000000));
         const size = rowCount * columnCount;
         const data = new Float64Array(size);
 
         for (let index = 0; index < size; index++) {
-            data[index] = chance.floating({min: 0, max: 1}) * 2 * epsilon - epsilon;
+            data[index] = random() * 2 * epsilon - epsilon;
         }
 
         return new Matrix(data, rowCount, columnCount);

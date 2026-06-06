@@ -318,10 +318,6 @@
     "@types/deep-eql" "*"
     assertion-error "^2.0.1"
 
-"@types/chance@^0.7.31":
-  version "0.7.31"
-  resolved "https://registry.yarnpkg.com/@types/chance/-/chance-0.7.31.tgz#8dcd812456a261bb4d832243b85ebc5c68e28c80"
-
 "@types/deep-eql@*":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/deep-eql/-/deep-eql-4.0.2.tgz#334311971d3a07121e7eb91b684a605e7eea9cbd"
@@ -433,10 +429,6 @@ chai@^6.2.2:
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/chai/-/chai-6.2.2.tgz#ae41b52c9aca87734505362717f3255facda360e"
   integrity sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg==
-
-chance@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/chance/-/chance-1.0.4.tgz#2dbc3ea6ad0541f7f965bd0af25d1ca275c853c4"
 
 convert-source-map@^2.0.0:
   version "2.0.0"
