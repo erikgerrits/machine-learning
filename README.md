@@ -28,6 +28,7 @@ Below are some simple code usage examples.
 * [Logistic Regression](#logistic-regression)
 * [Multiclass Logistic Regression](#multiclass-logistic-regression)
 * [Nearest Neighbors](#nearest-neighbors)
+* [k-Means Clustering](#k-means-clustering)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -124,6 +125,31 @@ const unknowns = new ml.Matrix([[0.5, 0.5], [1.5, 1.5], [1.75, 1.75]]);
 const predictions = nearestNeighbors.predict(unknowns);
 console.log(predictions.toArray());
 // [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
+
+```
+
+### k-Means Clustering
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// k-Means clustering (unsupervised): group points into 2 clusters — note there are no targets.
+const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]]);
+
+const kMeans = new ml.KMeans();
+kMeans.setNumberOfClusters(2);
+kMeans.setSeed(0); // makes the random centroid initialisation reproducible
+
+kMeans.train(inputs);
+
+const predictions = kMeans.predict(inputs);
+console.log(predictions.toArray());
+// one-hot cluster membership per point (the low blob is cluster 1, the high blob cluster 0)
+// [ [ 0, 1 ], [ 0, 1 ], [ 0, 1 ], [ 1, 0 ], [ 1, 0 ], [ 1, 0 ] ]
+
+console.log(kMeans.getCentroids().toArray());
+// the two cluster centres (each blob's mean)
+// [ [ 10.333333333333332, 10.333333333333332 ], [ 0.3333333333333333, 0.3333333333333333 ] ]
 
 ```
 

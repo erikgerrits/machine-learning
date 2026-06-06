@@ -8,6 +8,7 @@ import LinearRegressionTutorial from './content/linear-regression.mdx';
 import LogisticRegressionTutorial from './content/logistic-regression.mdx';
 import MulticlassLogisticRegressionTutorial from './content/multiclass-logistic-regression.mdx';
 import NearestNeighborsTutorial from './content/nearest-neighbors.mdx';
+import KMeansTutorial from './content/k-means.mdx';
 
 export function App() {
     return (
@@ -51,6 +52,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <NearestNeighborsTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="k-means"
+                    element={
+                        <TutorialPage>
+                            <KMeansTutorial />
                         </TutorialPage>
                     }
                 />

@@ -39,10 +39,6 @@
     "url": "https://github.com/erikgerrits/machine-learning/issues"
   },
   "homepage": "https://github.com/erikgerrits/machine-learning#readme",
-  "dependencies": {
-    "@types/chance": "^0.7.31",
-    "chance": "^1.0.4"
-  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^4.1.8",

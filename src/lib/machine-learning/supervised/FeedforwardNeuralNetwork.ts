@@ -83,10 +83,12 @@ export default class FeedforwardNeuralNetwork {
 
     public setActivationFunction (activationFunction: (value: number) => number) {
         this.activationFunction = activationFunction;
+        return this;
     }
 
     public setActivationGradientFunction (activationGradientFunction: (value: number) => number) {
         this.activationGradientFunction = activationGradientFunction;
+        return this;
     }
 
     /**
@@ -99,10 +101,12 @@ export default class FeedforwardNeuralNetwork {
      */
     public setBatchSize (batchSize = 0) {
         this.batchSize = batchSize;
+        return this;
     }
 
     public setLearningRate (learningRate = 0.001) {
         this.learningRate = learningRate;
+        return this;
     }
 
     /**
@@ -112,6 +116,7 @@ export default class FeedforwardNeuralNetwork {
      */
     public setNumberOfEpochs (numberOfEpochs = 1000) {
         this.numberOfEpochs = numberOfEpochs;
+        return this;
     }
 
     /* Parameter getters */

@@ -1,4 +1,5 @@
 export { default as FeedforwardNeuralNetwork } from "./machine-learning/supervised/FeedforwardNeuralNetwork";
+export { default as KMeans } from "./machine-learning/unsupervised/KMeans";
 export { default as LinearRegression } from "./machine-learning/supervised/LinearRegression";
 export { default as LogisticRegression } from "./machine-learning/supervised/LogisticRegression";
 export { default as Matrix } from "./math/linear-algebra/Matrix";
