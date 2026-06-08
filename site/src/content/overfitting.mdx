@@ -1,0 +1,91 @@
+import { OverfittingPlayground } from '../components/OverfittingPlayground';
+
+# Chapter 3 — Too many clues
+
+> *Overfitting & regularization.* More features made the model smarter. So Nadia adds *every*
+> feature — and watches it get stupider in the only way that counts.
+
+If three clues beat one, more must be better. Nadia goes through the receipts and adds every
+column she can dream up: the date, the phase of the moon, yesterday's lottery number, the count
+of pigeons on the awning. Dozens of features. She trains the model on last month and it is
+**uncanny** — it nails almost every single day she has on record.
+
+She has never been more wrong.
+
+## The wall: memorising isn't learning
+
+The catch is invisible if you only ever look at the days you trained on. Of course the model
+fits them — with enough knobs it can bend to hit any pile of points exactly, *including the
+random noise in them.* It hasn't learned the café. It has memorised last month, pigeons and all.
+
+The only way to catch this is honesty: **hold some days back.** Train on some, then test on
+others the model has never seen. Below, the blue dots are days it **studied**; the orange dots
+are **unseen** days — the ones that decide whether tomorrow's order is any good.
+
+<div className="breakout">
+  <OverfittingPlayground />
+</div>
+
+Press Train with the defaults (lots of junk features, only a handful of training days). The blue
+dots snap onto the diagonal — perfect on the past — while the orange dots scatter all over, and
+the two loss curves split apart. That widening gap *is* overfitting.
+
+## The idea: make the model stay modest
+
+Two fixes, and Nadia writes down both. The first is the test set she just used: never again will
+she judge a model on the data it trained on. The second is to stop the model contorting itself in
+the first place — to **penalise large weights** so it can only use a big coefficient when the data
+really, overwhelmingly insists. That's **regularization**.
+
+The loss gains a second term: keep the error low, *and* keep the weights small.
+
+$$
+L = \underbrace{\frac{1}{m}\sum_{i=1}^{m}\big(\hat{y}_i - y_i\big)^2}_{\text{fit the data}}
+\; + \; \underbrace{\lambda \sum_{j \ge 1} w_j^2}_{\text{stay modest}}
+$$
+
+The knob $\lambda$ sets how hard to lean on modesty. The bias term $w_0$ is left out — we only
+discourage the weights that can chase noise.
+
+## How it works: weight decay
+
+In the library this falls out as a tiny extra step at the end of each gradient update: nudge the
+error downhill as always, then **shrink every weight a little** toward zero. Straight from
+`Regression.trainBatch`:
+
+```ts
+if (this.regularizationFactor > 0) {
+    const regularizationVector = this.hypothesis
+        .multiply(this.learningRate * this.regularizationFactor / exampleCount)
+        .setElement(0, 0, 0); // never penalise the bias
+    newHypothesis.subtract(regularizationVector);
+}
+```
+
+A junk feature only earns a non-trivial weight if it consistently helps — and noise never does,
+so its weight keeps getting decayed back toward nothing. The real features (temperature, weekend,
+foot traffic) help on *every* batch, so they survive the decay.
+
+## Try it yourself
+
+- Start overfit, then drag **λ** up. The orange cloud pulls back onto the diagonal and the test
+  error drops — you're trading a little training error for a lot less test error.
+- Push **λ** way too high and *both* errors rise: now the model is too timid to use even the real
+  clues. That's **underfitting** — the opposite failure. The sweet spot is in between.
+- Or fix it the other way: drag **Junk features** down, or **Training days** up. More data makes
+  it much harder to memorise, even with no regularization at all.
+
+> **Field note — never grade your own homework.** A model's score on the data it trained on is
+> meaningless; it can always memorise. Keep a slice of data it never sees, and judge it only on
+> that. (And keep that slice *truly* unseen — peeking at it while tuning leaks it into training,
+> the subtlest bug in machine learning.)
+
+## What broke
+
+With a test set and a little λ, regression is trustworthy now — and it answers Nadia's questions
+with a *number*: croissants, revenue, kilos of flour.
+
+But her next problem won't take a number for an answer. Down in the cellar a batch of dough is
+proving, and she needs to know one thing before it goes anywhere near an oven: **will it rise —
+yes or no?** Ask this model and it shrugs back "0.73 of a rise," which means nothing. A yes/no
+question needs a yes/no machine — and that's the next page in the Ledger.

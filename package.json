@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -31,7 +31,15 @@
     "k-nearest neighbors",
     "k nearest neighbors",
     "k-NN",
-    "KNN"
+    "KNN",
+    "naive bayes",
+    "decision tree",
+    "random forest",
+    "gradient boosting",
+    "ensemble",
+    "classification",
+    "k-means",
+    "clustering"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

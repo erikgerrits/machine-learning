@@ -1,0 +1,93 @@
+import { DecisionTreePlayground } from '../components/DecisionTreePlayground';
+
+# Chapter 8 — A rule you can defend
+
+> *Decision trees.* Every model so far hands Nadia an answer. None of them hand her a *reason*.
+
+The argument is still going at the counter. A regular's latte came out cold after a long wait, and
+he wants it comped; the new hire doesn't know the rule and looks to Nadia. Her spam filter could
+tell her the email's 72% a complaint — useless here. What she needs is a **policy**: something the
+new hire can apply the same way every time, and that she can show the customer without it sounding
+made up on the spot.
+
+## The wall: a probability isn't a policy
+
+Logistic regression gives her a boundary equation. Naive Bayes gives her odds. A neural net would
+give her a shrug-shaped function. None of them is a *rule a person can follow*. You cannot pin
+"0.72" to the staff-room wall, and you cannot read a weight vector aloud to an annoyed customer.
+
+She needs the decision in a shape humans actually use: a short flowchart of yes/no questions.
+
+## The idea: split, then split again
+
+So she builds one from the past cases. Take every order she's ever comped or not, and find the
+single question that best **separates** them — say, *"was the wait long?"* Within each branch, ask
+the next best question, and the next, until each little group is basically all-comp or all-not.
+What you're left with reads straight off as rules. Pick a policy and watch the tree carve the map —
+the **rulebook** panel is the actual learned policy in plain words:
+
+<div className="breakout">
+  <DecisionTreePlayground />
+</div>
+
+## How it works: pick the cleanest cut
+
+"Best question" needs a number. The tree measures a group's messiness with **Gini impurity** —
+zero when every case agrees, highest when it's a 50/50 toss-up:
+
+$$
+G = 1 - \sum_{c} p_c^{\,2}
+$$
+
+```ts
+function gini (distribution) {
+    return 1 - distribution.reduce((sum, probability) => sum + probability * probability, 0);
+}
+```
+
+At each node it tries every feature and every threshold, and keeps the cut that drops impurity the
+most:
+
+```ts
+const gain = parentImpurity - weightedImpurity;
+if (gain > 0 && (best === undefined || gain > best.gain)) {
+    best = { featureIndex: feature, threshold, gain };
+}
+```
+
+Then it recurses — stopping when a group is pure, too small, or the depth cap is hit:
+
+```ts
+if (depth >= this.maxDepth || indices.length < this.minSamplesSplit || distribution.some(p => p === 1)) {
+    return { distribution };
+}
+```
+
+Because every question is "is this one feature above a cut?", the regions are always
+**axis-aligned rectangles** — that's the blocky look in the map, and why a curved border only ever
+becomes a staircase of little boxes.
+
+## Try it yourself
+
+- Read the **rulebook** — that *is* the model. No other algorithm in the Ledger lets you do that.
+- Switch to **Quadrants** ("comp when exactly one thing went wrong"). A straight line was helpless
+  here back in Chapter 4; the tree nails it with two cuts.
+- Drag **Max depth**. At depth 1 the policy is too crude (it underfits); crank it to 8 and watch it
+  grow a tiny box around every single noisy case — the leaf count balloons and it's **overfitting**
+  again, exactly like Chapter 3.
+
+> **Field note — depth is the regularizer.** A tree with no depth limit will memorise its training
+> set perfectly, noise and all. Capping the depth (or demanding a minimum number of cases per split)
+> is how you keep the policy simple enough to generalise — the same bias-for-simplicity that
+> regularization bought the regression models, in a different costume.
+
+## What broke
+
+The rulebook is a triumph of clarity. It's also alarmingly **jittery**. Reseed the data — same
+policy, a fresh sample of cases — and watch the whole tree rearrange: a different first question, a
+different shape. One mislabelled case near a boundary can flip an entire branch.
+
+A policy that reshuffles itself every time you glance at fresh data is hard to trust. One tree is a
+single, opinionated, slightly nervous judge. Nadia's next idea is the obvious one: don't ask a
+single nervous judge — ask a whole *crowd* of them, each shown a slightly different slice of the
+evidence, and let them vote.

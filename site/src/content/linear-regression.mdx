@@ -1,25 +1,56 @@
 import { LinearRegressionPlayground } from '../components/LinearRegressionPlayground';
 
-# Linear Regression
+# Chapter 1 — How many croissants?
 
-Linear regression is the "hello world" of machine learning: given a cloud of points, find the
-straight line that best fits them. Below is the real
-[`LinearRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/LinearRegression.ts)
-model, fitting a line by gradient descent — live. Press **Train** and watch the orange line
-rotate into place as the loss falls.
+> *Linear regression.* Nadia's first morning running **The Drifting Leaf**, and the first
+> question every café has to answer before sunrise: **how much do we make today?**
+
+It's 5:40am. Tomás, the flour supplier, is already leaning on the counter waiting for the day's
+order, and the ovens are still cold. Nadia has to commit to a number of croissants **now** —
+before a single customer walks in.
+
+Get it wrong one way and trays of unsold croissants hit the bin at close: money, literally, in
+the trash. Get it wrong the other way and she sells out by nine, turning regulars away to
+Cogwheel Coffee across the street. The whole café balances on this one guess, made fresh every
+single morning.
+
+## The wall: "just bake the average"
+
+Her aunt's method, scrawled inside the till: *bake the average of the last few weeks.* Eighty a
+day. Simple, and it feels safe.
+
+It isn't. Eighty is **right on average and wrong every single day.** On a cold, dead Tuesday she
+bins thirty. On the first warm Saturday of spring she's empty by 9:15 with a queue out the door.
+Averaging throws away the one thing Nadia already suspects matters: *it sells more when it's
+warm.*
+
+Press **Train** below, but watch the very first instant — the orange line **starts flat.** That
+flat line is a single constant guess for every temperature: it *is* Nadia's "bake the average."
+The faint vertical lines are the daily misses one number is stuck with.
 
 <div className="breakout">
   <LinearRegressionPlayground />
 </div>
 
-The faint vertical lines are the **residuals** — the gap between each point and the line. Their
-squared lengths are exactly what training is shrinking.
+A single number can't lean. To do better, Nadia needs something that **bends with the
+temperature** — a rule that says *the warmer it is, the more I bake.*
 
-## The model
+## The idea: draw a line, not a dot
 
-A line in one variable is just `y = slope · x + intercept`. Linear regression learns those two
-numbers. The prediction is a plain matrix product of the (bias-enriched) inputs with the
-weight vector — that's the whole of `LinearRegression`:
+Instead of one height, she sketches a **line** across the scatter of past days — cool mornings on
+the left, warm ones on the right, sales climbing up the page. A line in one variable is just:
+
+```
+sold = slope · temperature + intercept
+```
+
+Two numbers to pin down: the **slope** (how many extra croissants per degree) and the
+**intercept** (the baseline on a mild day). Find the best two and she has a smarter answer for
+*every* temperature — not one number for all of them.
+
+That's the whole of the library's
+[`LinearRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/LinearRegression.ts):
+a plain matrix product of the (bias-enriched) inputs with the weight vector.
 
 ```ts
 protected predictFromEnrichedInputs(inputs: Matrix) {
@@ -27,26 +58,33 @@ protected predictFromEnrichedInputs(inputs: Matrix) {
 }
 ```
 
-The "bias-enriched" part is a trick worth knowing: a leading column of `1`s is glued onto the
-inputs so the intercept becomes just another weight, folded into the same multiply (see
-`Regression.enrichedWithBiases`).
+(The "bias-enriched" trick: a leading column of `1`s is glued onto the inputs so the intercept
+becomes just another weight, folded into the same multiply — see `Regression.enrichedWithBiases`.)
 
-## Measuring fit: mean squared error
+## What makes one line better than another?
 
-How good is a line? Average the squared residuals — the **mean squared error**:
+Nadia needs a score for *how wrong* a line is. For each past day she takes the **miss** — the gap
+between the line and what actually sold — squares it, and averages over all the days. That's the
+**mean squared error**:
 
 $$
 \text{MSE} = \frac{1}{m} \sum_{i=1}^{m} \big(\hat{y}_i - y_i\big)^2
 $$
 
-Squaring punishes big misses more than small ones and keeps the error positive. That's the
-curve in the **Loss** panel.
+The $\sum$ just means *add it up over all $m$ days*. Squaring does two useful things: it makes
+every miss count as positive (over or under, a miss is a miss), and it punishes one big blunder
+far more than a handful of small ones. That's the number falling in the **Loss** panel — the
+squared length of every one of those vertical residual lines, added together.
 
-## Learning by gradient descent
+## How the line finds its place: rolling downhill
 
-Training starts from a flat line (slope and intercept both zero) and repeatedly nudges the
-weights downhill on the MSE surface. The shared `Regression.train` loop computes the error,
-turns it into a gradient, and steps:
+Nadia doesn't solve for the perfect line in one shot. She **nudges** it. Picture the MSE as a
+valley: every possible (slope, intercept) is a spot on the hillside, and the height is how wrong
+that line is. Training starts at the flat line — slope and intercept both zero — and takes small
+steps in whichever direction heads *downhill*, again and again, until it rolls to the bottom.
+
+The library's shared `Regression.train` loop does exactly that: measure the error, turn it into a
+gradient (the downhill direction), step.
 
 ```ts
 const errors = predictions.subtract(targets).transpose();
@@ -54,17 +92,31 @@ const gradient = errors.multiply(inputs).transpose();
 this.hypothesis = Matrix.subtract(this.hypothesis, gradient.multiply(learningRate / exampleCount));
 ```
 
-The **learning rate** sets the step size. Too small and the line crawls toward the data; too
-large and it overshoots and oscillates. Try dragging it on the **Steep** dataset to feel both
-failure modes.
-
-> Linear regression and logistic regression share this exact training loop — the only
-> difference is that logistic regression squashes the output through a sigmoid to predict a
-> class instead of a continuous value.
+The **learning rate** is the size of each step. Too small and the line crawls toward the data;
+too large and it overshoots and lurches past the bottom. Drag it up on the **Summer surge**
+dataset to feel both failure modes.
 
 ## Try it yourself
 
-- Switch to **Noisy** — the line settles on the best *average* trend, but the MSE never reaches
-  zero, because no line can pass through scattered points.
+- Hit **Train** and watch the flat "average" line **tilt** until it follows the trend — that's
+  Nadia's eighty-a-day becoming a real forecast.
+- Switch to **Chaotic week**: the line still finds the best *average* trend, but the MSE never
+  reaches zero — when a street fair drowns out the weather, no line can thread every point.
+- Try **Hot cocoa**: the slope goes *negative*. The very same machinery learns "warmer means
+  fewer" without ever being told which way to lean.
 - Lower the **learning rate** and watch the line approach its final angle in slow motion.
-- Change the **seed** to resample the data and confirm the fit is reproducible.
+
+> **Field note — beat the baseline.** Before trusting any model, race it against the dumbest one
+> you can write: *predict the average.* That flat line is the bar to clear. A model that can't
+> beat it isn't earning its keep — and here, the tilted line clears it comfortably.
+
+## What broke
+
+Linear regression hands Nadia a *number*, and it already beats "eighty a day." But watch the
+misses on a busy week: a warm **Saturday** and an equally warm **Tuesday** sell wildly
+differently — yet they share the same temperature, so her line gives them the identical forecast
+and is wrong on both.
+
+Temperature is only *one* clue. The receipts hold more — the day of the week, the crowd on the
+pavement, the festival down the road. Tomorrow she'll teach the line to listen to **all of them
+at once.**

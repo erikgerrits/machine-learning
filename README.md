@@ -28,6 +28,10 @@ Below are some simple code usage examples.
 * [Logistic Regression](#logistic-regression)
 * [Multiclass Logistic Regression](#multiclass-logistic-regression)
 * [Nearest Neighbors](#nearest-neighbors)
+* [Naive Bayes](#naive-bayes)
+* [Decision Tree](#decision-tree)
+* [Random Forest](#random-forest)
+* [Gradient Boosting](#gradient-boosting)
 * [k-Means Clustering](#k-means-clustering)
 
 ### Feedforward Neural Network
@@ -125,6 +129,83 @@ const unknowns = new ml.Matrix([[0.5, 0.5], [1.5, 1.5], [1.75, 1.75]]);
 const predictions = nearestNeighbors.predict(unknowns);
 console.log(predictions.toArray());
 // [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
+
+```
+
+### Naive Bayes
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Naive Bayes (multinomial): classify messages by word counts.
+// Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
+const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);
+const targets = new ml.Matrix([[1, 0], [1, 0], [0, 1], [0, 1]]);
+
+const naiveBayes = new ml.NaiveBayes();
+naiveBayes.train(inputs, targets);
+
+const unknowns = new ml.Matrix([[1, 1, 0, 0], [0, 0, 1, 1]]); // "free money" / "table tonight"
+const predictions = naiveBayes.predict(unknowns);
+console.log(predictions.getMaximumRowIndeces().toArray());
+// [ [ 0 ], [ 1 ] ]  ← spam, then ham
+
+```
+
+### Decision Tree
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Decision tree: class 1 iff both features are "high" (an AND rule).
+const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [0.9, 0.9], [0.8, 0.1]]);
+const targets = new ml.Matrix([[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]]);
+
+const decisionTree = new ml.DecisionTree();
+decisionTree.setMaxDepth(3);
+
+decisionTree.train(inputs, targets);
+const predictions = decisionTree.predict(inputs);
+console.log(predictions.getMaximumRowIndeces().toArray());
+// [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]  ← only the "both high" rows are class 1
+
+```
+
+### Random Forest
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Random forest: a committee of trees over bootstrap samples, votes averaged.
+const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [0.9, 0.9], [0.8, 0.1]]);
+const targets = new ml.Matrix([[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]]);
+
+const randomForest = new ml.RandomForest();
+randomForest.setNumberOfTrees(30).setMaxDepth(3).setSeed(0);
+
+randomForest.train(inputs, targets);
+const predictions = randomForest.predict(inputs);
+console.log(predictions.getMaximumRowIndeces().toArray());
+// [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]
+
+```
+
+### Gradient Boosting
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Gradient boosting: trees built in sequence, each fitting the leftover error.
+const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [0.9, 0.9], [0.8, 0.1]]);
+const targets = new ml.Matrix([[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]]);
+
+const gradientBoosting = new ml.GradientBoosting();
+gradientBoosting.setNumberOfTrees(60).setLearningRate(0.3).setMinSamplesSplit(2);
+
+gradientBoosting.train(inputs, targets);
+const predictions = gradientBoosting.predict(inputs);
+console.log(predictions.getMaximumRowIndeces().toArray());
+// [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]
 
 ```
 

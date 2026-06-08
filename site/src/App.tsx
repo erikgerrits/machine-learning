@@ -1,20 +1,40 @@
+import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { TutorialPage } from './components/TutorialPage';
 import { Landing } from './pages/Landing';
 import { NotFound } from './pages/NotFound';
-import NeuralNetworkTutorial from './content/neural-network.mdx';
-import LinearRegressionTutorial from './content/linear-regression.mdx';
-import LogisticRegressionTutorial from './content/logistic-regression.mdx';
-import MulticlassLogisticRegressionTutorial from './content/multiclass-logistic-regression.mdx';
-import NearestNeighborsTutorial from './content/nearest-neighbors.mdx';
-import KMeansTutorial from './content/k-means.mdx';
+
+// Each chapter is lazy-loaded so its playground + MDX land in their own chunk, fetched only when
+// the chapter is opened. The Layout (header + sidebar) and Landing stay in the initial bundle; the
+// Suspense boundary that catches these lazy loads lives in Layout, around the content <Outlet>.
+const TheLedgerTutorial = lazy(() => import('./content/the-ledger.mdx'));
+const NeuralNetworkTutorial = lazy(() => import('./content/neural-network.mdx'));
+const LinearRegressionTutorial = lazy(() => import('./content/linear-regression.mdx'));
+const ManyFeaturesTutorial = lazy(() => import('./content/many-features.mdx'));
+const OverfittingTutorial = lazy(() => import('./content/overfitting.mdx'));
+const LogisticRegressionTutorial = lazy(() => import('./content/logistic-regression.mdx'));
+const MulticlassLogisticRegressionTutorial = lazy(() => import('./content/multiclass-logistic-regression.mdx'));
+const NearestNeighborsTutorial = lazy(() => import('./content/nearest-neighbors.mdx'));
+const NaiveBayesTutorial = lazy(() => import('./content/naive-bayes.mdx'));
+const DecisionTreesTutorial = lazy(() => import('./content/decision-trees.mdx'));
+const RandomForestsTutorial = lazy(() => import('./content/random-forests.mdx'));
+const GradientBoostingTutorial = lazy(() => import('./content/gradient-boosting.mdx'));
+const KMeansTutorial = lazy(() => import('./content/k-means.mdx'));
 
 export function App() {
     return (
         <Routes>
             <Route element={<Layout />}>
                 <Route index element={<Landing />} />
+                <Route
+                    path="the-ledger"
+                    element={
+                        <TutorialPage>
+                            <TheLedgerTutorial />
+                        </TutorialPage>
+                    }
+                />
                 <Route
                     path="neural-network"
                     element={
@@ -28,6 +48,22 @@ export function App() {
                     element={
                         <TutorialPage>
                             <LinearRegressionTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="many-features"
+                    element={
+                        <TutorialPage>
+                            <ManyFeaturesTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="overfitting"
+                    element={
+                        <TutorialPage>
+                            <OverfittingTutorial />
                         </TutorialPage>
                     }
                 />
@@ -52,6 +88,38 @@ export function App() {
                     element={
                         <TutorialPage>
                             <NearestNeighborsTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="naive-bayes"
+                    element={
+                        <TutorialPage>
+                            <NaiveBayesTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="decision-trees"
+                    element={
+                        <TutorialPage>
+                            <DecisionTreesTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="random-forests"
+                    element={
+                        <TutorialPage>
+                            <RandomForestsTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="gradient-boosting"
+                    element={
+                        <TutorialPage>
+                            <GradientBoostingTutorial />
                         </TutorialPage>
                     }
                 />

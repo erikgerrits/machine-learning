@@ -31,6 +31,35 @@ export const KNN_EXPECTED = [
     [0, 0, 0, 1],
 ];
 
+/**
+ * Multinomial Naive Bayes: a tiny bag-of-words spam filter. Columns are word counts for the
+ * vocabulary [free, money, table, tonight]; spam leans on "free money", real bookings on
+ * "table tonight". Targets are one-hot [spam, ham].
+ */
+export const NAIVE_BAYES_INPUTS = [
+    [2, 1, 0, 0],
+    [1, 2, 0, 0],
+    [3, 1, 0, 0],
+    [0, 0, 2, 1],
+    [0, 0, 1, 2],
+    [0, 0, 1, 1],
+];
+export const NAIVE_BAYES_TARGETS = [[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [0, 1]];
+/** Expected class per training row (argmax): the first three are spam (0), the rest ham (1). */
+export const NAIVE_BAYES_EXPECTED_CLASSES = [[0], [0], [0], [1], [1], [1]];
+/** Unseen messages: "free money" → spam, "table tonight" → ham. */
+export const NAIVE_BAYES_QUERIES = [[1, 1, 0, 0], [0, 0, 1, 1]];
+export const NAIVE_BAYES_QUERY_CLASSES = [[0], [1]];
+
+/**
+ * Decision tree: an AND rule — class 1 iff both features are "high" (> 0.5). Cleanly separable by
+ * two axis-aligned splits, so a tree of depth ≥ 2 fits it perfectly. Targets are one-hot.
+ */
+export const TREE_INPUTS = [[0, 0], [0, 1], [1, 0], [1, 1], [0.2, 0.2], [0.9, 0.9], [0.1, 0.8], [0.8, 0.1]];
+export const TREE_TARGETS = [[1, 0], [1, 0], [1, 0], [0, 1], [1, 0], [0, 1], [1, 0], [1, 0]];
+/** Expected class per row (argmax): only the two "both high" rows are class 1. */
+export const TREE_EXPECTED_CLASSES = [[0], [0], [0], [1], [0], [1], [0], [0]];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

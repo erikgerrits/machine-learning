@@ -95,6 +95,63 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Naive Bayes (multinomial): classify messages by word counts.
+    // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
+    const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);
+    const targets = new ml.Matrix([[1, 0], [1, 0], [0, 1], [0, 1]]);
+
+    const naiveBayes = new ml.NaiveBayes();
+    naiveBayes.train(inputs, targets);
+
+    const unknowns = new ml.Matrix([[1, 1, 0, 0], [0, 0, 1, 1]]); // "free money" / "table tonight"
+    const predictions = naiveBayes.predict(unknowns);
+    console.log(predictions.getMaximumRowIndeces().toArray());
+    // [ [ 0 ], [ 1 ] ]  ← spam, then ham
+}
+
+{
+    // Decision tree: class 1 iff both features are "high" (an AND rule).
+    const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [0.9, 0.9], [0.8, 0.1]]);
+    const targets = new ml.Matrix([[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]]);
+
+    const decisionTree = new ml.DecisionTree();
+    decisionTree.setMaxDepth(3);
+
+    decisionTree.train(inputs, targets);
+    const predictions = decisionTree.predict(inputs);
+    console.log(predictions.getMaximumRowIndeces().toArray());
+    // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]  ← only the "both high" rows are class 1
+}
+
+{
+    // Random forest: a committee of trees over bootstrap samples, votes averaged. Same AND rule.
+    const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [0.9, 0.9], [0.8, 0.1]]);
+    const targets = new ml.Matrix([[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]]);
+
+    const randomForest = new ml.RandomForest();
+    randomForest.setNumberOfTrees(30).setMaxDepth(3).setSeed(0);
+
+    randomForest.train(inputs, targets);
+    const predictions = randomForest.predict(inputs);
+    console.log(predictions.getMaximumRowIndeces().toArray());
+    // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]  ← the committee agrees with the single tree
+}
+
+{
+    // Gradient boosting: trees built in sequence, each fitting the leftover error. Same AND rule.
+    const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1], [0.9, 0.9], [0.8, 0.1]]);
+    const targets = new ml.Matrix([[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [1, 0]]);
+
+    const gradientBoosting = new ml.GradientBoosting();
+    gradientBoosting.setNumberOfTrees(60).setLearningRate(0.3).setMinSamplesSplit(2);
+
+    gradientBoosting.train(inputs, targets);
+    const predictions = gradientBoosting.predict(inputs);
+    console.log(predictions.getMaximumRowIndeces().toArray());
+    // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]  ← boosted into the same AND rule
+}
+
+{
     const nn = new ml.FeedforwardNeuralNetwork([40, 40, 40, 40, 40]);
     console.log('');
     console.log('Checking FeedforwardNeuralNetwork gradients...');

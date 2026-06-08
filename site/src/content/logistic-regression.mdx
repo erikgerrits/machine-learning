@@ -1,28 +1,54 @@
 import { LogisticRegressionPlayground } from '../components/LogisticRegressionPlayground';
 
-# Logistic Regression
+# Chapter 4 — Will it rise?
 
-Logistic regression is linear regression's classifying cousin: instead of predicting a number,
-it predicts the **probability** that a point belongs to a class. Below is the real
-[`LogisticRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/LogisticRegression.ts)
-model, training live. Press **Train** and watch the colored regions settle — then switch
-datasets to see exactly where a straight line runs out of road.
+> *Logistic regression.* Nadia's models predict numbers beautifully. Bea asks her a question that
+> has no number in it.
 
-<div className="breakout">
-  <LogisticRegressionPlayground />
-</div>
+Bea, the baker, jerks a thumb at a tray of dough proving in the cellar. "Worth firing the oven
+for, or not?" A good batch baked is a morning's sales. A dud baked wastes flour, gas, and an
+hour of oven Nadia doesn't have; a good batch *binned* throws away the same. It's a clean
+**yes/no** — and it's exactly the shape of question her regression line can't answer.
 
-## From a line to a probability
+She has a hunch the answer is written in two things she can measure the moment the dough goes
+down: how **warm** the proving spot is, and how **fresh** the yeast is.
 
-It starts just like linear regression — a weighted sum of the inputs (with the bias folded in) —
-but then squashes that number through the **sigmoid** so the output lands in `(0, 1)` and reads
-as a probability:
+## The wall: a line is the wrong shape for yes/no
+
+Her instinct is to reuse what works. Label every past batch — **1** for rose, **0** for flopped —
+and fit a regression line, then call anything above `0.5` a "rise." It falls apart immediately:
+
+- The line doesn't stop at 0 and 1. A gloriously warm, fresh batch scores **1.4** — *one-point-four
+  of a rise*, which is meaningless.
+- One weird batch far from the rest — a fluke flop on a perfect day — **tilts the entire line** and
+  flips calls on batches nowhere near it.
+- "0.73" isn't a *probability*; it's just where a straight ramp happened to cross.
+
+She doesn't need a number that drifts off to infinity. She needs a **confidence** — pinned between
+0 and 1, near-certain at the extremes, genuinely unsure in the middle.
+
+## The idea: squash the line into a probability
+
+So she takes the same weighted sum as before and bends it through an **S-curve** — the
+**sigmoid** — which flattens any input into the range `(0, 1)`:
 
 $$
 \hat{y} = \sigma(\mathbf{w} \cdot \mathbf{x}), \qquad \sigma(z) = \frac{1}{1 + e^{-z}}
 $$
 
-That one extra step is the *entire* difference from linear regression in the source:
+Now the output reads as *"probability this batch rises."* To make the call, threshold it at `0.5`.
+The dividing line in feature space — where confidence is exactly 50% — is the **decision
+boundary**. Press **Train** and watch it settle between the flops and the rises:
+
+<div className="breakout">
+  <LogisticRegressionPlayground />
+</div>
+
+## How it works: one extra squash
+
+The remarkable part is how little changes. It's the *same* weighted sum, the *same*
+gradient-descent engine from the last three chapters — with one squash bolted onto the end. That's
+the entire difference from linear regression in the library's source:
 
 ```ts
 protected predictFromEnrichedInputs(inputs: Matrix) {
@@ -30,31 +56,38 @@ protected predictFromEnrichedInputs(inputs: Matrix) {
 }
 ```
 
-Everything else — the bias trick, the gradient-descent training loop in `Regression.train` — is
-shared with linear regression. To turn a probability into a class, threshold at `0.5`.
-
-## The loss: cross-entropy
-
-Squared error is the wrong yardstick for probabilities; logistic regression minimises
-**cross-entropy** instead, which rewards confident-and-correct and heavily punishes
+The yardstick changes too. Squared error is wrong for probabilities, so logistic regression
+minimises **cross-entropy**, which barely shrugs at confident-and-right and screams at
 confident-and-wrong:
 
 $$
 L = -\frac{1}{m}\sum_{i=1}^{m}\Big[\,y_i \log \hat{y}_i + (1-y_i)\log(1-\hat{y}_i)\,\Big]
 $$
 
-That's the curve in the **Loss** panel.
+That's the curve in the **Loss** panel. The boundary itself is still a single straight line — its
+strength, and soon its limit.
 
-## What a straight line can — and can't — do
+## Try it yourself
 
-The decision boundary of logistic regression is always a single straight line (in 2-D). That's
-its strength and its limit:
+- **Tried & true** — flops and rises sit in separate corners. The boundary slides cleanly between
+  them: nearly every call correct.
+- **Borderline batches** — the two clouds overlap. No straight line can be perfect here, and that's
+  the point: near the boundary the model reports something like 55% — an honest *coin-flip*, which
+  is far more useful than a smug wrong "yes."
+- **Two methods** — two proofing styles curl around each other. The line catches most batches but
+  can't bend to follow the curve. Hold that thought; Nadia will need a very different kind of
+  boundary later.
 
-- **Blobs** — two separated clusters. The line slides right between them: ~100% accuracy.
-- **Two moons** — the line catches most points but can't follow the curve: it plateaus around 85%.
-- **Circles** and **XNOR** — no straight line can separate these, so accuracy stalls near 50% and
-  the loss flattens at $\ln 2 \approx 0.69$. This is precisely the problem a
-  [neural network](/machine-learning/neural-network) solves by stacking non-linear layers.
+> **Field note — 0.5 isn't sacred.** The threshold is a business decision, not a law. If binning a
+> good batch barely costs Nadia anything but baking a dud ties up her only oven all morning, she
+> should only fire on, say, 80% confidence. Move the threshold to match what a mistake actually
+> costs — the model hands you a probability; *you* choose where to cut it.
 
-Flip between the datasets above and watch the boundary try — the failures are as instructive as
-the successes.
+## What broke
+
+Rise or flop — the yes/no machine handles it. Then Bea, wiping her hands, mentions she doesn't
+actually sort batches in two. She sorts them in **three**: under-proofed, just-right, and
+over-proofed — and each one heads to a different station.
+
+A single line draws *one* boundary: this side yes, that side no. It has no way to carve a plane
+into three. Nadia's going to need more than one line at once.

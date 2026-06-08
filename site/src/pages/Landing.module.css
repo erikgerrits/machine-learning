@@ -83,7 +83,26 @@
 
 .sectionTitle {
     font-size: 22px;
-    margin: 0 0 18px;
+    margin: 0 0 8px;
+}
+
+.sectionLead {
+    color: var(--muted);
+    margin: 0 0 28px;
+    max-width: 48em;
+    line-height: 1.6;
+}
+
+.partBlock {
+    margin-bottom: 28px;
+}
+
+.partTitle {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    margin: 0 0 12px;
 }
 
 .cards {
@@ -112,11 +131,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
+}
+
+.cardBadge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 999px;
 }
 
 .cardTitle {
+    display: block;
     font-weight: 600;
+    margin: 8px 0 6px;
 }
 
 .tag {

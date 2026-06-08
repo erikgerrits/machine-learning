@@ -29,35 +29,38 @@ function line(slope: number, intercept: number, noise: number) {
     };
 }
 
+// Café demand scenarios for Chapter 1. The numbers stay in [-1, 1] (x = temperature, y = items
+// sold, both relative to a mild/normal day) so plain gradient descent converges without feature
+// scaling — the story supplies the meaning, the axes show the direction.
 export const REGRESSION_DATASETS: RegressionDataset[] = [
     {
-        id: 'trend',
-        label: 'Upward trend',
-        blurb: 'A gentle positive slope with a little noise.',
+        id: 'weekday',
+        label: 'A normal week',
+        blurb: 'Croissant sales drift up on warmer days — a gentle, reliable trend.',
         domain: DOMAIN,
         recommendedLr: 0.5,
         generate: line(0.8, 0.1, 0.12),
     },
     {
-        id: 'steep',
-        label: 'Steep',
-        blurb: 'A strong slope — the line has to rotate a long way to fit.',
+        id: 'summer-surge',
+        label: 'Summer surge',
+        blurb: 'As it heats up, demand climbs fast — the line has to rotate a long way to keep up.',
         domain: DOMAIN,
         recommendedLr: 0.4,
         generate: line(1.6, -0.1, 0.15),
     },
     {
-        id: 'negative',
-        label: 'Downward',
-        blurb: 'A negative slope — the line tilts the other way.',
+        id: 'cocoa',
+        label: 'Hot cocoa',
+        blurb: 'Cocoa sells in the cold: the warmer it gets, the less goes out — the line tilts down.',
         domain: DOMAIN,
         recommendedLr: 0.5,
         generate: line(-0.9, 0.2, 0.12),
     },
     {
-        id: 'noisy',
-        label: 'Noisy',
-        blurb: 'A weak trend buried in noise — the best fit is far from perfect.',
+        id: 'chaotic',
+        label: 'Chaotic week',
+        blurb: 'A street fair throws everything off — weather barely predicts sales, and no line fits well.',
         domain: DOMAIN,
         recommendedLr: 0.5,
         generate: line(0.5, 0.0, 0.4),

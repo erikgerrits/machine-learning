@@ -14,6 +14,9 @@ export function drawRegression(
     predicted: number[],
     /** Two endpoints of the fitted line in data coordinates: [[x0, y0], [x1, y1]]. */
     line: [[number, number], [number, number]],
+    /** Optional axis captions (e.g. "temperature →" / "items sold →"). */
+    xLabel?: string,
+    yLabel?: string,
 ): void {
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = '#0b1120';
@@ -69,4 +72,24 @@ export function drawRegression(
     ctx.strokeStyle = '#fb923c';
     ctx.lineWidth = 3;
     ctx.stroke();
+
+    // Axis captions: what the axes mean, without committing to exact units.
+    if (xLabel || yLabel) {
+        ctx.fillStyle = 'rgba(148, 164, 189, 0.55)';
+        ctx.font = '12px ui-sans-serif, system-ui, sans-serif';
+        if (xLabel) {
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(xLabel, width / 2, height - 6);
+        }
+        if (yLabel) {
+            ctx.save();
+            ctx.translate(14, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(yLabel, 0, 0);
+            ctx.restore();
+        }
+    }
 }

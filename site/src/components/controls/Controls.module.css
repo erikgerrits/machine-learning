@@ -94,6 +94,22 @@
     line-height: 1.4;
 }
 
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.checkbox input[type='checkbox'] {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
 .metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

@@ -1,7 +1,12 @@
+export { default as DecisionTree } from "./machine-learning/supervised/DecisionTree";
+export type { DecisionTreeNode } from "./machine-learning/supervised/DecisionTree";
 export { default as FeedforwardNeuralNetwork } from "./machine-learning/supervised/FeedforwardNeuralNetwork";
+export { default as GradientBoosting } from "./machine-learning/supervised/GradientBoosting";
 export { default as KMeans } from "./machine-learning/unsupervised/KMeans";
 export { default as LinearRegression } from "./machine-learning/supervised/LinearRegression";
 export { default as LogisticRegression } from "./machine-learning/supervised/LogisticRegression";
 export { default as Matrix } from "./math/linear-algebra/Matrix";
 export { default as MulticlassLogisticRegression } from "./machine-learning/supervised/MulticlassLogisticRegression";
+export { default as NaiveBayes } from "./machine-learning/supervised/NaiveBayes";
 export { default as NearestNeighbors } from "./machine-learning/supervised/NearestNeighbors";
+export { default as RandomForest } from "./machine-learning/supervised/RandomForest";

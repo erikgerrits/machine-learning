@@ -1,0 +1,90 @@
+import { GradientBoostingPlayground } from '../components/GradientBoostingPlayground';
+
+# Chapter 10 — One mistake at a time
+
+> *Gradient boosting.* The forest's hundred trees never talk to each other. What if each new tree
+> studied exactly where the last ones went wrong?
+
+Nadia's random forest is steady and accurate, and she's grateful for it. But something about it
+nags: those hundred trees are grown in total isolation, each on its own random sample, and they
+only ever meet at the end to vote. Every tree re-solves the whole problem from scratch. Nobody
+focuses on the cases that are actually *hard*.
+
+## The wall: a committee that never confers
+
+Averaging independent guesses cancels noise — that was Chapter 9's lesson — but it's a blunt
+instrument. The borderline orders, the ones near the policy's edge that the model keeps getting
+wrong, get no more attention than the easy ones. A pooled vote can't say "we keep messing *this*
+up; someone go fix it."
+
+## The idea: a relay, not a crowd
+
+So Nadia changes the shape of the team. Instead of a hundred parallel guesses, she builds trees
+**one after another**, each handed a single job: *predict the error the model still has.* Start
+from the dumbest guess — the base rate, comp-everything-this-often. Look at the **residual** for
+every case (how far the truth is from the current prediction), and fit a small tree to *those*. Add
+it in, shrunk by a learning rate so no one tree overcommits. Now the model is a little less wrong;
+compute the new residuals and do it again. Drag **Rounds** and watch the boundary build itself out
+of its own leftover mistakes:
+
+<div className="breakout">
+  <GradientBoostingPlayground />
+</div>
+
+## How it works: fit the residual, add a sliver
+
+The "error to fix" has a precise meaning. In probability space the residual is simply *truth minus
+current guess* — which is exactly the negative gradient of the logistic loss, hence *gradient*
+boosting:
+
+```ts
+// Negative gradient of the logistic loss = (true label − current probability) = residual.
+const residuals = scores.map((score, i) => labels[i] - sigmoid(score));
+
+const tree = this.buildTree(rows, residuals, /* … */);
+this.trees.push(tree);
+
+for (let i = 0; i < exampleCount; i++) {
+    scores[i] += this.learningRate * predictTree(tree, rows[i]);
+}
+```
+
+Each tree is a tiny **regression** tree (depth 2–3) — it predicts a *number*, the leftover error,
+not a class. A prediction is then the base guess plus every tree's shrunken contribution, squashed
+back into a probability:
+
+```ts
+let score = this.initialScore;
+for (const tree of this.trees) score += this.learningRate * predictTree(tree, row);
+const probability = sigmoid(score);
+```
+
+Because the weak trees go to depth 2–3, they can capture *combinations* — which is why boosting,
+unlike a single stump, has no trouble with the **Quadrants** policy.
+
+## Try it yourself
+
+- Start at **1 round** — a vague, fuzzy blob (the base rate plus one weak tree). Drag rounds up and
+  watch the policy sharpen into focus, error by error.
+- Switch to **Quadrants**: the sequence handles the interaction that broke a straight line back in
+  Chapter 4.
+- Now push **Rounds** to the max with a high **rate**: the boundary starts growing little pockets
+  around individual noisy cases — boosting, too, will **overfit** if you let it run too long.
+
+> **Field note — rounds × rate is the throttle.** A big learning rate with many rounds fits fast
+> and overfits faster; a *small* rate with more rounds is slower but generalises better — the
+> standard recipe. Knowing when to stop adding rounds (watching error on held-out data) is called
+> early stopping, and it's most of the art of using boosting well.
+
+## What broke
+
+Gradient boosting is, frankly, the champion of this whole part of the Ledger — on tabular data like
+Nadia's it's hard to beat, and it's what wins most competitions. But it asks a lot of its three
+knobs (rounds, rate, depth), it can only be built in sequence, and — like the forest — it's a black
+box.
+
+And step back: every method since Chapter 4 has drawn its boundary wherever the training points
+happened to fall, sometimes threading it right past the nearest cases. None of them ever asked the
+question Nadia is about to: of all the lines that separate comp from no-comp, which one leaves the
+most *breathing room* — the widest margin of safety — so that the next borderline order doesn't tip
+it over?

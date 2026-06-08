@@ -1,0 +1,101 @@
+import { NaiveBayesPlayground } from '../components/NaiveBayesPlayground';
+
+# Chapter 7 — Reading the inbox
+
+> *Naive Bayes.* Every model so far needed numbers to chew on. Nadia's inbox is nothing but words.
+
+The café's address is online now, and the overnight inbox shows it: real booking requests, furious
+complaints, and a rising tide of spam, all jumbled together. Nadia wants them triaged into three
+trays — **Reservation**, **Complaint**, **Spam** — before she's poured her first coffee.
+
+Not one tool in the Ledger can help. There's no temperature to plot, no two batches to measure the
+distance between. A message is a *sentence*. How do you take the "distance" between two sentences?
+
+## The wall: words aren't numbers
+
+k-NN needs coordinates. Regression needs features. A line needs an axis. None of them have any
+idea what to do with *"my coffee was cold."* And she can't just memorise messages and match them —
+no two emails are ever identical, so every new one is, technically, unseen.
+
+She needs to reason about the **words themselves**.
+
+## The idea: count words, and flip the question with Bayes
+
+Here's the move. Forget word order and grammar; just **count words**. A complaint is mostly the
+word "cold," "rude," "refund"; spam is mostly "free," "win," "claim." So instead of asking the
+impossible — *"how likely is this exact never-seen sentence?"* — she flips it with **Bayes' rule**
+and asks the easy question, once per tray:
+
+> *If this were spam, how likely are these words? If a reservation, how likely?*
+
+Then she picks the tray that makes the words most likely, weighted by how common that tray is to
+begin with:
+
+$$
+P(\text{class} \mid \text{words}) \;\propto\; P(\text{class}) \prod_{w \in \text{message}} P(w \mid \text{class})
+$$
+
+Type a message and watch all three trays compete — the bars are those probabilities, and each word
+is coloured by the tray it pulls toward:
+
+<div className="breakout">
+  <NaiveBayesPlayground />
+</div>
+
+## How it works: count, then weigh
+
+**Training** is just counting. For each tray, tally how often every word shows up; turn those into
+`P(word | class)`. Straight from the library's `NaiveBayes`:
+
+```ts
+this.logLikelihoods = featureCountsPerClass.map(featureCounts => {
+    const classTotal = featureCounts.reduce((sum, count) => sum + count, 0);
+    const denominator = classTotal + this.smoothing * featureCount;
+    return featureCounts.map(count => Math.log((count + this.smoothing) / denominator));
+});
+```
+
+Two things to notice. We work in **logs**, so that long product of probabilities becomes a safe
+*sum* (multiplying hundreds of small numbers would underflow to zero). And there's that
+`+ smoothing` — **Laplace smoothing**, which pretends every word was seen a fraction of a time in
+every tray, so one unfamiliar word can never multiply a whole class down to zero. (Drag the **α**
+slider to feel it.)
+
+**Predicting** is then just adding up the right log-probabilities and taking the biggest:
+
+```ts
+const logScores = this.logPriors.map((logPrior, classIndex) => {
+    const likelihoods = this.logLikelihoods[classIndex];
+    let score = logPrior;
+    for (let f = 0; f < document.length; f++) score += document[f] * likelihoods[f];
+    return score;
+});
+```
+
+The **What tips it off** panel is just those likelihoods read back out — the words each tray has
+learned to care about.
+
+## Try it yourself
+
+- Load **A complaint** or **Spam**: a couple of loaded words ("rude", "free") and the verdict is
+  near-certain.
+- Load **A tricky one** — *"Is the free table by the window still available tonight?"* The word
+  **free** tugs toward spam, but **table**, **window**, and **tonight** outvote it. Watch the bars
+  share the doubt instead of pretending to be sure.
+- Type a sentence of pure small-talk ("thanks so much, see you soon"). With no familiar words, the
+  filter shrugs and falls back to the base rates.
+
+> **Field note — why "naive"?** It assumes every word is independent and ignores order completely —
+> to it, *"not bad at all"* and *"bad, not at all"* are the identical bag of words. That's plainly
+> false, and yet it works remarkably well, because for sorting by *topic* the words themselves
+> carry almost all the signal. Phrasing and context it simply cannot see.
+
+## What broke
+
+Naive Bayes clears the inbox in milliseconds. But notice what it never gives her: a **reason**. It
+returns a tray and a confidence — fine for sorting mail, useless for the row brewing at the counter.
+
+A regular insists his cold latte should be comped. The new hire isn't sure of the rule. "The model
+says 72% complaint" will not settle it, and it certainly won't reassure the customer. For decisions
+her staff have to *make and defend*, Nadia doesn't need a probability whispered from a black box.
+She needs the thing itself: a rule, written down, that anyone can read and follow.

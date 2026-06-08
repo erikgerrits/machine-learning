@@ -123,6 +123,23 @@ export function NumberField({
     );
 }
 
+export function Checkbox({
+    label,
+    checked,
+    onChange,
+}: {
+    label: string;
+    checked: boolean;
+    onChange: (checked: boolean) => void;
+}) {
+    return (
+        <label className={styles.checkbox}>
+            <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
+            <span>{label}</span>
+        </label>
+    );
+}
+
 export function Hint({ children }: { children: ReactNode }) {
     return <p className={styles.hint}>{children}</p>;
 }

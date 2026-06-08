@@ -70,6 +70,15 @@
     padding: 4px 12px 8px;
 }
 
+.partHeading {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    opacity: 0.75;
+    padding: 14px 12px 4px;
+}
+
 .navLink {
     display: flex;
     align-items: center;
@@ -113,6 +122,12 @@
 .content {
     padding: 28px 28px 80px;
     min-width: 0;
+}
+
+.loading {
+    color: var(--muted);
+    font-size: 14px;
+    padding: 48px 4px;
 }
 
 @media (max-width: 820px) {

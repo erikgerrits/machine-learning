@@ -1,0 +1,83 @@
+import { ManyFeaturesPlayground } from '../components/ManyFeaturesPlayground';
+
+# Chapter 2 — More than one clue
+
+> *Multiple linear regression.* Nadia's croissant line works — and then a single warm Saturday
+> blows a hole in it.
+
+The temperature line from Chapter 1 is earning its keep. But after a fortnight Nadia notices a
+pattern in its *misses*, and it nags at her. Two Saturdays in a row, the same mild 18°, and she
+sold out by ten. The Tuesday in between — also 18° — she binned a tray. Her line, seeing the same
+temperature, gave all three days the **same** forecast. It was high on the Tuesday and low on the
+Saturdays. Wrong, predictably, in a way that has nothing to do with the weather.
+
+## The wall: one clue can't tell days apart
+
+Temperature is *a* signal. It is not the *only* signal. Weekends are busier. A festival on the
+high street empties her shelves. None of that reaches a model whose only input is the thermometer
+— so it splits the difference and is gently wrong on every day that isn't average.
+
+Below is the fix in motion. Start with only **Temperature** ticked: this is Chapter 1's model,
+drawn a new way. Each dot is a day, placed at *(what actually sold, what the model predicted)*. A
+perfect model would land every dot on the dashed diagonal — predicted equals actual. With
+temperature alone, the dots sit in a loose, fat cloud: the model simply can't explain why two
+18° days sold so differently.
+
+<div className="breakout">
+  <ManyFeaturesPlayground />
+</div>
+
+Now tick **Weekend**, then **Foot traffic**, and press Train. Watch the cloud tighten onto the
+diagonal and the error drop. (Untick everything and it falls back to Chapter 0's baseline — one
+flat guess, the average.)
+
+## The idea: add up several weighted clues
+
+Instead of one input times one slope, Nadia lets the model weigh *several* inputs at once. Each
+feature gets its own **weight** — its own knob saying how much that clue matters — and the
+prediction is their sum, plus the baseline:
+
+$$
+\hat{y} = b + w_1 x_1 + w_2 x_2 + \dots + w_k x_k = b + \sum_{j=1}^{k} w_j x_j
+$$
+
+A positive weekend weight nudges Saturday's forecast up; the temperature weight still handles the
+weather; foot traffic catches the festival. One day, many clues, one number out.
+
+## How it works: a page of measurements
+
+This is where the library's `Matrix` earns its name. Stack the days into a table — **one row per
+day, one column per feature** — and the prediction for *every* day at once is a single matrix
+multiply. It's the exact same line of `LinearRegression` from Chapter 1:
+
+```ts
+protected predictFromEnrichedInputs(inputs: Matrix) {
+    return Matrix.multiply(inputs, this.getHypothesis());
+}
+```
+
+Nothing changed. In Chapter 1 `inputs` was an `m × 1` column and the hypothesis held two numbers
+(bias + slope). Now `inputs` is `m × k` and the hypothesis holds `k + 1` — and the multiply
+already does the weighted sum for all of them. Gradient descent trains the extra weights with the
+very same loop; there are just more knobs to turn.
+
+The **Recipe** panel shows those knobs as they settle. Let it run on all three features and the
+numbers drift toward the hidden truth the data was built from: a baseline around **80**, about
+**+22** on weekends, a steady lift per warm degree, and a smaller one for a busy pavement. The
+model is reverse-engineering Nadia's café from its receipts.
+
+> **Field note — keep features on the same scale.** Gradient descent takes one step size for
+> *all* the weights. If temperature were in tenths and foot traffic in raw counts of thousands,
+> the same step would be far too big for one and far too small for the other, and training would
+> crawl. The cure is to rescale every feature to a comparable range first — here they already are.
+
+## What broke
+
+Three clues beat one. So Nadia does the obvious thing: if a few features help, surely *more* must
+help more. She pulls every column she can find out of the receipts — the date, the moon phase,
+the number of pigeons on the awning — and feeds them all in.
+
+On last month's data, the model becomes *uncanny*. Nearly every dot snaps onto the diagonal. She's
+thrilled — right up until next week arrives and the forecasts are worse than the plain temperature
+line ever was. Somewhere between "more clues" and "too many," her model stopped learning the café
+and started **memorising** it.

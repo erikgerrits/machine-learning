@@ -1,22 +1,43 @@
 import { MulticlassLogisticRegressionPlayground } from '../components/MulticlassLogisticRegressionPlayground';
 
-# Multiclass Logistic Regression
+# Chapter 5 — Three stations
 
-[Logistic regression](/machine-learning/logistic-regression) only knows two classes. To handle
-three or more, this library uses the **one-vs-rest** trick: train one binary classifier per
-class, each answering "is this point my class, or not?", and let the most confident one win.
-Below is the real
-[`MulticlassLogisticRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/MulticlassLogisticRegression.ts)
-training live across three classes.
+> *Multiclass logistic regression.* A batch isn't rise-or-flop. Bea runs three stations, and
+> Nadia's one-line model can only ever point two ways.
+
+Bea's bench has three trays going at once. **Under-proofed** dough goes back to prove longer.
+**Just-right** heads straight to the oven. **Over-proofed** gets knocked back and repurposed into
+focaccia. Three destinations — and Nadia's shiny yes/no classifier from Chapter 4 can sort a batch
+into exactly *two*.
+
+## The wall: one line, two sides
+
+A logistic boundary slices the plane into two halves: one side "yes," the other "no." That's all a
+single line can ever do. To send batches to three stations she'd need to carve the plane into
+**three** regions — and no single straight cut makes three pockets.
+
+## The idea: ask three yes/no questions
+
+She doesn't need a new kind of model. She needs her old one, run **three times**. Train one
+detector per station:
+
+- *"Under-proofed, or not?"*
+- *"Just-right, or not?"*
+- *"Over-proofed, or not?"*
+
+For a new batch, ask all three and hand it to whichever is **most confident**. That's
+**one-vs-rest**, and it turns three binary classifiers into a three-way sorter. Press **Train** and
+watch the plane carve into stations:
 
 <div className="breakout">
   <MulticlassLogisticRegressionPlayground />
 </div>
 
-## One-vs-rest
+## How it works: one-hot targets and argmax
 
-The targets are **one-hot**: each row is `[1,0,0]`, `[0,1,0]`, or `[0,0,1]`. Training spins up one
-`LogisticRegression` per column and trains each on its own slice — class _i_ versus everyone else:
+Each batch's label becomes a row with a single 1 — `[1,0,0]` for under, `[0,1,0]` for just-right,
+`[0,0,1]` for over. Training spins up one `LogisticRegression` per column and trains each on its
+own slice — that class versus everyone else:
 
 ```ts
 this.logisticRegressions.forEach((classifier, i) =>
@@ -24,22 +45,37 @@ this.logisticRegressions.forEach((classifier, i) =>
 );
 ```
 
-To predict, every classifier produces a probability and the columns are stacked back together;
-the winner is the **argmax** — the class whose classifier is most confident:
+To predict, every classifier reports a probability, the columns are stacked back together, and the
+winner is the **argmax** — the station whose classifier is most sure:
 
 ```ts
 predictions.getMaximumRowIndeces(); // index of the largest value in each row
 ```
 
-That argmax is exactly what colors each cell of the map above.
+That argmax is exactly what colours each cell of the map. Because every underlying classifier still
+draws a *straight* line, the regions meet along straight seams — the plane carved into wedges.
 
-## What the boundaries look like
+## Try it yourself
 
-Because each underlying classifier draws a straight line, the regions meet along straight
-seams — you can see the plane carved into wedges. On well-separated **blobs** or horizontal
-**stripes** that's a near-perfect fit; on the **pinwheel** the straight seams can only roughly
-follow the curved class borders, so a few points near the center get misfiled.
+- **By the clock** — proving time runs bottom to top, so the three stages stack in horizontal
+  bands. Two straight seams split them almost perfectly.
+- **Distinct batches** — the outcomes cluster in separate corners; one-vs-rest slots clean wedges
+  between them.
+- **Swirl** — now the three outcomes spiral around the proving sweet-spot. The straight seams can
+  only *roughly* trace the curved borders, and a handful of batches near the centre get misfiled.
 
-> For boundaries that genuinely curve, you need a non-linear model — that's the
-> [neural network](/machine-learning/neural-network), or the local voting of
-> [k-nearest neighbours](/machine-learning/nearest-neighbors).
+> **Field note — one-vs-rest vs. softmax.** This library trains three *independent* yes/no
+> classifiers, so their confidences don't add up to 100% — you just take the largest. A true
+> *softmax* classifier would couple them into one model whose three probabilities sum to one.
+> One-vs-rest is simpler and works well whenever the classes part along roughly straight lines.
+
+## What broke
+
+Stations sorted — as long as the outcomes separate along straight seams. The **Swirl** already
+showed the cracks: where classes coil around each other, no number of straight lines can trace the
+border.
+
+And Nadia's next sorting job is all curve. She wants to label new pastries by eye from a couple of
+measurements, but the types interlock so tightly that every straight seam mangles them. She's going
+to have to give up drawing global lines altogether — and instead judge each new pastry by the
+company it keeps.

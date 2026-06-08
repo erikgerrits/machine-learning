@@ -1,0 +1,79 @@
+import { BaselinePlayground } from '../components/BaselinePlayground';
+
+# Chapter 0 — The Ledger
+
+> *The prologue.* Before a single algorithm, there's a café, a shoebox of receipts, and a new way
+> of looking at them.
+
+The lawyer's envelope held two things: a set of keys, and a note in her aunt's handwriting —
+*"Look after the Leaf for me."* So now Nadia owns **The Drifting Leaf**: a narrow café on Maple
+Lane with a temperamental espresso machine, a loyal handful of regulars, and account books that
+slope, gently and relentlessly, toward closing for good.
+
+What her aunt left instead of a system was a **shoebox of receipts** — every order, every day,
+for years. Nadia tips it out on the counter at midnight and stares. It looks like noise. But she
+has a hunch that buried in that pile is everything she needs to know to keep the lights on, if
+only she can learn to *read* it.
+
+She buys a fresh notebook. On the cover she writes one word — **Ledger** — and decides that every
+method she works out for turning that pile of paper into a decision goes on its pages. This is
+that notebook.
+
+## Learning to see in data
+
+First she has to name what she's looking at. Each receipt is one **observation** — a single day
+that actually happened. For each day she can read off a few **features**: the date, the high
+temperature, whether it rained, how many people walked past. And there's the thing she actually
+cares about — the **target** — like how many croissants sold.
+
+Stacked up, the shoebox becomes a table: one row per day, one column per feature, and a column
+for the answer. That table is the raw material of everything that follows.
+
+Every method in the Ledger will do just two things with it:
+
+- **Train** — study past days, where the answer is already known, and find a pattern.
+- **Predict** — use that pattern to guess the answer for a *new* day she hasn't seen yet.
+
+Study, then guess. That's the whole game. The art is in the pattern.
+
+## The dumbest possible model
+
+Before anything clever, Nadia writes down the simplest rule that could ever count as a "method":
+**guess the same number every day.** For croissants, the obvious choice is the **average** of
+what she's sold before — in fact it's exactly the *"80 a day"* her aunt had scribbled in the till.
+
+It feels too dumb to bother with. It is also, secretly, important. Below is two weeks of real
+sales. Slide the flat line — that's your one constant guess — and watch the total error:
+
+<div className="breakout">
+  <BaselinePlayground />
+</div>
+
+Two things to notice. The error never hits zero: a single number can't possibly match every
+day. And it's smallest at one specific height — **the average.** No constant guess can do better
+than the mean. (For a yes/no question it's the same idea: guess the *majority* answer every time.)
+
+## Beat the baseline
+
+This is the rule Nadia underlines twice, and the one habit worth carrying through the whole
+course:
+
+> **Field note — beat the baseline.** Before trusting any model, race it against the dumbest one
+> you can write: *predict the average* (or, for a decision, the majority). That flat line is the
+> bar. A model that can't clear it is just a complicated way of being average — and isn't worth
+> the trouble.
+
+It also tells her precisely what "doing better" would *mean.* The baseline throws away every
+feature — it ignores the weather, the day of the week, the festival down the street. To beat it,
+she'll need a method that actually **uses** those features to give a different answer on a cold
+Tuesday than on a sweltering Saturday.
+
+## What's next
+
+The Ledger has its first page: a baseline, and a bar to beat. Nadia closes the notebook a little
+after 1am.
+
+The bar gets tested at 5:40 tomorrow morning, when Tomás the flour supplier leans on the counter
+and wants to know one number before the ovens are even warm: **how many croissants today?** Her
+aunt would have said eighty. Nadia thinks she can do better — by finally putting that temperature
+column to work.

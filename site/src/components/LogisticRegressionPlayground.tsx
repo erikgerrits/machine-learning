@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LogisticRegression, Matrix } from 'machine-learning';
-import { DATASETS, type Domain } from '../ml/datasets';
+import type { Domain } from '../ml/datasets';
+import { DOUGH_DATASETS } from '../ml/doughDatasets';
 import { accuracy, crossEntropy } from '../ml/metrics';
 import { useAnimationFrame } from '../hooks/useAnimationFrame';
 import { fitCanvas } from '../viz/canvas';
@@ -21,10 +22,8 @@ import styles from './LogisticRegressionPlayground.module.css';
 
 const POINTS = 240;
 
-// A curated subset that tells the linear-boundary story: clean → partial → impossible.
-const LOGISTIC_DATASETS = ['blobs', 'moons', 'circles', 'xnor']
-    .map(id => DATASETS.find(d => d.id === id))
-    .filter((d): d is (typeof DATASETS)[number] => Boolean(d));
+// Café dough batches (clean split → overlap → a curve a straight line can't follow).
+const LOGISTIC_DATASETS = DOUGH_DATASETS;
 
 const sliderToLr = (slider: number) => Math.pow(10, -3 + 4 * (slider / 1000));
 const lrToSlider = (lr: number) => Math.round(((Math.log10(lr) + 3) / 4) * 1000);
@@ -196,8 +195,8 @@ export function LogisticRegressionPlayground() {
                 <div className={styles.boundaryWrap}>
                     <canvas ref={boundaryCanvasRef} className={styles.boundary} />
                     <div className={styles.activation}>
-                        <span style={{ color: 'var(--accent)' }}>● class 0</span>
-                        <span style={{ color: 'var(--accent-2)' }}>● class 1</span>
+                        <span style={{ color: 'var(--accent)' }}>● flopped</span>
+                        <span style={{ color: 'var(--accent-2)' }}>● rose</span>
                     </div>
                 </div>
 
@@ -210,9 +209,9 @@ export function LogisticRegressionPlayground() {
 
                     <Card title="Decision boundary" subtitle="always a straight line">
                         <p className={styles.note}>
-                            Logistic regression can only split the plane with one straight line. It
-                            nails linearly separable data — and visibly fails when the classes curve
-                            around each other.
+                            Logistic regression splits the batches with a single straight line, set
+                            where its confidence crosses 50%. On a clean day that's all it needs — but
+                            when two doughs curl around each other, watch it strain.
                         </p>
                     </Card>
 

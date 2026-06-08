@@ -1,20 +1,38 @@
 import { NearestNeighborsPlayground } from '../components/NearestNeighborsPlayground';
 
-# k-Nearest Neighbours
+# Chapter 6 — Ask the neighbours
 
-Every other model on this site learns parameters by gradient descent. k-NN does something
-refreshingly different: it **doesn't really train at all**. It just remembers the examples, and
-to classify a new point it asks its `k` closest neighbours to vote. Below is the real
-[`NearestNeighbors`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/NearestNeighbors.ts)
-— drag **k** and switch datasets, and the boundary recomputes instantly (there are no epochs to wait for).
+> *k-nearest neighbours.* Two pastries, two measurements, and a boundary that finally bends.
+
+The wholesaler now drops a mixed crate each morning — croissants and danishes, jumbled — and
+Nadia wants them sorted automatically. She has two quick measurements for each: how dark the crust
+baked, and how much it weighs. She plots a tray she's already sorted by hand, expecting two tidy
+halves.
+
+They're not tidy at all. The two types **interleave** — a light, heavy danish sits right among the
+croissants; the clusters curl around one another. It's the swirl she glimpsed back at the proving
+bench, and it breaks every tool she owns.
+
+## The wall: the boundary has to bend
+
+Logistic regression and its one-vs-rest cousin can only ever lay down **straight** lines. On
+interleaving pastries a straight cut slices through both types at once — there's no angle that
+helps. She doesn't need a better line. She needs a boundary that can be *any shape at all*.
+
+## The idea: forget the global rule
+
+So she stops trying to describe the whole tray with one equation. To label a new pastry, she just
+finds the handful of already-sorted pastries it most **resembles** — its nearest neighbours — and
+goes with the majority. No formula for the boundary; the boundary is simply wherever the examples
+say it is. Press play with different crates:
 
 <div className="breakout">
   <NearestNeighborsPlayground />
 </div>
 
-## Lazy learning
+## How it works: lazy learning
 
-"Training" is a single line — store the data:
+The twist is that **k-NN barely trains**. "Training" is one line — just remember the examples:
 
 ```ts
 train(inputs: Matrix, targets: Matrix) {
@@ -23,23 +41,44 @@ train(inputs: Matrix, targets: Matrix) {
 }
 ```
 
-All the work happens at prediction time. For each query point, `NearestNeighbors` measures the
-distance to every stored example (squared Euclidean by default, but the metric is swappable via
-`setDistanceFunction`), keeps the closest `k`, and averages their labels. Above 0.5 → class 1.
+All the work waits until prediction. For each new pastry, `NearestNeighbors` measures the distance
+to every stored example, keeps the closest `k`, and takes their majority vote. Distance is just
+Pythagoras, stretched across however many measurements there are:
 
-## The role of k
+$$
+d^2 = \sum_{j} \big(x_j - x'_j\big)^2
+$$
 
-`k` is the one knob, and it trades detail for smoothness:
+(squared Euclidean by default — and swappable via `setDistanceFunction`).
 
-- **k = 1** — each point copies its single nearest neighbour. The boundary hugs the data
-  exactly: jagged, islanded, and prone to overfitting noise.
-- **larger k** — more neighbours vote, so the boundary smooths out and shrugs off outliers — at
-  the risk of washing out genuinely small regions.
+## The one knob: k
 
-## The payoff: non-linear for free
+`k` is the only dial, and it trades detail for steadiness:
 
-Switch to **moons**, **circles**, or the **spiral** — the shapes that
-[logistic regression](/machine-learning/logistic-regression) simply could not separate. k-NN
-follows every curve without any extra machinery, because its boundary is defined by the data
-itself rather than by a fixed equation. The cost is that it must keep all the training data and
-compare against it for every single prediction.
+- **k = 1** — each pastry copies its single closest neighbour. The boundary hugs the data exactly:
+  jagged, dotted with little islands, and quick to enshrine one mislabelled outlier.
+- **larger k** — more neighbours vote, so the boundary smooths and shrugs off the odd weirdo — at
+  the risk of steamrolling a genuinely small pocket.
+
+## Try it yourself
+
+- **Two recipes**, **A ring**, **The swirl** — the very shapes a straight line couldn't touch.
+  k-NN follows every curve with no extra machinery, because the boundary *is* the data.
+- **Easy day** — when the types do separate cleanly, k-NN handles it as well as any line. It loses
+  nothing on the easy cases.
+- Drag **k** from 1 upward on **The swirl** and watch the speckled islands melt into smooth arms.
+
+> **Field note — lazy now, pay later.** k-NN does no work up front and *all* of it at prediction
+> time: every new pastry is compared against every stored one. Charming for a tray, brutal for a
+> catalogue of years. And it trusts raw distance completely — pile on more measurements and
+> "nearness" turns to mush, with no way for the model to learn which measurements actually matter.
+
+## What broke
+
+k-NN bends around anything you can plot. But Nadia's next headache isn't on a tray — it's her
+**inbox**. Hundreds of messages pile up overnight: real reservations, furious complaints, and
+spam dressed up as both. She wants them triaged before she's had coffee.
+
+There's nothing to plot. No crust-darkness, no weight, no distance to take — just **words**. Not
+one tool in the Ledger so far can read a sentence. She's going to need a completely different way
+to decide.

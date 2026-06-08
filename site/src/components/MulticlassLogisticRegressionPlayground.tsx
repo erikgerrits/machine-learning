@@ -201,9 +201,9 @@ export function MulticlassLogisticRegressionPlayground() {
                 <div className={styles.boundaryWrap}>
                     <canvas ref={boundaryCanvasRef} className={styles.boundary} />
                     <div className={styles.activation}>
-                        <span style={{ color: CLASS_HEX[0] }}>● class 0</span>
-                        <span style={{ color: CLASS_HEX[1] }}>● class 1</span>
-                        <span style={{ color: CLASS_HEX[2] }}>● class 2</span>
+                        <span style={{ color: CLASS_HEX[0] }}>● under-proofed</span>
+                        <span style={{ color: CLASS_HEX[1] }}>● just right</span>
+                        <span style={{ color: CLASS_HEX[2] }}>● over-proofed</span>
                     </div>
                 </div>
 
@@ -216,8 +216,8 @@ export function MulticlassLogisticRegressionPlayground() {
 
                     <Card title="One-vs-rest" subtitle="3 binary classifiers">
                         <p className={styles.note}>
-                            One logistic classifier is trained per class — "this class vs. everything
-                            else" — and each point is given to whichever classifier is most confident.
+                            One logistic classifier is trained per outcome — "this one vs. everything
+                            else" — and each batch goes to whichever classifier is most confident.
                         </p>
                     </Card>
 

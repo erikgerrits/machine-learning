@@ -81,7 +81,7 @@ export function LinearRegressionPlayground() {
         const plotCanvas = plotCanvasRef.current;
         if (plotCanvas) {
             const { ctx, width, height } = fitCanvas(plotCanvas);
-            drawRegression(ctx, width, height, domainRef.current, data.inputs, data.targets, read.predicted, read.line);
+            drawRegression(ctx, width, height, domainRef.current, data.inputs, data.targets, read.predicted, read.line, 'temperature →', 'items sold →');
         }
 
         const lossCanvas = lossCanvasRef.current;
@@ -207,8 +207,8 @@ export function LinearRegressionPlayground() {
                 <div className={styles.plotWrap}>
                     <canvas ref={plotCanvasRef} className={styles.plot} />
                     <div className={styles.legend}>
-                        <span style={{ color: 'var(--accent)' }}>● data</span>
-                        <span style={{ color: 'var(--accent-2)' }}>— fit</span>
+                        <span style={{ color: 'var(--accent)' }}>● daily sales</span>
+                        <span style={{ color: 'var(--accent-2)' }}>— predicted demand</span>
                     </div>
                 </div>
 

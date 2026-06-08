@@ -1,0 +1,87 @@
+import { RandomForestPlayground } from '../components/RandomForestPlayground';
+
+# Chapter 9 — Ask the crowd
+
+> *Random forests.* One decision tree is clear, fast, and alarmingly easy to spook. So Nadia stops
+> trusting one.
+
+The rulebook from Chapter 8 was a triumph of clarity — and a menace of moodiness. Reseed the data
+with the same policy and a fresh week of cases, and the whole tree rearranges: a different first
+question, a different shape, sometimes a different verdict for the very same order. A policy that
+reshuffles every time you blink is not a policy she can hang on the wall.
+
+## The wall: one tree is twitchy
+
+This is **high variance**. A single tree commits hard to the first split it finds, and one
+mislabelled case near a boundary can swing an entire branch. She can calm it by capping the depth —
+but then it goes the other way and underfits, too crude to capture the real rule. Jumpy or dim;
+neither is good enough.
+
+## The idea: a committee, not an oracle
+
+So she stops asking one tree and asks **a hundred** — each grown on a slightly different **bootstrap
+sample** of the cases (the same cases, redrawn at random with replacement), so no two trees see
+quite the same evidence. To decide an order, every tree votes and she takes the **average**.
+
+The magic is that their *mistakes* are mostly private — each tree overfits its own random quirks —
+so in the average those quirks cancel, while the real signal they all agree on stays put. Drag the
+**Trees** slider from 1 upward and watch a jagged single tree melt into a smooth, steady boundary:
+
+<div className="breakout">
+  <RandomForestPlayground />
+</div>
+
+## How it works: bootstrap, then average
+
+Training is just "grow a tree, but on a resample." Each tree gets `exampleCount` rows drawn with
+replacement — so it sees some cases twice and misses others entirely:
+
+```ts
+for (let i = 0; i < exampleCount; i++) {
+    const index = Math.floor(random() * exampleCount); // sample with replacement
+    sampledRows.push(rows[index]);
+    sampledTargets.push(labels[index]);
+}
+```
+
+(Real forests add a second sprinkle of randomness — each split considers only a random handful of
+features, which `DecisionTree.setMaxFeatures` supports — to keep the trees from all leaning on the
+same dominant feature.)
+
+Prediction is a show of hands: sum every tree's class distribution and divide by the count.
+
+```ts
+for (const tree of this.trees) {
+    const treePredictions = tree.predict(inputs).toArray();
+    for (let i = 0; i < rowCount; i++)
+        for (let c = 0; c < this.classCount; c++)
+            totals[i][c] += treePredictions[i][c];
+}
+return new Matrix(totals.map(row => row.map(value => value / this.trees.length)));
+```
+
+## Try it yourself
+
+- Start at **1 tree** — that's Chapter 8's judge, hard edges and islands. Now drag the slider up and
+  watch the boundary round out and steady.
+- Change the **seed** at 1 tree, then at 40. One tree lurches; the forest barely moves. That
+  steadiness *is* the whole point.
+- Notice what the side panel no longer offers: a rulebook. A forest can't be read like a single
+  tree — that's the trade.
+
+> **Field note — averaging kills variance.** Average many noisy-but-roughly-right estimates and the
+> noise shrinks while the signal stays; that's why a forest of twitchy trees is calm. It's the same
+> reason a crowd guesses the jar of jellybeans better than almost anyone in it. (Bonus: each tree
+> skips about a third of the rows, so a forest can grade itself on the cases each tree never saw —
+> a free accuracy check, no separate test set required.)
+
+## What broke
+
+The forest is steady and accurate, and Nadia trusts it. But it's wasteful in a particular way:
+every one of those hundred trees is grown **in isolation**, blind to the others, and they only
+meet at the end to vote. Nobody is learning from anybody's mistakes.
+
+Which prompts the obvious question. What if, instead of a hundred independent guesses pooled at the
+end, you built models **in sequence** — each new one trained specifically on the errors the
+previous ones kept getting wrong? Not a crowd voting in parallel, but a relay, each runner picking
+up exactly where the last stumbled.

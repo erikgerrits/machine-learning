@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { NearestNeighbors, Matrix } from 'machine-learning';
-import { DATASETS, type Domain } from '../ml/datasets';
+import type { Domain } from '../ml/datasets';
+import { PASTRY_DATASETS } from '../ml/pastryDatasets';
 import { accuracy } from '../ml/metrics';
 import { fitCanvas } from '../viz/canvas';
 import { drawPoints, makeGrid, paintBoundary, type Grid } from '../viz/decisionBoundary';
@@ -11,10 +12,8 @@ import styles from './LogisticRegressionPlayground.module.css';
 const GRID = 70;
 const POINTS = 200;
 
-// k-NN shines exactly where a straight line fails — show the curved datasets.
-const KNN_DATASETS = ['moons', 'circles', 'spiral', 'blobs']
-    .map(id => DATASETS.find(d => d.id === id))
-    .filter((d): d is (typeof DATASETS)[number] => Boolean(d));
+// k-NN shines exactly where a straight line fails — café pastries that interleave, ring, and swirl.
+const KNN_DATASETS = PASTRY_DATASETS;
 
 interface TrainingData {
     inputs: number[][];
@@ -119,8 +118,8 @@ export function NearestNeighborsPlayground() {
                 <div className={styles.boundaryWrap}>
                     <canvas ref={boundaryCanvasRef} className={styles.boundary} />
                     <div className={styles.activation}>
-                        <span style={{ color: 'var(--accent)' }}>● class 0</span>
-                        <span style={{ color: 'var(--accent-2)' }}>● class 1</span>
+                        <span style={{ color: 'var(--accent)' }}>● croissants</span>
+                        <span style={{ color: 'var(--accent-2)' }}>● danishes</span>
                     </div>
                 </div>
 
@@ -134,10 +133,10 @@ export function NearestNeighborsPlayground() {
                     <Card title="Lazy learning" subtitle="no model, just data">
                         <p className={styles.note}>
                             k-NN draws no equation and runs no gradient descent — it simply keeps every
-                            example and labels each new point by a vote of its <strong>k</strong> nearest
-                            neighbours. Small <strong>k</strong> gives jagged, overfit regions; larger
-                            <strong> k</strong> smooths the boundary. Unlike a straight-line classifier,
-                            it bends around moons, rings, and spirals with ease.
+                            pastry it has seen and labels each new one by a vote of its <strong>k</strong>
+                            nearest neighbours. Small <strong>k</strong> gives jagged, overfit regions;
+                            larger <strong>k</strong> smooths the boundary. Unlike a straight-line
+                            classifier, it bends around crescents, rings, and spirals with ease.
                         </p>
                     </Card>
                 </div>
