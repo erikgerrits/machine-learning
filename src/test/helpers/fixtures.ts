@@ -60,6 +60,24 @@ export const TREE_TARGETS = [[1, 0], [1, 0], [1, 0], [0, 1], [1, 0], [0, 1], [1,
 /** Expected class per row (argmax): only the two "both high" rows are class 1. */
 export const TREE_EXPECTED_CLASSES = [[0], [0], [0], [1], [0], [1], [0], [0]];
 
+/**
+ * Support vector machine — a cleanly separable 2D set: class 1 sits in the upper-right, class 0 in
+ * the lower-right's mirror (lower-left). A straight max-margin line (roughly x + y = 0) splits them
+ * with room to spare, so a linear-kernel SVM nails every point and only the inner points become
+ * support vectors. Targets are a single 0/1 column, like logistic regression.
+ */
+export const SVM_LINEAR_INPUTS = [[2, 2], [3, 3], [3, 1], [1, 3], [-2, -2], [-3, -3], [-3, -1], [-1, -3]];
+export const SVM_LINEAR_TARGETS = [[1], [1], [1], [1], [0], [0], [0], [0]];
+export const SVM_LINEAR_EXPECTED_CLASSES = [1, 1, 1, 1, 0, 0, 0, 0];
+
+/**
+ * XOR — the textbook non-linearly-separable problem (opposite corners share a class). No straight
+ * line can split it, so a linear SVM fails; an RBF kernel carves it cleanly. Reuses {@link
+ * XNOR_INPUTS} for the four corners with XOR targets.
+ */
+export const SVM_XOR_TARGETS = [[0], [1], [1], [0]];
+export const SVM_XOR_EXPECTED_CLASSES = [0, 1, 1, 0];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

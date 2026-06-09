@@ -1,0 +1,126 @@
+import { SupportVectorMachinePlayground } from '../components/SupportVectorMachinePlayground';
+
+# Chapter 11 — The widest street
+
+> *Support vector machines.* Every model Nadia has built draws *a* boundary. None of them ever asked
+> which boundary leaves the most room to be wrong.
+
+The comp policy works. Trees, forest, boosting — they all separate the orders she'd refund from the
+ones she wouldn't. But a regular complains: his order, a hair past the line, got refused, while his
+neighbour's near-identical one was comped. Nadia looks at her boundary and sees the problem. It runs
+*right alongside* a cluster of real cases, practically grazing them. One noisy new order and the
+call flips.
+
+She doesn't just want a line that separates today's orders. She wants the line that will still be
+right tomorrow — the one that keeps the **most distance** from every case it's seen.
+
+## The wall: any old separating line will do
+
+That's the thing none of her models optimised for. Logistic regression stops the moment it finds a
+line with low loss; a tree stops when its splits are pure. Show them the clean **Clear-cut** policy
+below and they'll happily settle on a boundary skimming one of the clouds — technically correct,
+dangerously close. There are infinitely many lines through that empty gap, and her old tools had no
+reason to prefer the safe one in the middle over a reckless one at the edge.
+
+## The idea: make the gap as wide as possible
+
+So Nadia flips the question around. Instead of *"find a line that separates them,"* she asks
+*"find the line with the widest empty street on either side of it."* Push the two borders of that
+street apart until each one bumps into the nearest orders. Those few orders it touches are the
+**support vectors** — they alone hold the boundary up. Every other order could vanish and the line
+wouldn't move an inch.
+
+The width of that street is the **margin**, and it has a tidy formula. If the boundary is
+`w · x + b = 0` and we scale things so the nearest points sit at `w · x + b = ±1`, the half-width of
+the street is `1 / ‖w‖`. Widening the margin means *shrinking* `‖w‖`:
+
+$$
+\min_{\mathbf{w},\,b}\ \tfrac{1}{2}\lVert \mathbf{w} \rVert^{2}
+\quad\text{subject to}\quad y_i\,(\mathbf{w}\cdot \mathbf{x}_i + b)\ \ge\ 1 .
+$$
+
+Real orders are messy, so a few are allowed to sit inside the street — for a price `C`. A small `C`
+buys a wider, calmer street at the cost of a few violations; a large `C` refuses to tolerate them
+and hugs the data tighter. Press **Train** and watch the street widen until the support vectors stop
+it:
+
+<div className="breakout">
+  <SupportVectorMachinePlayground />
+</div>
+
+## How it works: only the support vectors survive
+
+Solving that optimisation lands on a weight for every training order, `αᵢ`, and the punchline is
+that **almost all of them come out zero**. The only non-zero `αᵢ` belong to the support vectors —
+the orders on the street's edge. The boundary is built from *just those*, which is why the
+prediction sums over support vectors and ignores everything else:
+
+```ts
+let sum = this.bias;
+for (let k = 0; k < alphas.length; k++) {
+    if (alphas[k] !== 0) { // only support vectors contribute
+        sum += alphas[k] * this.labels[k] * this.applyKernel(this.inputs[k], point);
+    }
+}
+```
+
+The sign of that sum is the call — comp or no comp — and its size is how far past the margin the
+order sits.
+
+### The kernel trick: bending the street
+
+There's one move left, and it's the elegant one. Notice the prediction never touches an order's raw
+features directly — it only ever asks `applyKernel(a, b)`: *how similar are these two orders?* Swap
+out that one similarity function and the whole machine bends with it. The **linear** kernel is a
+plain dot product (a straight street). The **RBF** kernel scores similarity by distance, and that
+alone lets the boundary curve:
+
+```ts
+case 'rbf': {
+    let squaredDistance = 0;
+    for (let i = 0; i < a.length; i++) {
+        const difference = a[i] - b[i];
+        squaredDistance += difference * difference;
+    }
+    return Math.exp(-this.gamma * squaredDistance); // close orders ≈ 1, far ones ≈ 0
+}
+case 'linear':
+    return dotProduct(a, b);
+```
+
+That's the **kernel trick**: a curved boundary in Nadia's two features *is* a straight max-margin
+plane in a higher-dimensional space the kernel conjures up — and she never has to build that space,
+only score similarities in it.
+
+## Try it yourself
+
+- **Clear-cut** with the **linear** kernel — the street opens up dead-centre of the gap, far from
+  both clouds, balanced on just a few ringed support vectors. That centred line is the whole point.
+- **Borderline** — the clouds overlap and a few orders fall on the wrong side. Slide **C** down: the
+  margin widens and shrugs off the stragglers; slide it up and the street narrows as it strains to
+  catch every last one. More orders end up as support vectors as it tightens.
+- **Surrounded** — a pocket of always-comp orders ringed by ones that never are. The linear kernel
+  is hopeless; no straight street fits. Switch the kernel to **RBF** and the boundary wraps the
+  pocket like a lasso. Nudge **Gamma**: low and lazy draws a smooth ring, high and twitchy shrinks
+  it into tight bubbles around individual orders.
+
+> **Field note — gamma is a reach dial, and it overfits.** RBF's gamma sets how far one order's
+> influence carries. Low gamma = long reach = smooth, general boundaries. High gamma = each order
+> only sees its immediate neighbours, so the boundary fragments into little islands that memorise
+> the training set — the same overfitting from Chapter 3, wearing a kernel.
+
+## What broke
+
+The SVM is the most *principled* boundary Nadia has drawn: of all the lines that separate her
+orders, it picks the provably safest one, and the kernel trick bends it around shapes a straight
+line never could. It's fiddlier than boosting — you have to choose a kernel, then tune `C` and
+`gamma` — and it slows down on huge datasets, since it compares every pair of orders. But it works.
+
+And then Tomás the supplier asks her a question that stops her cold. *"Who even are your regulars?
+Group them so I know what to stock."* Nadia reaches for her tools and freezes. Every single model in
+the ledger — line, tree, forest, this beautiful margin — learned from an **answer key**: orders
+already labelled comp or no-comp, batches already marked rose or flopped. Nobody has labelled her
+customers. There's no column that says which group anyone belongs to. The groups don't exist yet —
+they're hiding in the data, waiting to be *found*.
+
+Every method she owns needs to be told the answer. She's about to need one that finds it alone.

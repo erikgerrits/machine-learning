@@ -123,6 +123,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_2,
     },
     {
+        id: 'support-vector-machines',
+        path: '/support-vector-machines',
+        title: 'Support Vector Machines',
+        tagline: 'Not just a line — the line with the widest safety margin.',
+        status: 'live',
+        chapter: 11,
+        part: PART_2,
+    },
+    {
         id: 'k-means',
         path: '/k-means',
         title: 'k-Means',

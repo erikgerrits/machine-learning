@@ -20,6 +20,7 @@ const NaiveBayesTutorial = lazy(() => import('./content/naive-bayes.mdx'));
 const DecisionTreesTutorial = lazy(() => import('./content/decision-trees.mdx'));
 const RandomForestsTutorial = lazy(() => import('./content/random-forests.mdx'));
 const GradientBoostingTutorial = lazy(() => import('./content/gradient-boosting.mdx'));
+const SupportVectorMachinesTutorial = lazy(() => import('./content/support-vector-machines.mdx'));
 const KMeansTutorial = lazy(() => import('./content/k-means.mdx'));
 
 export function App() {
@@ -120,6 +121,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <GradientBoostingTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="support-vector-machines"
+                    element={
+                        <TutorialPage>
+                            <SupportVectorMachinesTutorial />
                         </TutorialPage>
                     }
                 />

@@ -32,6 +32,7 @@ Below are some simple code usage examples.
 * [Decision Tree](#decision-tree)
 * [Random Forest](#random-forest)
 * [Gradient Boosting](#gradient-boosting)
+* [Support Vector Machine](#support-vector-machine)
 * [k-Means Clustering](#k-means-clustering)
 
 ### Feedforward Neural Network
@@ -206,6 +207,31 @@ gradientBoosting.train(inputs, targets);
 const predictions = gradientBoosting.predict(inputs);
 console.log(predictions.getMaximumRowIndeces().toArray());
 // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]
+
+```
+
+### Support Vector Machine
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Support vector machine: the widest-margin boundary between two classes.
+// A linear kernel draws a straight max-margin line; .setKernel('rbf') carves curves (the kernel trick).
+const inputs = new ml.Matrix([[2, 2], [3, 3], [3, 1], [1, 3], [-2, -2], [-3, -3], [-3, -1], [-1, -3]]);
+const targets = new ml.Matrix([[1], [1], [1], [1], [0], [0], [0], [0]]);
+
+const supportVectorMachine = new ml.SupportVectorMachine();
+supportVectorMachine.setKernel('linear').setRegularization(10).setNumberOfIterations(50);
+
+supportVectorMachine.train(inputs, targets);
+
+// predict returns the raw decision score per row; its sign is the class (>= 0 -> class 1).
+const predictions = supportVectorMachine.predict(inputs);
+console.log(predictions.transform(score => (score >= 0 ? 1 : 0)).toArray());
+// [ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 0 ], [ 0 ], [ 0 ], [ 0 ] ]
+
+console.log(supportVectorMachine.getSupportVectorIndices());
+// [ 0, 2, 3, 4, 6 ]  <- the boundary-hugging points the line balances on (the rest could be deleted)
 
 ```
 

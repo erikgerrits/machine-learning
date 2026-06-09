@@ -37,6 +37,9 @@
     "random forest",
     "gradient boosting",
     "ensemble",
+    "support vector machine",
+    "svm",
+    "kernel",
     "classification",
     "k-means",
     "clustering"
