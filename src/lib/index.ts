@@ -24,3 +24,4 @@ export { default as RecurrentNeuralNetwork } from "./machine-learning/supervised
 export { default as Recommender } from "./machine-learning/unsupervised/Recommender";
 export { default as SupportVectorMachine } from "./machine-learning/supervised/SupportVectorMachine";
 export type { Kernel } from "./machine-learning/supervised/SupportVectorMachine";
+export { default as Transformer } from "./machine-learning/supervised/Transformer";

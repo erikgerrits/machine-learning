@@ -36,6 +36,7 @@ Below are some simple code usage examples.
 * [Support Vector Machine](#support-vector-machine)
 * [Convolutional Neural Network](#convolutional-neural-network)
 * [Recurrent Neural Network](#recurrent-neural-network)
+* [Transformer](#transformer)
 * [k-Means Clustering](#k-means-clustering)
 * [Hierarchical Clustering](#hierarchical-clustering)
 * [DBSCAN](#dbscan)
@@ -321,6 +322,33 @@ console.log(rnn.predict(reviews).getMaximumRowIndeces().toArray());
 
 console.log('gradients verified:', rnn.checkGradients());
 // gradients verified: true  <- finite-difference check of backprop-through-time
+
+```
+
+### Transformer
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Transformer (single self-attention block): find the salient word anywhere in the sequence.
+// Vocab: 0=<cls> 1=filler 2=good 3=bad. Class = which keyword appears, at any position.
+const make = (pos: number, key: number) => { const s = [0, 1, 1, 1, 1]; s[pos] = key; return s; };
+const sequences = new ml.Matrix([make(1, 2), make(3, 2), make(2, 3), make(4, 3), make(4, 2), make(1, 3)]);
+const targets = new ml.Matrix([[1, 0], [1, 0], [0, 1], [0, 1], [1, 0], [0, 1]]);
+
+const transformer = new ml.Transformer();
+transformer.setVocabSize(4).setModelDim(8).setMaxLength(5).setLearningRate(0.05).setNumberOfEpochs(500).setSeed(0);
+
+transformer.train(sequences, targets);
+
+console.log(transformer.predict(sequences).getMaximumRowIndeces().toArray());
+// [ [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ], [ 1 ] ]  <- "good" -> 0, "bad" -> 1, wherever it appears
+
+console.log(transformer.getAttention(make(3, 2))[0].map(a => Number(a.toFixed(2))));
+// [ 0.08, 0.13, 0.1, 0.55, 0.14 ]  <- the [CLS] token attends mostly to index 3, where the keyword sits
+
+console.log('gradients verified:', transformer.checkGradients());
+// gradients verified: true  <- finite-difference check of the attention backprop
 
 ```
 

@@ -71,7 +71,10 @@
     "recurrent neural network",
     "rnn",
     "embeddings",
-    "nlp"
+    "nlp",
+    "transformer",
+    "attention",
+    "self-attention"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

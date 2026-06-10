@@ -1,0 +1,92 @@
+import { TransformerPlayground } from '../components/TransformerPlayground';
+
+# Chapter 23 — Looking everywhere at once
+
+> *Transformers & attention.* The RNN read a review word by word through one little memory. What if
+> every word could look **directly** at every other, all at once, and decide for itself what matters?
+> That idea is the engine behind the café's new assistant — and the model that wrote this library.
+
+Nadia wants an assistant in the app: read a customer's message and route it, summarise the reviews,
+draft a reply. The RNN from last chapter can read, but two things hold it back, and a long message
+makes both bite.
+
+## The wall: a single memory, read in order
+
+The RNN reads strictly left to right and funnels everything through one hidden state. So it's
+**slow** — each step waits for the one before, no way to parallelise over the mountain of text an app
+collects — and it's **forgetful**: a verdict that depends on a word many steps back ("the coffee,
+*despite the twenty-minute wait*, was wonderful") has to survive being squeezed through that one
+state, step after step, fading as it goes. The relay is the bottleneck.
+
+## The idea: attention
+
+So drop the relay. Let **every position look at every other position directly**. Each word forms a
+**query** ("what am I looking for?") and every word offers a **key** ("here's what I am"); their dot
+product scores how relevant each other word is. Softmax those scores into weights that sum to one,
+and the word's new representation is a **weighted blend of everyone's values** — a custom summary of
+the whole sequence, built in one step. A special **[CLS]** slot does the same and its blend becomes
+the verdict. Every pair compared at once: fully parallel, and any word can reach any other directly.
+
+$$
+\mathrm{Attention}(Q, K, V) = \mathrm{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d}}\right) V
+$$
+
+Below, one sentiment word hides among fillers at a random spot. Press **Train** and watch the [CLS]
+attention bar grow tallest over *that* word — the model learning where to look:
+
+<div className="breakout">
+  <TransformerPlayground />
+</div>
+
+## How it works: query, key, value
+
+Each position projects its embedding into a query, a key, and a value (`Q = X·Wq`, etc.). Then every
+query is scored against every key, softmaxed, and used to blend the values — straight from the
+[`Transformer`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/Transformer.ts)
+source:
+
+```ts
+for (let j = 0; j < L; j++) {
+    let dot = 0;
+    for (let d = 0; d < D; d++) dot += q[i][d] * k[j][d]; // query i · key j
+    scores[j] = dot * scaling;                            // ÷ √d keeps the softmax from saturating
+}
+const a = softmax(scores);                                // how much i attends to each j
+for (let j = 0; j < L; j++) for (let d = 0; d < D; d++) ctx[d] += a[j] * v[j][d]; // blend the values
+```
+
+The [CLS] position's blended context feeds a softmax classifier. One subtlety: attention has **no
+built-in sense of order** — shuffle the words and the scores are identical. So position is added in
+at the start, as a learned **positional embedding** (`X = tokenEmbedding + positionEmbedding`). The
+whole block trains by backpropagation — including the gnarly path back through the softmax-attention,
+which a shipped `checkGradients()` finite-difference-verifies (the ✓ badge).
+
+## Try it yourself
+
+- Watch the bars. Early on attention is spread roughly evenly; as the loss falls, the [CLS] bar over
+  the sentiment word climbs well above the fillers — the model decided *that's* the word that settles
+  the verdict, wherever it sits. Scrub **Show review** to see it find the word at different positions.
+- **Longer reviews** add more filler to look past; attention still picks the word out — the payoff of
+  looking everywhere at once rather than remembering through a narrow state.
+- Nudge the **learning rate** and **speed** to watch the focus sharpen faster or wobble.
+
+> **Field note — this is one head, one layer.** A real transformer stacks *many* blocks, each with
+> *multiple* attention heads (different heads learn different relationships — one tracks the
+> sentiment word, another the subject, another long-range agreement), plus feed-forward layers,
+> residual connections, and normalisation. Scale that to billions of parameters and oceans of text,
+> train it to predict the next token, and the same mechanism you just watched becomes a language model.
+
+## What broke — or rather, where it leads
+
+Nothing broke this time. Attention is the modern backbone: the very mechanism in this playground,
+multiplied up and trained on the open internet, is what powers the assistant Nadia ships in her app —
+and, not to be coy about it, the model writing this very page. From a shoebox of receipts in Chapter
+0 to a network that reads and writes language: that's the whole arc of the ledger.
+
+What's left isn't a new way of *seeing* the data so much as new things to *do* with it. So far every
+model has **predicted** — a number, a class, a cluster. The frontier the café hasn't reached yet is
+to **generate** (invent new recipes, draft the marketing), to **act and learn from outcomes** —
+which daily special to run, what to charge — where a choice today changes the rewards tomorrow
+(reinforcement learning), and to **reason under uncertainty** before a big bet. The shoebox is a
+long way behind. The map ahead — `docs/course-plan.md` — still has open chapters, and Nadia's café
+keeps growing into them.

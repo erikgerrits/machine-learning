@@ -32,6 +32,7 @@ const TimeSeriesTutorial = lazy(() => import('./content/time-series.mdx'));
 const PerceptronTutorial = lazy(() => import('./content/perceptron.mdx'));
 const CNNTutorial = lazy(() => import('./content/cnn.mdx'));
 const RNNTutorial = lazy(() => import('./content/rnn.mdx'));
+const TransformerTutorial = lazy(() => import('./content/transformer.mdx'));
 
 export function App() {
     return (
@@ -227,6 +228,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <RNNTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="transformer"
+                    element={
+                        <TutorialPage>
+                            <TransformerTutorial />
                         </TutorialPage>
                     }
                 />
