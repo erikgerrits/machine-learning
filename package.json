@@ -59,7 +59,10 @@
     "market basket analysis",
     "recommender",
     "collaborative filtering",
-    "matrix factorization"
+    "matrix factorization",
+    "time series",
+    "forecasting",
+    "exponential smoothing"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

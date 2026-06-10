@@ -21,7 +21,7 @@ const PART_0 = 'Part 0 · Foundations';
 const PART_1 = 'Part 1 · Predicting & deciding';
 const PART_2 = 'Part 2 · A wider toolbox';
 const PART_3 = 'Part 3 · Understanding customers';
-const PART_4 = 'Part 4 · Deep learning';
+const PART_4 = 'Part 4 · Sequences & deep learning';
 
 export const ALGORITHMS: AlgorithmEntry[] = [
     {
@@ -193,6 +193,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         status: 'live',
         chapter: 18,
         part: PART_3,
+    },
+    {
+        id: 'time-series',
+        path: '/time-series',
+        title: 'Time Series',
+        tagline: 'Forecast next week\'s demand — trend, weekly rhythm and all.',
+        status: 'live',
+        chapter: 19,
+        part: PART_4,
     },
     {
         id: 'neural-network',

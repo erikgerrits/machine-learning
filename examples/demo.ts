@@ -195,6 +195,22 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Exponential smoothing (Holt-Winters): forecast a series with a weekly rhythm.
+    // Two weeks of daily croissant demand (Mon..Sun) — quiet midweek, busy weekends, slight uptrend.
+    const demand = new ml.Matrix([
+        [40], [42], [45], [50], [80], [95], [70],
+        [44], [46], [49], [55], [85], [100], [74],
+    ]);
+
+    const model = new ml.ExponentialSmoothing();
+    model.setAlpha(0.4).setBeta(0.1).setGamma(0.5).setSeasonLength(7);
+
+    model.train(demand);
+    console.log(model.predict(7).toArray().map(row => Math.round(row[0])));
+    // [ 47, 49, 52, 57, 87, 103, 78 ]  ← next week, continuing the weekly rhythm (busy Fri/Sat) + uptrend
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

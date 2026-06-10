@@ -1,0 +1,103 @@
+import { TimeSeriesPlayground } from '../components/TimeSeriesPlayground';
+
+# Chapter 19 — Next week's order
+
+> *Time-series forecasting.* The café is growing, and Tomás the supplier wants the whole week's order
+> by 6am Monday. Nadia's old regression line treats every day as an island. Demand isn't islands —
+> it's a rhythm.
+
+This is where the café starts to *go wide*. Tomás won't deliver daily anymore — he needs one order,
+Monday morning, covering all seven days ahead. Get it wrong and Nadia either runs out on Saturday or
+bins a crate of stale croissants Sunday night. She has two years of daily sales and a strong feeling
+they're not random: weekends are always slammed, and the whole curve has been creeping upward as the
+café catches on.
+
+## The wall: a regression line can't hear a rhythm
+
+Her instinct is Chapter 1's tool — fit a line. But demand-vs-date misses everything that matters
+here. Fit a straight line through the dates and you capture the slow upward drift but flatten every
+weekend spike into the average. Ignore the dates and predict from temperature like before, and you
+lose the trend *and* the fact that **Saturday is always Saturday**. The deeper problem: regression
+treats the rows as an unordered bag of points. But in a time series the **order is the signal** —
+which day follows which, and that last week looks a lot like next week.
+
+## The idea: track level, trend, and season as you go
+
+So Nadia stops fitting one frozen line and starts *walking the days in order*, keeping three running
+estimates and nudging each as new days arrive:
+
+- the **level** — roughly where demand sits right now,
+- the **trend** — which way, and how fast, it's drifting,
+- the **season** — a repeating offset for each weekday (Saturday runs hot, Tuesday cold).
+
+Each update is an **exponential smoothing**: a blend of the newest day and everything before it,
+weighted so recent days count for more and the distant past fades. To forecast next Saturday she just
+adds them up: level, plus the trend stretched out to that day, plus Saturday's seasonal bump. Drag
+the sliders and watch the forecast (past the dashed "now" line) bend to fit:
+
+<div className="breakout">
+  <TimeSeriesPlayground />
+</div>
+
+## How it works: three exponential averages
+
+Walking the series, each day updates the three estimates — every new value mixed in with weight
+`α`/`β`/`γ`, the rest carried over from before. Straight from the
+[`ExponentialSmoothing`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/time-series/ExponentialSmoothing.ts)
+source (Holt-Winters):
+
+```ts
+const season = seasonals[t % m];
+fitted.push(previousLevel + previousTrend + season);                 // one-step-ahead forecast
+
+level    = α * (series[t] - season)        + (1 - α) * (previousLevel + previousTrend);
+trend    = β * (level - previousLevel)     + (1 - β) * previousTrend;
+seasonals[t % m] = γ * (series[t] - level) + (1 - γ) * season;
+```
+
+$$
+\hat{y}_{t+h} = \underbrace{\ell_t}_{\text{level}} + \underbrace{h\,b_t}_{\text{trend}} + \underbrace{s_{t+h-m}}_{\text{season}}
+$$
+
+Forecasting `h` days ahead is then just that sum — level, plus `h` steps of trend, plus the seasonal
+offset for the matching weekday:
+
+```ts
+const season = seasonals[(seriesLength + h - 1) % m];
+forecast.push([level + h * trend + season]);
+```
+
+The "exponential" part is the whole trick: because each estimate folds the newest reading into the
+old one, the influence of any past day decays geometrically — the model stays anchored to recent
+reality without forgetting the shape of the week.
+
+## Try it yourself
+
+- **Weekly rhythm** — the forecast doesn't flatten the weekends; it carries the Saturday spike right
+  into next week, nudged up by the gentle trend. That's all three estimates working together.
+- **Going up** — start with **β** at zero and the forecast visibly *lags*, trailing below the still-
+  climbing demand. Turn β up and the trend term catches it. This is the knob plain smoothing-without-
+  trend is missing.
+- **No real pattern** — a noisy flat line. Smoothing honestly gives you back the average; there's no
+  rhythm to project, and no slider will invent one.
+- Untick **Weekly season** on any dataset: the forecast collapses to a plain trend line that can't
+  tell a Saturday from a Tuesday — exactly the structure Chapter 1's regression threw away.
+
+> **Field note — α, β, γ are responsiveness dials.** High values chase the latest day (quick to
+> react, but jumpy on noise); low values stay smooth (steady, but slow to turn). And you must hand
+> the model the season's *length* — 7 for a weekly cycle — and trust that next week resembles the
+> recent past. When that assumption holds, it's hard to beat for the effort.
+
+## What broke
+
+Exponential smoothing gave Nadia a real forecast — trend, weekly rhythm and all — from nothing but
+the order of the days. For a single series with a steady shape, it's the right tool and barely costs
+anything.
+
+But look at what she had to *tell* it: that the cycle is seven days, that the parts add up, that
+tomorrow looks like last week. It forecasts that one demand line and nothing else — it can't fold in
+the weather, a holiday, a promo, or the latte-art photos and written reviews now pouring in from the
+new app. The café's data has outgrown a single tidy column. The patterns that matter next are tangled
+across many inputs at once — *delight and disaster hiding in combinations of cues*, the kind no
+straight line, tree, or smoother can carve apart. For that, Nadia finally needs a model that learns
+its own features and bends to any shape the data takes.

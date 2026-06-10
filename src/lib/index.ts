@@ -4,6 +4,7 @@ export type { AssociationRule, FrequentItemset } from "./machine-learning/unsupe
 export { default as DBSCAN } from "./machine-learning/unsupervised/DBSCAN";
 export { default as DecisionTree } from "./machine-learning/supervised/DecisionTree";
 export type { DecisionTreeNode } from "./machine-learning/supervised/DecisionTree";
+export { default as ExponentialSmoothing } from "./machine-learning/time-series/ExponentialSmoothing";
 export { default as FeedforwardNeuralNetwork } from "./machine-learning/supervised/FeedforwardNeuralNetwork";
 export { default as GradientBoosting } from "./machine-learning/supervised/GradientBoosting";
 export { default as HierarchicalClustering } from "./machine-learning/unsupervised/HierarchicalClustering";

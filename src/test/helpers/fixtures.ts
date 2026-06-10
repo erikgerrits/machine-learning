@@ -141,6 +141,11 @@ export const RECOMMENDER_INPUTS = [
     [0, 1, 5, 5],
 ];
 
+/** Time series (one value per time step, as a column): a flat line, a rising trend, a 2-step cycle. */
+export const TS_CONSTANT = [[5], [5], [5], [5], [5]];
+export const TS_TREND = [[1], [2], [3], [4], [5], [6]];
+export const TS_SEASONAL = [[10], [20], [10], [20], [10], [20], [10], [20]];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

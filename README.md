@@ -40,6 +40,7 @@ Below are some simple code usage examples.
 * [Anomaly Detection](#anomaly-detection)
 * [Association Rules](#association-rules)
 * [Recommender](#recommender)
+* [Exponential Smoothing (time series)](#exponential-smoothing-time-series)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -407,6 +408,28 @@ console.log(recommender.recommend(1)); // user 1's unrated items, best first
 
 console.log(recommender.predict().toArray()[3][0].toFixed(2)); // user 3's hidden item 0
 // 1.29  <- correctly low: user 3 is in the other taste group
+
+```
+
+### Exponential Smoothing (time series)
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Exponential smoothing (Holt-Winters): forecast a series with a weekly rhythm.
+// Two weeks of daily croissant demand (Mon..Sun) - quiet midweek, busy weekends, slight uptrend.
+const demand = new ml.Matrix([
+    [40], [42], [45], [50], [80], [95], [70],
+    [44], [46], [49], [55], [85], [100], [74],
+]);
+
+const model = new ml.ExponentialSmoothing();
+model.setAlpha(0.4).setBeta(0.1).setGamma(0.5).setSeasonLength(7); // level, trend, season, period
+
+model.train(demand);
+
+console.log(model.predict(7).toArray().map(row => Math.round(row[0])));
+// [ 47, 49, 52, 57, 87, 103, 78 ]  <- next week, continuing the weekly rhythm (busy Fri/Sat) + uptrend
 
 ```
 
