@@ -36,6 +36,7 @@ Below are some simple code usage examples.
 * [k-Means Clustering](#k-means-clustering)
 * [Hierarchical Clustering](#hierarchical-clustering)
 * [DBSCAN](#dbscan)
+* [PCA](#pca)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -306,6 +307,28 @@ console.log(dbscan.getLabels());
 
 console.log(dbscan.getClusterCount());
 // 2  <- discovered, not specified up front
+
+```
+
+### PCA
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// PCA (unsupervised): find the axes of greatest variance and project onto the top ones.
+// These points lie on the line y = x, so a single axis captures all the variance.
+const inputs = new ml.Matrix([[-2, -2], [-1, -1], [0, 0], [1, 1], [2, 2]]);
+
+const pca = new ml.PCA();
+pca.setNumberOfComponents(1);
+
+pca.train(inputs);
+
+console.log(pca.predict(inputs).toArray());
+// each point's position along the one axis: [ [ -2.83 ], [ -1.41 ], [ 0 ], [ 1.41 ], [ 2.83 ] ]
+
+console.log(pca.getExplainedVarianceRatio());
+// [ 1 ]  <- that single axis holds 100% of the variance (the 2nd dimension was redundant)
 
 ```
 

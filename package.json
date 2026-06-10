@@ -48,7 +48,10 @@
     "dendrogram",
     "dbscan",
     "density clustering",
-    "anomaly detection"
+    "anomaly detection",
+    "pca",
+    "principal component analysis",
+    "dimensionality reduction"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

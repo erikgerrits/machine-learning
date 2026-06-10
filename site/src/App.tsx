@@ -24,6 +24,7 @@ const SupportVectorMachinesTutorial = lazy(() => import('./content/support-vecto
 const KMeansTutorial = lazy(() => import('./content/k-means.mdx'));
 const HierarchicalClusteringTutorial = lazy(() => import('./content/hierarchical-clustering.mdx'));
 const DBSCANTutorial = lazy(() => import('./content/dbscan.mdx'));
+const PCATutorial = lazy(() => import('./content/pca.mdx'));
 
 export function App() {
     return (
@@ -155,6 +156,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <DBSCANTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="pca"
+                    element={
+                        <TutorialPage>
+                            <PCATutorial />
                         </TutorialPage>
                     }
                 />

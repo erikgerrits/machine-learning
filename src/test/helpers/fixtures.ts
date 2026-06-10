@@ -97,6 +97,13 @@ export const DBSCAN_INPUTS = [
 /** Expected labels: blob A = cluster 0, blob B = cluster 1, the outlier = noise. */
 export const DBSCAN_EXPECTED_LABELS = [0, 0, 0, 0, 1, 1, 1, 1, -1];
 
+/**
+ * PCA: five points lying exactly on the line y = x. All the variance is along one diagonal axis, so
+ * the first principal component should be ~[0.707, 0.707] and capture ~100% of the variance; the
+ * second captures ~0. A clean, fully determined case for the eigendecomposition.
+ */
+export const PCA_DIAGONAL_INPUTS = [[-2, -2], [-1, -1], [0, 0], [1, 1], [2, 2]];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

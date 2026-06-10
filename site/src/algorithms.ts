@@ -159,6 +159,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_3,
     },
     {
+        id: 'pca',
+        path: '/pca',
+        title: 'PCA',
+        tagline: 'Thirty survey questions, two axes you can actually see.',
+        status: 'live',
+        chapter: 15,
+        part: PART_3,
+    },
+    {
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',
