@@ -35,6 +35,7 @@ Below are some simple code usage examples.
 * [Gradient Boosting](#gradient-boosting)
 * [Support Vector Machine](#support-vector-machine)
 * [Convolutional Neural Network](#convolutional-neural-network)
+* [Recurrent Neural Network](#recurrent-neural-network)
 * [k-Means Clustering](#k-means-clustering)
 * [Hierarchical Clustering](#hierarchical-clustering)
 * [DBSCAN](#dbscan)
@@ -292,6 +293,34 @@ console.log(cnn.predict(images).getMaximumRowIndeces().toArray());
 
 console.log('gradients verified:', cnn.checkGradients());
 // gradients verified: true  <- finite-difference check of the convolution backprop
+
+```
+
+### Recurrent Neural Network
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// RNN: embedding -> recurrent hidden state -> dense softmax, trained by backprop-through-time.
+// Read a tiny review and classify sentiment. Vocab: 0=<pad> 1=the 2=coffee 3=service 4=was 5=great 6=terrible
+const reviews = new ml.Matrix([
+    [1, 2, 4, 5, 0], // the coffee was great    -> positive
+    [1, 3, 4, 5, 0], // the service was great   -> positive
+    [1, 2, 4, 6, 0], // the coffee was terrible -> negative
+    [1, 3, 4, 6, 0], // the service was terrible -> negative
+]);
+const sentiment = new ml.Matrix([[1, 0], [1, 0], [0, 1], [0, 1]]); // [positive, negative]
+
+const rnn = new ml.RecurrentNeuralNetwork();
+rnn.setVocabSize(7).setEmbeddingDim(2).setHiddenSize(8).setLearningRate(0.1).setNumberOfEpochs(400).setSeed(0);
+
+rnn.train(reviews, sentiment);
+
+console.log(rnn.predict(reviews).getMaximumRowIndeces().toArray());
+// [ [ 0 ], [ 0 ], [ 1 ], [ 1 ] ]  <- "great" -> positive (0), "terrible" -> negative (1)
+
+console.log('gradients verified:', rnn.checkGradients());
+// gradients verified: true  <- finite-difference check of backprop-through-time
 
 ```
 

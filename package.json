@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -67,7 +67,11 @@
     "convolutional neural network",
     "cnn",
     "deep learning",
-    "computer vision"
+    "computer vision",
+    "recurrent neural network",
+    "rnn",
+    "embeddings",
+    "nlp"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

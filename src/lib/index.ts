@@ -20,6 +20,7 @@ export { default as NearestNeighbors } from "./machine-learning/supervised/Neare
 export { default as PCA } from "./machine-learning/unsupervised/PCA";
 export { default as Perceptron } from "./machine-learning/supervised/Perceptron";
 export { default as RandomForest } from "./machine-learning/supervised/RandomForest";
+export { default as RecurrentNeuralNetwork } from "./machine-learning/supervised/RecurrentNeuralNetwork";
 export { default as Recommender } from "./machine-learning/unsupervised/Recommender";
 export { default as SupportVectorMachine } from "./machine-learning/supervised/SupportVectorMachine";
 export type { Kernel } from "./machine-learning/supervised/SupportVectorMachine";

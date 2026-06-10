@@ -1,0 +1,103 @@
+import { RNNPlayground } from '../components/RNNPlayground';
+
+# Chapter 22 — Reading the reviews
+
+> *Recurrent networks.* A photo is a grid you can take in at a glance. A review is a *stream* — words
+> arriving one after another, where the order and what came before are the whole point.
+
+The app is filling up with written reviews now — "the latte was lovely", "rude staff, cold coffee" —
+and Nadia wants it to read them: tag each one's sentiment, and eventually understand them. But a
+review isn't a fixed grid of pixels. It's a variable-length run of *words*, and meaning lives in the
+sequence.
+
+## The wall: no order, and words aren't numbers
+
+Everything she's built takes a fixed-size input all at once. Two problems hit immediately. First,
+**order**: flatten a review into a bag of words and you throw away the sequence; pad it to a fixed
+length and feed it to a dense net, and "great" in the first slot looks like a totally different input
+from "great" in the fourth — the CNN's translation problem, now in *time*. Second, **words aren't
+numbers**: if you just hand the network token id 5 for "coffee" and 1 for "the", it'll assume coffee
+is somehow five-times-the, which is nonsense. She needs a way to *represent* words, and a way to
+*read in order while remembering*.
+
+## The idea: embeddings + a hidden state that carries
+
+Two pieces solve it. First, an **embedding**: give every word its own short learned vector instead of
+a bare id. Training is free to discover that "great" and "lovely" should point in similar directions
+— the same "similar sits close" trick the recommender used for items in Chapter 18. Second,
+**recurrence**: walk the review word by word, keeping a **hidden state** that updates at every step,
+so what was read earlier shapes how later words land:
+
+$$
+h_t = \tanh(W_{xh}\,x_t + W_{hh}\,h_{t-1} + b), \qquad \hat{y} = \mathrm{softmax}(W_{hy}\,h_T + b_y)
+$$
+
+Read to the last word, then turn the final state into the verdict. Below it's just two embedding
+dimensions so you can watch them move — press **Train** and the positive and negative words drift
+apart while the fillers stay in the muddle:
+
+<div className="breakout">
+  <RNNPlayground />
+</div>
+
+## How it works: walk the sequence, carrying state
+
+Each step looks up the word's embedding and mixes it with the running memory, straight from the
+[`RecurrentNeuralNetwork`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/RecurrentNeuralNetwork.ts)
+source:
+
+```ts
+const embedding = this.embeddings[token];                  // word → its learned vector
+for (let h = 0; h < H; h++) {
+    let sum = this.hiddenBias[h];
+    for (let d = 0; d < D; d++) sum += embedding[d] * Wxh[d][h]; // the new word…
+    for (let i = 0; i < H; i++) sum += previous[i] * Whh[i][h];  // …mixed with the memory so far
+    next[h] = Math.tanh(sum);
+}
+```
+
+The final hidden state goes through a dense layer + softmax for the class. Training is
+**backpropagation through time**: unroll the loop and let the blame flow *backward* through every
+step — each step's gradient feeds the step before it, and the same recurrent weights collect their
+share at every position:
+
+```ts
+for (let t = steps - 1; t >= 0; t--) {                 // walk backward through the sequence
+    const dRaw = dh[h] * (1 - current[h] * current[h]); // back through tanh
+    // …accumulate grads for Wxh, Whh, the embedding used, and dh_prev for the earlier step
+}
+```
+
+Because through-time gradients are notoriously easy to get wrong, the model ships a
+`checkGradients()` that finite-difference-verifies them — the ✓ badge in the playground.
+
+## Try it yourself
+
+- Watch the **embedding scatter**. The word vectors start as random dots; as the loss falls, the
+  positive words slide one way and the negative words the other, with fillers like "the" and "was"
+  marooned in between. Nobody told it which words are positive — it inferred it from which reviews
+  they appear in.
+- Read the **sample predictions** flip from wrong to right as training proceeds.
+- Switch to **Longer reviews**: two-clause reviews mean the hidden state must carry meaning further
+  before the verdict — it still gets there, just over more epochs.
+
+> **Field note — the embedding is the quiet star, and memory has a limit.** Those learned word
+> vectors are reusable far beyond this task (search, recommendations — Ch 18's latent factors are the
+> same idea). But notice the catch in backprop-through-time: the further back a signal has to flow,
+> the more it's multiplied down through `tanh` after `tanh` until it nearly **vanishes**. So a plain
+> RNN struggles to connect words far apart, and forgets the start of a long review. Gated variants
+> (**LSTM**, **GRU**) add a protected memory lane to carry signal across long gaps — the standard fix.
+
+## What broke
+
+The RNN can finally *read*: turn words into meaningful vectors and process a sequence in order,
+carrying memory forward. For tagging a short review, it's the right shape.
+
+But two limits are baked into its wiring. It reads **strictly one step at a time, left to right** —
+which can't be parallelised, so it's slow to train on the mountains of text a real app collects. And
+even with gates, it leans on a *single* hidden state to ferry everything forward, so connecting a
+verdict to a detail many words back ("the coffee, despite the *awful* twenty-minute wait, was
+actually wonderful") stays hard. What if, instead of squeezing the whole past through one narrow
+state, every word could look **directly at every other word** and decide for itself which ones
+matter? That's **attention** — the idea behind the **transformer**, the backbone of every modern
+language model, including the one writing this very page. It's where the story goes next.
