@@ -15,6 +15,8 @@ export { default as LinearRegression } from "./machine-learning/supervised/Linea
 export { default as LogisticRegression } from "./machine-learning/supervised/LogisticRegression";
 export { default as Matrix } from "./math/linear-algebra/Matrix";
 export { default as MulticlassLogisticRegression } from "./machine-learning/supervised/MulticlassLogisticRegression";
+export { default as MultiArmedBandit } from "./machine-learning/reinforcement/MultiArmedBandit";
+export type { BanditStrategy } from "./machine-learning/reinforcement/MultiArmedBandit";
 export { default as NaiveBayes } from "./machine-learning/supervised/NaiveBayes";
 export { default as NearestNeighbors } from "./machine-learning/supervised/NearestNeighbors";
 export { default as PCA } from "./machine-learning/unsupervised/PCA";

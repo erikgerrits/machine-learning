@@ -274,6 +274,25 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Multi-armed bandit (reinforcement learning): which daily special sells best?
+    // Three specials with hidden sell-rates; the bandit learns by trying them and watching outcomes.
+    const sellRate = [0.3, 0.55, 0.8]; // hidden truth the bandit must discover
+
+    const bandit = new ml.MultiArmedBandit();
+    bandit.setNumberOfArms(3).setStrategy('ucb').setSeed(0);
+
+    for (let day = 0; day < 2000; day++) {
+        const special = bandit.selectArm();                          // choose what to feature
+        const sold = Math.random() < sellRate[special] ? 1 : 0;       // ask the world
+        bandit.update(special, sold);                                 // learn from the outcome
+    }
+    console.log(bandit.getValues().map(v => Number(v.toFixed(2))));
+    // ≈ [ 0.30, 0.55, 0.80 ]  ← learned sell-rates converge to the hidden truth
+    console.log('best special:', bandit.getValues().indexOf(Math.max(...bandit.getValues())), '(plays', bandit.getCounts(), ')');
+    // best special: 2  ← and it played special 2 by far the most (exploit), sampling the others to be sure
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

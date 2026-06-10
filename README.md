@@ -45,6 +45,7 @@ Below are some simple code usage examples.
 * [Association Rules](#association-rules)
 * [Recommender](#recommender)
 * [Exponential Smoothing (time series)](#exponential-smoothing-time-series)
+* [Multi-Armed Bandit (reinforcement learning)](#multi-armed-bandit-reinforcement-learning)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -540,6 +541,32 @@ model.train(demand);
 
 console.log(model.predict(7).toArray().map(row => Math.round(row[0])));
 // [ 47, 49, 52, 57, 87, 103, 78 ]  <- next week, continuing the weekly rhythm (busy Fri/Sat) + uptrend
+
+```
+
+### Multi-Armed Bandit (reinforcement learning)
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Multi-armed bandit: which daily special sells best? Unlike every other model here, a bandit has no
+// train(inputs, targets) - it learns online by *acting*: selectArm -> see a reward -> update, and must
+// balance exploring under-tried specials against exploiting the one that looks best so far.
+const sellRate = [0.3, 0.55, 0.8]; // hidden truth the bandit must discover
+
+const bandit = new ml.MultiArmedBandit();
+bandit.setNumberOfArms(3).setStrategy('ucb').setSeed(0); // or 'epsilon-greedy'
+
+for (let day = 0; day < 2000; day++) {
+    const special = bandit.selectArm();                    // choose what to feature
+    const sold = Math.random() < sellRate[special] ? 1 : 0; // ask the world
+    bandit.update(special, sold);                          // learn from the outcome
+}
+
+console.log(bandit.getValues().map(v => Number(v.toFixed(2))));
+// [ 0.30, 0.55, 0.80 ]  <- learned sell-rates converge to the hidden truth
+console.log(bandit.getCounts());
+// [ 80, 246, 1674 ]  <- and it played the winner (special 2) far the most, sampling the rest to be sure
 
 ```
 

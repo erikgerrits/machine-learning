@@ -33,6 +33,7 @@ const PerceptronTutorial = lazy(() => import('./content/perceptron.mdx'));
 const CNNTutorial = lazy(() => import('./content/cnn.mdx'));
 const RNNTutorial = lazy(() => import('./content/rnn.mdx'));
 const TransformerTutorial = lazy(() => import('./content/transformer.mdx'));
+const BanditsTutorial = lazy(() => import('./content/bandits.mdx'));
 
 export function App() {
     return (
@@ -236,6 +237,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <TransformerTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="bandits"
+                    element={
+                        <TutorialPage>
+                            <BanditsTutorial />
                         </TutorialPage>
                     }
                 />

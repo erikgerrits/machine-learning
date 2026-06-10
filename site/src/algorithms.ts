@@ -22,6 +22,7 @@ const PART_1 = 'Part 1 · Predicting & deciding';
 const PART_2 = 'Part 2 · A wider toolbox';
 const PART_3 = 'Part 3 · Understanding customers';
 const PART_4 = 'Part 4 · Sequences & deep learning';
+const PART_5 = 'Part 5 · Learning by doing';
 
 export const ALGORITHMS: AlgorithmEntry[] = [
     {
@@ -246,5 +247,14 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         status: 'live',
         chapter: 23,
         part: PART_4,
+    },
+    {
+        id: 'bandits',
+        path: '/bandits',
+        title: 'Multi-Armed Bandits',
+        tagline: 'Stop predicting, start acting — which daily special should the café feature?',
+        status: 'live',
+        chapter: 24,
+        part: PART_5,
     },
 ];
