@@ -211,6 +211,28 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Convolutional neural network: learns to spot a shape anywhere in a tiny image.
+    // 8×8 images — a horizontal line (class 0) or a vertical line (class 1), at various positions.
+    const size = 8;
+    const line = (orientation: 'h' | 'v', pos: number) => {
+        const image = new Array(size * size).fill(0);
+        for (let k = 0; k < size; k++) image[orientation === 'h' ? pos * size + k : k * size + pos] = 1;
+        return image;
+    };
+    const images = new ml.Matrix([line('h', 1), line('h', 4), line('h', 6), line('v', 1), line('v', 4), line('v', 6)]);
+    const targets = new ml.Matrix([[1, 0], [1, 0], [1, 0], [0, 1], [0, 1], [0, 1]]);
+
+    const cnn = new ml.ConvolutionalNeuralNetwork();
+    cnn.setInputShape(8, 8).setFilterCount(4).setLearningRate(0.3).setNumberOfEpochs(300).setSeed(0);
+
+    cnn.train(images, targets);
+    console.log(cnn.predict(images).getMaximumRowIndeces().toArray());
+    // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 1 ] ]  ← horizontals → class 0, verticals → class 1
+    console.log('CNN gradients verified:', cnn.checkGradients());
+    // CNN gradients verified: true  ← finite-difference check of the convolution backprop
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

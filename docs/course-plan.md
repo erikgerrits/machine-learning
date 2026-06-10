@@ -26,15 +26,14 @@ generative). The built algorithms become the spine; everything else is roadmap.
 
 **Goal:** engaging, fun, genuinely educational, and very cool.
 
-**Status (this release).** Woven through **Ch 0–19**: all of Part 1, the whole of Part 2 (k‑NN,
-Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support Vector Machines), all of
-Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA, Anomaly Detection, Association Rules,
-Recommender Systems), and Part 4 so far — **Ch 19 Time Series** (Holt-Winters exponential
-smoothing), the **Perceptron interlude**, and now **Ch 20 Neural Networks** (the newest weave: the
-matching-dials XNOR problem → hidden layers + backprop). **Every built algorithm is now woven into
-the café story** — there is no longer a built-but-unwoven chapter. Everything past Ch 20 (CNNs,
-RNNs/transformers, reinforcement learning, generative, Bayesian) is roadmap: new builds the library
-grows into. See the status column below.
+**Status (this release).** Woven through **Ch 0–21** with no built-but-unwoven gaps: all of Part 1,
+the whole of Part 2 (k‑NN, Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support
+Vector Machines), all of Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA, Anomaly Detection,
+Association Rules, Recommender Systems), and Part 4 — Time Series, the Perceptron interlude, Neural
+Networks, and now **Ch 21 Convolutional Networks** (the newest chapter: a from-scratch trainable CNN
+with conv/pool/backprop and gradient checking — built fully rather than the planned "adopts"
+explainer). Still roadmap: RNNs/transformers (Ch 22–23), the reinforcement-learning arc (Ch 24–27),
+generative, and Bayesian — new builds the library grows into. See the status column below.
 
 ---
 
@@ -176,7 +175,7 @@ Every row's "Wall" is the previous tool failing.
 | 19 | **Time Series Forecasting** | *Forecasting numbers* across weeks & seasons | Plain regression ignores order & seasonality → moving averages, exponential smoothing, trend/seasonality (ARIMA-lite) | ✅ `ExponentialSmoothing` |
 | — | *Interlude: The Perceptron* | A single artificial "brain cell" | Built as a short history interlude (Priya shows Nadia where neural nets came from): weighted sum + activation; why one neuron can't do XOR | ✅ `Perceptron` (interlude) |
 | 20 | **Neural Networks & Backprop** | Danger/delight hides in *combinations* of cues (XNOR-like) | k-NN is slow, memoryless, and dumb in high dimensions; linear can't combine → **stack layers that learn features**; backprop ("blame flows backward"); dropout; SGD/Adam | ✅ `FeedforwardNeuralNetwork` |
-| 21 | **Convolutional Nets (CNNs)** | Grade latte-art photos / spot pastry defects / scan receipts | Dense nets ignore spatial structure → **convolutions**, filters, pooling (computer vision) | ○ (adopts) |
+| 21 | **Convolutional Nets (CNNs)** | Grade latte-art photos / spot pastry defects / scan receipts | Dense nets ignore spatial structure → **convolutions**, filters, pooling (computer vision) | ✅ `ConvolutionalNeuralNetwork` (built from scratch — exceeded the "adopts" plan) |
 | 22 | **Recurrent Nets / LSTMs** | Learn *sequence & text representations* (reviews, chat logs) — **not** forecasting (that's Ch 19) | Feedforward has no memory of order; this is the bridge to language → recurrence, memory, vanishing gradients. *Embeddings are introduced here as connective tissue* — learned word/item **vectors** where "similar sits close" (also reused by recsys, Ch 18) | ○ (adopts) |
 | 23 | **Transformers & Attention** | The café's AI assistant / chatbot | RNNs forget long context & don't parallelize → **attention**; the modern backbone (and a nod to the model writing this) | ○ (adopts) |
 

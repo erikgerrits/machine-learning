@@ -220,4 +220,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 20,
         part: PART_4,
     },
+    {
+        id: 'cnn',
+        path: '/cnn',
+        title: 'Convolutional Networks',
+        tagline: 'Slide little filters over an image to spot a shape anywhere it appears.',
+        status: 'live',
+        chapter: 21,
+        part: PART_4,
+    },
 ];

@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -63,7 +63,11 @@
     "time series",
     "forecasting",
     "exponential smoothing",
-    "perceptron"
+    "perceptron",
+    "convolutional neural network",
+    "cnn",
+    "deep learning",
+    "computer vision"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",
