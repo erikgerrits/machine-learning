@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -74,7 +74,13 @@
     "nlp",
     "transformer",
     "attention",
-    "self-attention"
+    "self-attention",
+    "reinforcement learning",
+    "multi-armed bandit",
+    "bandit",
+    "explore exploit",
+    "epsilon-greedy",
+    "ucb"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

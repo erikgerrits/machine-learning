@@ -26,17 +26,17 @@ generative). The built algorithms become the spine; everything else is roadmap.
 
 **Goal:** engaging, fun, genuinely educational, and very cool.
 
-**Status (this release).** Woven through **Ch 0–21** with no built-but-unwoven gaps: all of Part 1,
+**Status (this release).** Woven through **Ch 0–24** with no built-but-unwoven gaps: all of Part 1,
 the whole of Part 2 (k‑NN, Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support
 Vector Machines), all of Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA, Anomaly Detection,
-Association Rules, Recommender Systems), and Part 4 — Time Series, the Perceptron interlude, Neural
-Networks, Convolutional Networks, Recurrent Networks, and now **Ch 23 Transformers & Attention**
-(the newest chapter: a from-scratch trainable single self-attention block — Q/K/V, scaled
-dot-product attention, a CLS head, learned token + positional embeddings — with full backprop and
-gradient checking). **All three deep-learning frontier chapters (CNN, RNN, Transformer) became full
-trainable builds**, each gradient-checked, rather than the planned "adopts" explainers. That closes
-the built deep-learning arc (Ch 0–23). Still roadmap: the reinforcement-learning arc (Ch 24–27),
-generative (Ch 28–29), and Bayesian (Ch 30). See the status column below.
+Association Rules, Recommender Systems), all of Part 4 — Time Series, the Perceptron interlude, Neural
+Networks, Convolutional Networks, Recurrent Networks, Transformers & Attention — and now **Ch 24
+Multi-Armed Bandits**, which opens **Part 5 (reinforcement learning)**: the first model that *acts*
+rather than predicts, learning online via select → reward → update with ε-greedy and UCB strategies.
+**All three deep-learning frontier chapters (CNN, RNN, Transformer) became full trainable builds**,
+each gradient-checked, rather than the planned "adopts" explainers. Still roadmap: the rest of the
+reinforcement-learning arc (Ch 25–27), generative (Ch 28–29), and Bayesian (Ch 30). See the status
+column below.
 
 ---
 
@@ -185,7 +185,7 @@ Every row's "Wall" is the previous tool failing.
 ### Part 5 — Learning by doing: reinforcement learning (Season 4)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 24 | **Multi-Armed Bandits** | Which daily special sells best? | Static prediction never *acts* or learns from outcomes → **explore vs. exploit**; regret; ε-greedy/UCB (the gentle RL entry) | ○ |
+| 24 | **Multi-Armed Bandits** | Which daily special sells best? | Static prediction never *acts* or learns from outcomes → **explore vs. exploit**; regret; ε-greedy/UCB (the gentle RL entry) | ✅ `MultiArmedBandit` (first reinforcement-learning chapter — online select/reward/update; ε-greedy + UCB) |
 | 25 | **Contextual Bandits** | Personalized offers per customer context | One best arm for everyone is too coarse → condition the choice on context | ○ |
 | 26 | **MDPs & Q-Learning** | A restocking / pricing **policy** over time | Actions have *delayed* consequences → states, actions, rewards, value, Bellman, Q-learning | ○ |
 | 27 | **Deep RL (DQN / Policy Gradients)** | **Chain-scale** optimization where the state space explodes (many stores × SKUs × conditions) | *Tabular Q-learning's table is now impossibly large* → neural nets approximate value/policy. **NB: this is the weakest café hook** — keep it tied to chain-scale optimization, not a gimmicky "robot barista" | ○ (adopts) |

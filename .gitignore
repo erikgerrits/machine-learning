@@ -2,6 +2,7 @@
 .vscode
 coverage
 dist
+*.tsbuildinfo
 node_modules
 npm-debug.log
 yarn-error.log

@@ -1,0 +1,122 @@
+import { BanditPlayground } from '../components/BanditPlayground';
+
+# Chapter 24 — The daily special
+
+> *Multi-armed bandits.* Every model so far has **predicted** — a number, a class, a cluster — from
+> data someone already collected. A bandit is the first one that **acts**: it chooses, watches what
+> happens, and the only data it ever gets is the outcome of its own choices.
+
+The Drifting Leaf has a little chalkboard by the door: **today's special**. Nadia can feature exactly
+one — there's only so much counter space and so much a barista can upsell in a day. Some specials fly
+off the shelf; some sit. She wants the board, over a season, to push whatever sells best.
+
+The trouble is she can't *look up* the answer. The only way to learn how the cinnamon roll does is to
+feature it and count how many sell — and a single day is noisy: a rainy Tuesday, a tour bus, a regular
+on holiday. One good day doesn't crown a winner, and every day spent testing a dud is a day she didn't
+spend selling the real best.
+
+## The wall: predicting never tells you what to *do*
+
+Every earlier chapter handed the model a dataset and asked a question *about* it. But there's no
+dataset of "how each special would have sold" — the only way to get that number for the lemon tart is
+to **run the lemon tart** and watch. The data doesn't exist until you act, and acting one way means
+*not* acting the others that day. You're learning and earning from the very same choices.
+
+The tempting fixes both fail:
+
+- **Always exploit.** Feature whatever's looked best so far. But "so far" might be three lucky sales of
+  a mediocre special — lock in early and you can ride a wrong guess for the whole season, never
+  discovering the real winner you barely tried.
+- **Always explore.** Rotate through everything evenly, like a fair A/B test. Now you *know* the rates
+  precisely — but you spent half your prime days deliberately featuring the losers to find that out.
+
+This is the **explore/exploit dilemma**: every turn, gamble on learning something new, or cash in on
+what you already believe? Neither extreme is right. You want to explore *just enough*.
+
+## The idea: a bandit
+
+Picture a row of slot machines — "one-armed bandits" — each paying out from its own unknown
+distribution. Pull arms, learn the payouts as you go, and steer your pulls toward the good ones. Swap
+"slot machine" for "daily special" and that's Nadia's board exactly.
+
+There's no `train(inputs, targets)` here. A bandit learns **online**, one interaction at a time, in a
+loop: **select an arm → observe the reward → update**. Each special keeps a running average of how
+often it sold. The only real question is how the selection step handles uncertainty, and there are two
+classic answers:
+
+- **ε-greedy** — feature the best-looking special almost always, but with a small probability **ε**,
+  pick one at random instead. Dead simple; the random slice guarantees it never fully stops checking
+  the others.
+- **UCB** (upper confidence bound) — be *optimistic about the unknown*. Add a bonus to each special's
+  estimate that's large when you've barely tried it and shrinks as evidence piles up, then feature
+  whichever has the highest estimate-plus-bonus. It explores on purpose, aiming its curiosity at the
+  specials it's least sure about.
+
+Press **Train** and watch each bar — the bandit's *guess* at a special's sell-rate — climb toward its
+white tick, the *true* rate it can't see. The gold ring shows today's pick:
+
+<div className="breakout">
+  <BanditPlayground />
+</div>
+
+## How it works: a running average and a nudge to explore
+
+The update is just an incremental mean — fold each new outcome into the arm's average without storing
+the whole history, straight from the
+[`MultiArmedBandit`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/reinforcement/MultiArmedBandit.ts)
+source:
+
+```ts
+this.counts[arm]++;
+// newAverage = old + (reward − old) / count
+this.values[arm] += (reward - this.values[arm]) / this.counts[arm];
+```
+
+**ε-greedy** then chooses by flipping a weighted coin — explore at random, or exploit the best estimate:
+
+```ts
+if (this.random() < this.epsilon) {
+    return Math.floor(this.random() * this.numberOfArms); // explore: a random arm
+}
+return argmax(this.values);                               // exploit: the best-looking arm
+```
+
+**UCB** never flips a coin. It tries every arm once, then adds the optimism bonus — big for
+rarely-pulled arms, fading as the count grows — and takes the best total:
+
+```ts
+const bonus = this.confidence * Math.sqrt(logStep / this.counts[arm]);
+const score = this.values[arm] + bonus; // estimate + "how much room could I be wrong by?"
+```
+
+That bonus is the faint headroom you see past the end of each solid bar in the playground. A barely
+tried special gets a tall tip — UCB is saying *"this could be much better than it looks, go check"* —
+and as Nadia features it, the tip collapses onto the real estimate.
+
+## Try it yourself
+
+- **Photo finish, ε-greedy, ε = 0.** Greed with no exploring. It often slams onto whichever near-tied
+  leader got lucky first and never reconsiders — sometimes the *wrong* one. Nudge ε up and watch it
+  keep sampling enough to sort the two out.
+- **Dark horse.** The star hides among forgettable specials. Pure greed can miss it for ages; UCB's
+  optimism keeps poking the unknowns until the babka's bar suddenly pulls ahead.
+- **Watch Regret.** It counts the sales given up versus a perfect chooser. A good strategy keeps it
+  growing *slowly* — explore briefly, then mostly exploit. Crank ε to 0.5 and see regret climb forever:
+  that's the cost of never settling down.
+
+> **Field note — bandits vs. full reinforcement learning.** A bandit's reward depends only on the arm
+> you pull *right now* — featuring the scone today doesn't change tomorrow's menu. Real reinforcement
+> learning adds **state**: your action moves you to a new situation, and a choice now shapes the rewards
+> far down the line (a chess move, a route through a maze, a pricing path over a season). Same
+> explore/exploit heart, much longer horizon — and the next frontier on the map.
+
+## What broke — nothing; the café started choosing
+
+Nothing broke. For the first time the model isn't answering a question about the past — it's making a
+decision about *today* and getting smarter from the consequence. Nadia's chalkboard now runs itself:
+mostly featuring the season's best seller, quietly sampling the rest in case tastes shift.
+
+But a bandit's world is frozen between turns — one choice, one reward, no tomorrow that today's choice
+created. The moment Nadia's decisions start to *compound* — set a price that changes who walks in next
+week, choose a path through a sequence of moves — she'll need a model that plans over states and a
+future. That's where the map (`docs/course-plan.md`) heads next.
