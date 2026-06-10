@@ -1,0 +1,37 @@
+name: Publish
+
+# Publish the library to npm when a version tag is pushed (e.g. `git tag v0.7.0 && git push --tags`).
+# Requires an `NPM_TOKEN` repository secret (an npm automation token for the package owner).
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: yarn
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: yarn install --frozen-lockfile
+
+      # Gate the publish on a green build, so a bad tag can never ship.
+      - name: Type-check and test
+        run: |
+          yarn typecheck
+          yarn test
+
+      # `npm publish` runs prepublishOnly (yarn build) and ships only dist/lib (see package.json).
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
