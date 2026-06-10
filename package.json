@@ -51,7 +51,9 @@
     "anomaly detection",
     "pca",
     "principal component analysis",
-    "dimensionality reduction"
+    "dimensionality reduction",
+    "outlier detection",
+    "mahalanobis"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

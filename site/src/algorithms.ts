@@ -168,6 +168,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_3,
     },
     {
+        id: 'anomaly-detection',
+        path: '/anomaly-detection',
+        title: 'Anomaly Detection',
+        tagline: 'Learn what normal looks like, then flag whatever doesn\'t fit.',
+        status: 'live',
+        chapter: 16,
+        part: PART_3,
+    },
+    {
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',

@@ -25,6 +25,7 @@ const KMeansTutorial = lazy(() => import('./content/k-means.mdx'));
 const HierarchicalClusteringTutorial = lazy(() => import('./content/hierarchical-clustering.mdx'));
 const DBSCANTutorial = lazy(() => import('./content/dbscan.mdx'));
 const PCATutorial = lazy(() => import('./content/pca.mdx'));
+const AnomalyDetectionTutorial = lazy(() => import('./content/anomaly-detection.mdx'));
 
 export function App() {
     return (
@@ -164,6 +165,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <PCATutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="anomaly-detection"
+                    element={
+                        <TutorialPage>
+                            <AnomalyDetectionTutorial />
                         </TutorialPage>
                     }
                 />

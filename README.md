@@ -37,6 +37,7 @@ Below are some simple code usage examples.
 * [Hierarchical Clustering](#hierarchical-clustering)
 * [DBSCAN](#dbscan)
 * [PCA](#pca)
+* [Anomaly Detection](#anomaly-detection)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -329,6 +330,27 @@ console.log(pca.predict(inputs).toArray());
 
 console.log(pca.getExplainedVarianceRatio());
 // [ 1 ]  <- that single axis holds 100% of the variance (the 2nd dimension was redundant)
+
+```
+
+### Anomaly Detection
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Anomaly detection (unsupervised): fit a Gaussian to "normal" data, flag the unlikely points.
+const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, -1], [0.5, -0.5]]);
+
+const detector = new ml.AnomalyDetector();
+detector.setThreshold(3); // flag points more than 3 Mahalanobis "std devs" from the centre
+
+detector.train(inputs);
+
+console.log(detector.predict(new ml.Matrix([[0, 0], [0.5, 0.5], [8, 8]])).toArray());
+// [ [ 0 ], [ 0 ], [ 1 ] ]  <- the far-out point is the anomaly
+
+console.log(detector.score(new ml.Matrix([[8, 8]])).toArray());
+// [ [ 12.22 ] ]  <- its Mahalanobis distance, far past the threshold
 
 ```
 

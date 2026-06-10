@@ -140,6 +140,20 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Anomaly detection (unsupervised): fit a Gaussian to "normal" data, flag the unlikely points.
+    const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, -1], [0.5, -0.5]]);
+
+    const detector = new ml.AnomalyDetector();
+    detector.setThreshold(3); // flag points more than 3 Mahalanobis "std devs" from the centre
+
+    detector.train(inputs);
+    console.log(detector.predict(new ml.Matrix([[0, 0], [0.5, 0.5], [8, 8]])).toArray());
+    // [ [ 0 ], [ 0 ], [ 1 ] ]  ← the far-out point is the anomaly
+    console.log(detector.score(new ml.Matrix([[8, 8]])).toArray());
+    // [ [ 12.22 ] ]  ← its Mahalanobis distance, far past the threshold of 3
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

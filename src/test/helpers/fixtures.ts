@@ -104,6 +104,16 @@ export const DBSCAN_EXPECTED_LABELS = [0, 0, 0, 0, 1, 1, 1, 1, -1];
  */
 export const PCA_DIAGONAL_INPUTS = [[-2, -2], [-1, -1], [0, 0], [1, 1], [2, 2]];
 
+/** Anomaly detection: a tight, roughly round cloud of "normal" points around the origin. */
+export const ANOMALY_NORMAL = [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, -1], [0.5, -0.5]];
+
+/**
+ * Anomaly detection on a correlated cloud (points hug the line y = x). Used to show the Mahalanobis
+ * distance respects the data's shape: a point off the diagonal is far more anomalous than one the
+ * same Euclidean distance away *along* it.
+ */
+export const ANOMALY_CORRELATED = [[-2, -2.1], [-1, -0.9], [0, 0.1], [1, 1.1], [2, 1.9], [-1.5, -1.6], [1.5, 1.4], [0.5, 0.6]];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

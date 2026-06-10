@@ -26,12 +26,12 @@ generative). The built algorithms become the spine; everything else is roadmap.
 
 **Goal:** engaging, fun, genuinely educational, and very cool.
 
-**Status (this release).** Woven through **Ch 0–15**: all of Part 1, the whole of Part 2 (k‑NN,
+**Status (this release).** Woven through **Ch 0–16**: all of Part 1, the whole of Part 2 (k‑NN,
 Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support Vector Machines), and Part 3
-so far — k‑Means, Hierarchical Clustering, DBSCAN, and now **Ch 15 PCA** (the newest chapter, a
-from-scratch build that adds a Jacobi eigensolver and the first dimensionality-reduction method).
-One built algorithm is *not yet woven into the story*: the **Neural Network** (Ch 20) still ships its
-older generic tutorial and needs the per-chapter café treatment. Everything else is roadmap. See the
+so far — k‑Means, Hierarchical Clustering, DBSCAN, PCA (with a Jacobi eigensolver), and now **Ch 16
+Anomaly Detection** (the newest chapter, a multivariate-Gaussian / Mahalanobis detector). One built
+algorithm is *not yet woven into the story*: the **Neural Network** (Ch 20) still ships its older
+generic tutorial and needs the per-chapter café treatment. Everything else is roadmap. See the
 status column below.
 
 ---
@@ -164,7 +164,7 @@ Every row's "Wall" is the previous tool failing.
 | 13 | **Hierarchical Clustering** | A nested family tree of menu items / customer groups | k is unknown & structure is nested → **dendrograms** | ✅ `HierarchicalClustering` |
 | 14 | **DBSCAN** | A weird late-night cluster (possible fraud) | k-means forces every point into a round blob → **density-based** clusters + outliers | ✅ `DBSCAN` |
 | 15 | **PCA / Dimensionality Reduction** | A 30-question taste survey you can't visualize | You can't see 30 dimensions; features are redundant → **principal components**: 30 → 2 "flavor axes" | ✅ `PCA` |
-| 16 | **Anomaly Detection** | Catch the fraudulent transaction / spoiled batch | Rare events drown in normal data → model "normal," flag the rest | ○ |
+| 16 | **Anomaly Detection** | Catch the fraudulent transaction / spoiled batch | Rare events drown in normal data → model "normal," flag the rest | ✅ `AnomalyDetector` |
 | 17 | **Association Rules** | "Coffee + muffin" basket combos | Need co-occurrence patterns → Apriori; support/confidence/lift | ○ |
 | 18 | **Recommender Systems** | The loyalty app suggests items per person | Basket rules are global, not personal → **collaborative filtering / matrix factorization**; latent taste factors | ○ |
 
@@ -250,7 +250,7 @@ Canvas playgrounds). Realization is staged so we never block on the whole map:
 
 **Phase 1 — Re-frame the built algorithms into café chapters (no new algorithms). [mostly done]**
 - Rewrite the tutorials in `site/src/content/*.mdx` to follow the per-chapter template (Problem
-  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for Ch 0–15; the one
+  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for Ch 0–16; the one
   remaining built algorithm (Neural Network, Ch 20) still needs this treatment.*
 - Re-theme datasets in `site/src/ml/*` (e.g. `datasets.ts`, `clusteringDatasets.ts`) to café data
   (demand, batches, pastries, regulars) **with the same underlying shapes/labels**, so the existing
