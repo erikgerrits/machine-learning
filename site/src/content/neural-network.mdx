@@ -1,151 +1,141 @@
 import { NeuralNetworkPlayground } from '../components/NeuralNetworkPlayground';
 
-# Neural Networks, from scratch
+# Chapter 20 — When the answer is a combination
 
-A neural network is a stack of simple parts that, together, can learn shapes a straight line
-never could. Below is a real one — the [`FeedforwardNeuralNetwork`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/FeedforwardNeuralNetwork.ts)
-from this library, training **live in your browser**. Press **Train** and watch the decision
-boundary bend itself around the data while the weights pulse and the loss falls.
+> *Neural networks.* Priya's interlude left Nadia with one neuron stuck forever on XOR. Then she
+> hits a café problem shaped exactly like it — and finally builds the brain.
+
+Nadia is designing pairings for the new menu — a coffee matched with a pastry — and testing which
+ones regulars actually love. Poring over the scores, she spots something her old tools can't touch:
+delight isn't *"stronger is better."* It's about the **match**. A bold, dark roast sings next to a
+rich, buttery pastry; a delicate cup wants a light, airy one. But cross them — bold coffee with a
+wispy pastry, or a mild cup beside something heavy — and it flops. Two dials, and the verdict flips
+on their **combination**.
+
+## The wall: neither cue means anything alone
+
+Every model in the ledger draws its verdict from "more of this, less of that." Here that's useless.
+Is a bold coffee good? *It depends entirely on the pastry.* Knowing one dial tells you nothing about
+the outcome without the other. Plotted out — strength on one axis, richness on the other — the hits
+sit in opposite corners (bold-bold and mild-mild) and the flops in the other two. That's **XNOR**,
+the exact shape the perceptron lurched on forever in the interlude. No single straight line can keep
+"both-or-neither" on one side. One neuron is one line, and one line cannot do this.
+
+## The idea: a layer to ask, a layer to combine
+
+So Nadia stops trying to draw the answer in one stroke and **stacks** neurons. The first layer is a
+row of simple neurons, each free to learn its own little question — *"is the coffee bold?"*, *"is the
+pastry rich?"* — each still just a straight line. Then a second layer takes **those answers as its
+inputs** and combines them into the final call. "Both bold-ish" and "both mild-ish" are easy to
+express once the first layer has carved the raw dials into intermediate features. The hidden neurons
+invent the features; the output neuron composes them. Stack enough and the boundary can bend into any
+shape at all. Press **Train** and watch it wrap itself around the data:
 
 <div className="breakout">
   <NeuralNetworkPlayground />
 </div>
 
-Everything below explains exactly what you just watched — and points at the lines of code that
-make it happen.
+## How it works: a stack of simple parts
 
-## The idea
-
-We have points on a plane, each belonging to class **0** or class **1**, and we want a function
-that takes a point $(x_1, x_2)$ and returns how likely it is to be class 1. A single straight
-line can only split the plane in two. The XNOR and spiral datasets above can't be split that way
-— so we stack several simple "neurons" into layers and let them bend the boundary.
-
-The network is just a list of layer sizes. `[2, 8, 1]` means two inputs, one hidden layer of
-eight neurons, and one output:
+The network is just a list of layer sizes. `[2, 8, 1]` is two inputs (the dials), one hidden layer of
+eight neurons, and one output (delight, 0–1) — the real
+[`FeedforwardNeuralNetwork`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/FeedforwardNeuralNetwork.ts)
+from this library:
 
 ```ts
 const net = new FeedforwardNeuralNetwork([2, 8, 1], /* seed */ 0);
 net.setLearningRate(1);
 net.train(inputs, targets); // inputs: N×2, targets: N×1
-net.predict(inputs);        // N×1, each in (0, 1)
+net.predict(inputs);        // N×1, each in (0, 1) — "how likely to delight"
 ```
 
-## A single neuron
-
-One neuron takes its inputs, multiplies each by a **weight**, adds a **bias**, and squashes the
-result through an **activation function**. With weights $w$, bias $b$, and inputs $x$:
+**One neuron** is the perceptron from the interlude with its hard switch softened: weighted sum,
+plus bias, squashed through a smooth **sigmoid** so the output reads like a probability and the
+boundary can be nudged by calculus.
 
 $$
-a = \sigma(w \cdot x + b), \qquad \sigma(z) = \frac{1}{1 + e^{-z}}
+a = \sigma(\mathbf{w}\cdot\mathbf{x} + b), \qquad \sigma(z) = \frac{1}{1 + e^{-z}}
 $$
-
-The sigmoid $\sigma$ maps any number into $(0, 1)$, so the output reads like a probability. In
-the library it's the default activation:
 
 ```ts
 private activationFunction = (value) => 1.0 / (1.0 + Math.exp(-value));
 ```
 
-Stack non-linear neurons and the network can carve out curved, even closed regions — which is
-exactly why the **Circles** dataset becomes learnable.
-
-## The forward pass
-
-To make a prediction, signal flows forward layer by layer: prepend a bias input, multiply by
-the layer's weight matrix, apply the activation, repeat. That's `forwardPropagate`:
+**The forward pass** sends signal through layer by layer — glue on a bias input, multiply by the
+layer's weights, squash, repeat:
 
 ```ts
-// Add bias nodes to the activations
-activations[layer].appendLeft(Matrix.ones(rows, 1));
-// Multiply by the weights to get each next-layer neuron's input
+activations[layer].appendLeft(Matrix.ones(rows, 1));                       // bias node
 incoming[layer + 1] = Matrix.multiply(activations[layer], weightMatrices[layer]);
-// Squash to get the next layer's output signal
 activations[layer + 1] = Matrix.transform(incoming[layer + 1], activationFunction);
 ```
 
-For `[2, 8, 1]` the shapes go `N×2 → N×8 → N×1`. The final column is the prediction you see
-shaded across the plane in the heatmap above.
+For `[2, 8, 1]` the shapes flow `N×2 → N×8 → N×1`; that last column is the delight score shaded
+across the plane in the heatmap.
 
-## Measuring wrongness: cross-entropy
-
-To improve, the network needs a number for how wrong it is. For probabilities we use
-**cross-entropy** (negative log-likelihood), averaged over the $m$ examples:
+**Measuring wrongness** uses **cross-entropy** (the same loss as logistic regression in Chapter 4) —
+gentle when confident-and-right, brutal when confident-and-wrong:
 
 $$
 L = -\frac{1}{m} \sum_{i=1}^{m} \Big[\, y_i \log \hat{y}_i + (1 - y_i)\log(1 - \hat{y}_i) \,\Big]
 $$
 
-That's the curve in the **Loss** panel. It's computed by `computeLoss`, which the playground
-samples every epoch:
+**Learning** is gradient descent, and the trick that makes it work in a deep stack is
+**backpropagation** — the answer to the very question that stumped the perceptron, *"how do you blame
+a neuron buried in the middle?"* Compute the error at the output, then pass it backwards through the
+transposed weight matrices so each weight learns its share of the blame, and step everything downhill:
 
 ```ts
-net.computeLoss(inputs, targets); // → average cross-entropy, lower is better
-```
-
-> Because of the $\log \hat{y}$ term, the output must live in $(0, 1)$ — which is why the output
-> layer uses a sigmoid. Swap in an activation that can output 0 or negatives and the loss breaks.
-
-## Learning: gradient descent and backpropagation
-
-Training nudges every weight a little in the direction that *reduces* the loss. The size of the
-nudge is the **learning rate** — the slider you've been dragging. Each step:
-
-$$
-w \leftarrow w - \eta \, \frac{\partial L}{\partial w}
-$$
-
-The partial derivatives come from **backpropagation**: compute the error at the output, then
-pass it backwards through the layers (using the transposed weight matrices) to find each
-weight's share of the blame. That's `calculateGradients` and `backPropagate`:
-
-```ts
-// Error at the output: how far predictions are from targets
-errors[last] = Matrix.subtract(activations[last], targets);
-// ...propagate backwards through transposed weights, then step downhill:
+errors[last] = Matrix.subtract(activations[last], targets);       // blame at the output
+// …propagate backwards through transposed weights, then:
 weightMatrices[layer].subtract(gradients[layer].multiply(learningRate));
 ```
 
-Because the weights persist on the network between calls, this playground sets the epoch count
-to **1** and calls `train()` once per animation frame — so you're literally watching one
-gradient-descent step per frame.
-
-## The bias trick
-
-Notice the `appendLeft(Matrix.ones(...))` above. Rather than track a separate bias term, we glue
-a constant column of `1`s onto the inputs; the bias then becomes just another weight in the
-matrix and rides along for free in the multiply. (The regression models in this library use the
-same trick.)
-
-## Smart initialization
-
-If every weight started at zero, every neuron would learn the same thing. They're seeded with
-small random values scaled by **Xavier/Glorot** initialization, which keeps the signal from
-exploding or vanishing as it flows through the layers:
+Three details make it behave. A **bias trick** — gluing a column of `1`s onto the inputs — lets the
+bias ride along as just another weight. **Xavier/Glorot initialization** seeds the weights small but
+not zero (all-zero and every neuron would learn the same thing), scaled to keep the signal from
+exploding or vanishing:
 
 ```ts
 const epsilon = Math.sqrt(6) / Math.sqrt(incomingNodes + outgoingNodes);
 weightMatrices.push(Matrix.rand(incomingNodes + 1, outgoingNodes, epsilon, seed));
 ```
 
-Because it's seeded, the same seed reproduces the exact same run — try changing the **seed** in
-the playground and watch a different path to the same solution.
-
-## Trust, but verify: gradient checking
-
-Backprop is easy to get subtly wrong. The library ships a `checkGradients()` method that nudges
-each weight by a tiny amount, measures how the loss actually changes (a finite-difference
-estimate of the gradient), and compares it to the analytic gradient — failing if they disagree by
-more than `1e-4`. That's the green **✓ Gradients verified** badge in the playground: a live proof
-that the math is implemented correctly.
+And because backprop is so easy to get subtly wrong, the library ships `checkGradients()`, which
+nudges each weight a hair, measures how the loss *actually* moves, and compares that to the analytic
+gradient — that's the green **✓ Gradients verified** badge: a live proof the math is right.
 
 ## Try it yourself
 
-- Switch to the **Spiral** and crank the **speed** — a deeper network slowly untangles the arms.
-- Drop the **learning rate** very low and watch the descent crawl; raise it too high and watch it
-  thrash.
-- Compare **Batch** vs **Mini-batch** vs **SGD** and see how the loss curve gets noisier.
+- **XNOR** is the matching-dials problem. A single line never solved it; give the network one hidden
+  layer and the boundary splits into the two diagonal pockets — exactly what beat the perceptron.
+- **Circles** and **Two moons** — preferences that curl around each other. Watch the boundary bend
+  into closed loops and crescents no line, tree, or smoother could draw.
+- **Spiral** is the showstopper: switch to a deeper network (`2 × 16`), raise the speed, and watch it
+  slowly untangle two wound-together tastes.
+- Drop the **learning rate** to a crawl, or crank it until the loss thrashes; compare **Batch** vs
+  **SGD**; nudge the **seed** to take a different path to the same solution.
 
-<div className="breakout">
-  <NeuralNetworkPlayground />
-</div>
+> **Field note — power cuts both ways.** A bigger network can learn anything in the training set —
+> including its noise. That's Chapter 3's overfitting with far more rope: the remedy is the same
+> (more data, hold-out checks, stopping early), and it's why "just add layers" isn't a free lunch.
+
+## What broke
+
+This is the most powerful tool in Nadia's ledger. It learns its *own* features instead of being
+handed them, and bends to any shape the data takes — the matching-dials pairing, the spiral, all of
+it. Everything earlier in the course is, in a sense, a neural network with the interesting parts
+removed.
+
+But that power has a bill. It's **hungry** — it wants far more labelled examples and compute than a
+line or a tree, and it will cheerfully memorise noise if you let it. It's a **black box** — try
+explaining a comped order by quoting a hidden weight. And, like every method in the ledger, it still
+expects a tidy **table of numbers**.
+
+That last limit is the real frontier. The café has gone wide — there's an app now, photos of latte
+art, written reviews, the order of each regular's visits over months. None of it is a neat row of
+features. Reading an *image* asks for a network that understands neighbouring pixels (convolutions);
+reading *text and sequences* asks for one with memory and attention. Those architectures — the
+machinery behind the model writing this very page — are where the story goes next, beyond the built
+pages of the ledger. But the engine inside them all is the one Nadia just built: stacked neurons,
+learning their own features, blame flowing backward.

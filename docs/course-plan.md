@@ -29,11 +29,12 @@ generative). The built algorithms become the spine; everything else is roadmap.
 **Status (this release).** Woven through **Ch 0–19**: all of Part 1, the whole of Part 2 (k‑NN,
 Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support Vector Machines), all of
 Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA, Anomaly Detection, Association Rules,
-Recommender Systems), and the opening of Part 4 — **Ch 19 Time Series** (Holt-Winters exponential
-smoothing) plus the **Perceptron interlude** (the newest piece: a single neuron that learns AND/OR
-but stalls on XOR, setting up neural networks). One built algorithm is *not yet woven into the
-story*: the **Neural Network** (Ch 20) still ships its older generic tutorial and needs the
-per-chapter café treatment. Everything else is roadmap. See the status column below.
+Recommender Systems), and Part 4 so far — **Ch 19 Time Series** (Holt-Winters exponential
+smoothing), the **Perceptron interlude**, and now **Ch 20 Neural Networks** (the newest weave: the
+matching-dials XNOR problem → hidden layers + backprop). **Every built algorithm is now woven into
+the café story** — there is no longer a built-but-unwoven chapter. Everything past Ch 20 (CNNs,
+RNNs/transformers, reinforcement learning, generative, Bayesian) is roadmap: new builds the library
+grows into. See the status column below.
 
 ---
 
@@ -129,7 +130,7 @@ Ordered simplest → most advanced. Three states:
 - **✅ DONE** — built *and* woven into the café story: the algorithm lives in `src/lib` with a
   playground, and its tutorial follows the per-chapter template in Nadia's voice.
 - **◐ BUILT** — the algorithm + playground exist in the code, but the tutorial is still the older
-  generic explainer, *not yet re-themed* into the story. (Currently: Neural Networks.)
+  generic explainer, *not yet re-themed* into the story. (Currently: none — every built algorithm is woven.)
 - **○ ROADMAP** — a future chapter; the library grows into it.
 
 Every row's "Wall" is the previous tool failing.
@@ -174,7 +175,7 @@ Every row's "Wall" is the previous tool failing.
 |---|---|---|---|---|
 | 19 | **Time Series Forecasting** | *Forecasting numbers* across weeks & seasons | Plain regression ignores order & seasonality → moving averages, exponential smoothing, trend/seasonality (ARIMA-lite) | ✅ `ExponentialSmoothing` |
 | — | *Interlude: The Perceptron* | A single artificial "brain cell" | Built as a short history interlude (Priya shows Nadia where neural nets came from): weighted sum + activation; why one neuron can't do XOR | ✅ `Perceptron` (interlude) |
-| 20 | **Neural Networks & Backprop** | Danger/delight hides in *combinations* of cues (XNOR-like) | k-NN is slow, memoryless, and dumb in high dimensions; linear can't combine → **stack layers that learn features**; backprop ("blame flows backward"); dropout; SGD/Adam | ◐ `FeedforwardNeuralNetwork` (tutorial not yet woven into the story) |
+| 20 | **Neural Networks & Backprop** | Danger/delight hides in *combinations* of cues (XNOR-like) | k-NN is slow, memoryless, and dumb in high dimensions; linear can't combine → **stack layers that learn features**; backprop ("blame flows backward"); dropout; SGD/Adam | ✅ `FeedforwardNeuralNetwork` |
 | 21 | **Convolutional Nets (CNNs)** | Grade latte-art photos / spot pastry defects / scan receipts | Dense nets ignore spatial structure → **convolutions**, filters, pooling (computer vision) | ○ (adopts) |
 | 22 | **Recurrent Nets / LSTMs** | Learn *sequence & text representations* (reviews, chat logs) — **not** forecasting (that's Ch 19) | Feedforward has no memory of order; this is the bridge to language → recurrence, memory, vanishing gradients. *Embeddings are introduced here as connective tissue* — learned word/item **vectors** where "similar sits close" (also reused by recsys, Ch 18) | ○ (adopts) |
 | 23 | **Transformers & Attention** | The café's AI assistant / chatbot | RNNs forget long context & don't parallelize → **attention**; the modern backbone (and a nod to the model writing this) | ○ (adopts) |
@@ -251,9 +252,9 @@ Canvas playgrounds). Realization is staged so we never block on the whole map:
 
 **Phase 1 — Re-frame the built algorithms into café chapters (no new algorithms). [mostly done]**
 - Rewrite the tutorials in `site/src/content/*.mdx` to follow the per-chapter template (Problem
-  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for Ch 0–19 (Parts
-  0–3 and the opening of Part 4); the one remaining built algorithm (Neural Network, Ch 20) still
-  needs this treatment.*
+  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for every built
+  algorithm (Ch 0–20 plus the Perceptron interlude). Phase 1 is complete; future chapters are new
+  builds (Phase 2+).*
 - Re-theme datasets in `site/src/ml/*` (e.g. `datasets.ts`, `clusteringDatasets.ts`) to café data
   (demand, batches, pastries, regulars) **with the same underlying shapes/labels**, so the existing
   Canvas playgrounds and viz keep working unchanged.

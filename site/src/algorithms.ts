@@ -215,7 +215,7 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',
-        tagline: 'Bends curved boundaries no straight line could draw.',
+        tagline: 'When delight hides in a combination of cues — stack neurons and bend the boundary.',
         status: 'live',
         chapter: 20,
         part: PART_4,
