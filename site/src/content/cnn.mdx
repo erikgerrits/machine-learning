@@ -1,0 +1,92 @@
+import { CNNPlayground } from '../components/CNNPlayground';
+
+# Chapter 21 — Seeing the pour
+
+> *Convolutional networks.* The app is full of photos now. A plain network reads a picture as a bag
+> of pixels — so the same stroke, an inch to the left, looks like something it has never seen.
+
+The loyalty app lets regulars snap their latte art, and Nadia wants it to auto-tag the **pour
+direction** — a horizontal sweep, a vertical line, a diagonal rosetta. Easy by eye. But the cup is
+never in the same spot in the frame, so the stroke lands anywhere in the image. That single fact
+breaks the tool she just built.
+
+## The wall: flattening throws away "next to"
+
+Feed a photo to the dense network from Chapter 20 and you first have to **flatten** it — unroll the
+grid of pixels into one long row. Do that and a stroke in the top-left and the *same* stroke in the
+bottom-right share almost no active pixels; to the network they're unrelated inputs. It can memorise
+the exact photos it trained on, but nudge the stroke a few pixels and every input value changes and
+it's lost. Flattening discards the one thing that matters in an image: **which pixels are next to
+which**. And wiring every pixel to every neuron is a parameter explosion that overfits fast.
+
+## The idea: slide a small filter everywhere
+
+So the network stops looking at the whole image at once. It takes a tiny **filter** — a few pixels
+square — and slides it across every position, computing a little weighted sum at each spot. The
+**same filter weights** are reused everywhere, so a filter that learns to detect a horizontal edge
+fires on a horizontal stroke *wherever it sits*. Each filter produces a **feature map**: a picture of
+where its pattern occurs. **Pooling** then shrinks each map (keep the strongest response in each
+little block), buying tolerance to small shifts, and a final dense layer reads off "which patterns
+showed up" to call the class. Shared weights mean far fewer parameters and built-in position
+tolerance. Press **Train** and watch the filters turn from noise into edge detectors:
+
+<div className="breakout">
+  <CNNPlayground />
+</div>
+
+## How it works: convolve, pool, classify
+
+The convolution is just that sliding weighted sum (technically cross-correlation), squashed through
+**ReLU** — straight from the
+[`ConvolutionalNeuralNetwork`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/ConvolutionalNeuralNetwork.ts)
+source:
+
+```ts
+let sum = this.filterBiases[k];
+for (let di = 0; di < f; di++)
+    for (let dj = 0; dj < f; dj++)
+        sum += image[i + di][j + dj] * this.filters[k][di][dj]; // the same filter, at every (i, j)
+actRow.push(sum > 0 ? sum : 0);                                  // ReLU
+```
+
+**Max-pooling** keeps only the strongest response in each 2×2 block (and remembers which cell won, so
+the gradient can flow back to it) — that's where the shift-tolerance comes from:
+
+```ts
+const value = convActivated[k][pi * 2 + di][pj * 2 + dj];
+if (value > best) { best = value; bestDi = di; bestDj = dj; } // winner takes the block
+```
+
+Then the pooled maps are flattened, a dense layer maps them to the classes, and **softmax** turns
+that into probabilities. The whole stack — conv → ReLU → pool → dense → softmax — trains by the same
+backpropagation as Chapter 20; the only new gradients are routing through the pool's winners and back
+into the shared filters. Because that convolution backprop is so easy to get subtly wrong, the model
+ships a `checkGradients()` that finite-difference-verifies it — the green **✓ Gradients verified**
+badge.
+
+## Try it yourself
+
+- Watch the **learned filters**: they start as random static and sharpen into little oriented edge
+  detectors — one tuned to horizontal strokes, one to vertical, and so on.
+- Scrub **Show example** through the dataset. The same filter's **feature map** lights up along
+  whatever stroke is present, wherever it is — that's a shared filter earning its keep.
+- Switch to **Messy pours** (grainier) and it still gets there, just slower. Drop the filter count to
+  4 and it has fewer patterns to work with; raise it and it learns faster.
+
+> **Field note — tolerance, not magic invariance.** One conv + one pool buys *some* shift tolerance,
+> not perfect position-invariance — real vision models stack many conv/pool layers (and use padding
+> and strides) to build it up, and they're hungry for data. What's exact here is the principle:
+> **shared filters that look for local patterns anywhere**, which is the whole idea of seeing.
+
+## What broke
+
+A CNN reads images by leaning on the thing dense nets threw away — that nearby pixels belong
+together — and it does it with a handful of reused filters instead of a wall of weights. That's how
+the app can tag a pour no matter where the cup sits.
+
+But notice the assumption baked in: the input is a **fixed-size grid where neighbours relate in
+space**. Perfect for a photo. Useless for the other data flooding in — a customer's *run of visits*
+over months, the *words* of a written review. Those are **sequences**: variable length, and what
+matters is the order and what came before, not which pixel sits next to which. A filter sliding over
+space has no notion of "earlier" or "memory." To read a sentence or a history, Nadia needs a network
+wired for *time* — one that carries something forward as it reads. That's the next turn of the story.

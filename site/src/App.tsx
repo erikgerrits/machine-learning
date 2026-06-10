@@ -30,6 +30,7 @@ const AssociationRulesTutorial = lazy(() => import('./content/association-rules.
 const RecommenderSystemsTutorial = lazy(() => import('./content/recommender-systems.mdx'));
 const TimeSeriesTutorial = lazy(() => import('./content/time-series.mdx'));
 const PerceptronTutorial = lazy(() => import('./content/perceptron.mdx'));
+const CNNTutorial = lazy(() => import('./content/cnn.mdx'));
 
 export function App() {
     return (
@@ -209,6 +210,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <PerceptronTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="cnn"
+                    element={
+                        <TutorialPage>
+                            <CNNTutorial />
                         </TutorialPage>
                     }
                 />
