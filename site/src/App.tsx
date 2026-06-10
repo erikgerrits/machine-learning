@@ -23,6 +23,7 @@ const GradientBoostingTutorial = lazy(() => import('./content/gradient-boosting.
 const SupportVectorMachinesTutorial = lazy(() => import('./content/support-vector-machines.mdx'));
 const KMeansTutorial = lazy(() => import('./content/k-means.mdx'));
 const HierarchicalClusteringTutorial = lazy(() => import('./content/hierarchical-clustering.mdx'));
+const DBSCANTutorial = lazy(() => import('./content/dbscan.mdx'));
 
 export function App() {
     return (
@@ -146,6 +147,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <HierarchicalClusteringTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="dbscan"
+                    element={
+                        <TutorialPage>
+                            <DBSCANTutorial />
                         </TutorialPage>
                     }
                 />

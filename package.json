@@ -45,7 +45,10 @@
     "clustering",
     "hierarchical clustering",
     "agglomerative",
-    "dendrogram"
+    "dendrogram",
+    "dbscan",
+    "density clustering",
+    "anomaly detection"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

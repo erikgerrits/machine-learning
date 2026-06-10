@@ -85,6 +85,18 @@ export const SVM_XOR_EXPECTED_CLASSES = [0, 1, 1, 0];
  */
 export const HIERARCHICAL_LINE_INPUTS = [[0, 0], [1, 0], [3, 0], [8, 0]];
 
+/**
+ * DBSCAN: two tight blobs and one far-flung outlier. With epsilon 0.5 / minPoints 3, each blob is a
+ * dense cluster and the lone point at (10, 0) is reachable from nobody — so it's labelled noise (-1).
+ */
+export const DBSCAN_INPUTS = [
+    [0, 0], [0.1, 0], [0, 0.1], [0.1, 0.1],
+    [5, 5], [5.1, 5], [5, 5.1], [5.1, 5.1],
+    [10, 0],
+];
+/** Expected labels: blob A = cluster 0, blob B = cluster 1, the outlier = noise. */
+export const DBSCAN_EXPECTED_LABELS = [0, 0, 0, 0, 1, 1, 1, 1, -1];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

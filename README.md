@@ -35,6 +35,7 @@ Below are some simple code usage examples.
 * [Support Vector Machine](#support-vector-machine)
 * [k-Means Clustering](#k-means-clustering)
 * [Hierarchical Clustering](#hierarchical-clustering)
+* [DBSCAN](#dbscan)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -283,6 +284,28 @@ console.log(predictions.toArray());
 console.log(hierarchical.getMergeHistory().map(m => Number(m.distance.toFixed(2))));
 // the dendrogram's merge heights, climbing until the two far-apart blobs join at the top
 // [ 1, 1, 1.21, 1.21, 14.17 ]
+
+```
+
+### DBSCAN
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// DBSCAN (unsupervised): clusters by density and flags stragglers as noise — no k needed.
+// Two tight blobs and one far-flung outlier.
+const inputs = new ml.Matrix([[0, 0], [0.1, 0], [0, 0.1], [0.1, 0.1], [5, 5], [5.1, 5], [5, 5.1], [5.1, 5.1], [10, 0]]);
+
+const dbscan = new ml.DBSCAN();
+dbscan.setEpsilon(0.5).setMinPoints(3); // a point is "core" with >= minPoints neighbours within epsilon
+
+dbscan.train(inputs);
+
+console.log(dbscan.getLabels());
+// [ 0, 0, 0, 0, 1, 1, 1, 1, -1 ]  <- two dense blobs (clusters 0 and 1), the lone point is noise (-1)
+
+console.log(dbscan.getClusterCount());
+// 2  <- discovered, not specified up front
 
 ```
 

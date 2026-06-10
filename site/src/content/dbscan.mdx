@@ -1,0 +1,104 @@
+import { DBSCANPlayground } from '../components/DBSCANPlayground';
+
+# Chapter 14 — The stragglers
+
+> *DBSCAN.* Every grouping Nadia has built insists that everyone belongs somewhere. Some customers
+> simply don't — and those are the ones she most needs to see.
+
+A run of odd late-night card transactions shows up in the books — a clutch of charges that don't
+look like anyone's normal habits. Nadia tries to spot them by clustering, and every method buries
+them: k-means folds each oddball into whatever group is nearest; hierarchical chains them onto the
+edge of a real crowd. The very points she wants to flag — possible fraud, mistakes, one-off tourists
+— get camouflaged inside legitimate groups. She doesn't just want the groups. She wants what's
+*left over*.
+
+## The wall: every point gets a home, like it or not
+
+That's the shared blind spot of everything in Part 3 so far. k-means assigns all `m` points to some
+centroid; hierarchical clustering puts every leaf in the tree. Neither has a category for *"this
+one belongs to no group."* So a stray transaction doesn't get flagged — it gets absorbed, and quietly
+drags a centroid or a cluster boundary off true while it's at it. And on the **ring** of regulars
+sharing a centre, centroid distance is hopeless anyway.
+
+## The idea: let density draw the lines
+
+Nadia stops measuring distance to a centre and starts asking a local question: *is this customer in
+a crowd?* Pick a radius **epsilon** and a count **min points**. A point sitting in a dense pile —
+at least `minPoints` others within `epsilon` — is a **core** point:
+
+$$
+\big|\,\{\,q : \operatorname{dist}(p, q) \le \varepsilon\,\}\,\big| \ \ge\ \text{minPoints}
+\quad\Rightarrow\quad p \text{ is core.}
+$$
+
+Clusters then grow by **contagion**: start at a core point and sweep outward, and every time the
+sweep lands on *another* core point, its neighbours join the frontier too. A cluster becomes any
+blob, curve, or ring that stays dense the whole way through. Points the sweep can reach but that
+aren't themselves core are **border** points; points no sweep ever reaches are **noise** — and they
+stay noise, flagged, never forced into a group. Crucially, there's no `k`: the number of clusters is
+whatever the density leaves behind. Drag **epsilon** and watch groups and noise appear:
+
+<div className="breakout">
+  <DBSCANPlayground />
+</div>
+
+## How it works: core, reach, repeat
+
+The training loop walks each point, and when it finds an unclaimed core point it flood-fills a whole
+cluster out of it — pulling in more neighbours every time it crosses another core point. Straight
+from the
+[`DBSCAN`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/DBSCAN.ts)
+source:
+
+```ts
+const seeds = [...neighbours[p]];          // p is core → seed the cluster with its neighbourhood
+for (let s = 0; s < seeds.length; s++) {
+    const q = seeds[s];
+    if (this.labels[q] !== UNCLASSIFIED) continue;
+    this.labels[q] = clusterId;            // q is reachable → it joins the cluster
+    if (isCore[q]) {                       // …and if q is *also* dense, its neighbours join the hunt
+        for (const r of neighbours[q]) if (!queued.has(r)) { queued.add(r); seeds.push(r); }
+    }
+}
+```
+
+Whether a point is core is just a neighbour count against `minPoints`:
+
+```ts
+isCore.push(neighbours[i].length >= this.minPoints);
+```
+
+Anything still unclaimed when the dust settles is labelled noise. `predict` returns one integer per
+point — a cluster index, or `-1` for noise — so a straggler is reported as a straggler, not quietly
+shoved into the nearest group.
+
+## Try it yourself
+
+- **Regulars & oddballs** — two solid crowds dusted with one-off visitors. DBSCAN keeps the crowds
+  and marks the strays with a grey ✕. That's the late-night anomaly Nadia was hunting, finally
+  *separated* instead of absorbed.
+- **A ring of regulars** — a tight core inside a ring, sharing one centre. k-means can't split them;
+  DBSCAN sees two distinct dense regions and doesn't care that they're concentric.
+- **Blended habits** — the two crescents come out as two clean groups, no `k` and no linkage choice.
+- Now sweep **epsilon**. Too small and the crowds shatter into noise; too large and everything melts
+  into one blob that swallows the oddballs again. The good clustering lives in the middle — and
+  finding that middle is the whole art.
+
+> **Field note — epsilon is the hard part.** There's no `k` to set, but `epsilon` and `minPoints`
+> trade off in its place. A common recipe: sort every point's distance to its k-th nearest neighbour,
+> plot them, and look for the "elbow" — the distance where the curve kicks up is a good `epsilon`.
+> And `minPoints` is roughly "how big a pile counts as a crowd."
+
+## What broke
+
+DBSCAN gave Nadia the thing every earlier method refused: a clustering that finds dense groups of
+*any shape*, picks its own number of them, and hands back the leftovers as **noise** instead of
+hiding them. For separating regulars from oddballs, it's exactly right.
+
+But it leans on a single global `epsilon`, and that quietly assumes every group is **equally dense**.
+The instant her data has a tight knot of devotees next to a loose scatter of occasional visitors, no
+one `epsilon` fits both — tighten it and the loose group dissolves into noise; loosen it and the
+tight ones merge. And there's a deeper storm coming: Nadia's new taste survey rates each customer on
+**thirty** questions. In thirty dimensions, "distance" barely means anything — every point ends up
+roughly equidistant from every other — and she can't even *look* at the data to check. Before she can
+cluster that, she needs a way to squeeze thirty numbers down to two she can actually see.

@@ -150,6 +150,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_3,
     },
     {
+        id: 'dbscan',
+        path: '/dbscan',
+        title: 'DBSCAN',
+        tagline: 'Cluster by density — and call the stragglers what they are: noise.',
+        status: 'live',
+        chapter: 14,
+        part: PART_3,
+    },
+    {
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',

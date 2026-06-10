@@ -111,6 +111,20 @@ import * as ml from '../src/lib';
 }
 
 {
+    // DBSCAN (unsupervised): clusters by density and flags stragglers as noise — no k needed.
+    const inputs = new ml.Matrix([[0, 0], [0.1, 0], [0, 0.1], [0.1, 0.1], [5, 5], [5.1, 5], [5, 5.1], [5.1, 5.1], [10, 0]]);
+
+    const dbscan = new ml.DBSCAN();
+    dbscan.setEpsilon(0.5).setMinPoints(3);
+
+    dbscan.train(inputs);
+    console.log(dbscan.getLabels());
+    // [ 0, 0, 0, 0, 1, 1, 1, 1, -1 ]  ← two dense blobs (clusters 0 and 1), the lone point is noise (-1)
+    console.log(dbscan.getClusterCount());
+    // 2
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);
