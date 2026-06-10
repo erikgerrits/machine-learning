@@ -42,7 +42,10 @@
     "kernel",
     "classification",
     "k-means",
-    "clustering"
+    "clustering",
+    "hierarchical clustering",
+    "agglomerative",
+    "dendrogram"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

@@ -95,6 +95,22 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Hierarchical clustering (unsupervised): merge the closest groups bottom-up into a tree, then
+    // cut it to k clusters — no need to fix k before building. Same two blobs as k-means.
+    const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]]);
+
+    const hierarchical = new ml.HierarchicalClustering();
+    hierarchical.setNumberOfClusters(2).setLinkage('average');
+
+    hierarchical.train(inputs);
+    console.log(hierarchical.predict(inputs).toArray());
+    // one-hot membership: the low blob is one cluster, the high blob the other
+    // [ [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], [ 0, 1 ], [ 0, 1 ], [ 0, 1 ] ]
+    console.log(hierarchical.getMergeHistory().map(m => Number(m.distance.toFixed(2))));
+    // [ 1, 1, 1.21, 1.21, 14.17 ]  ← merge heights climbing until the two far-apart blobs join at the top
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

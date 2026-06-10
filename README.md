@@ -34,6 +34,7 @@ Below are some simple code usage examples.
 * [Gradient Boosting](#gradient-boosting)
 * [Support Vector Machine](#support-vector-machine)
 * [k-Means Clustering](#k-means-clustering)
+* [Hierarchical Clustering](#hierarchical-clustering)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -257,6 +258,31 @@ console.log(predictions.toArray());
 console.log(kMeans.getCentroids().toArray());
 // the two cluster centres (each blob's mean)
 // [ [ 10.333333333333332, 10.333333333333332 ], [ 0.3333333333333333, 0.3333333333333333 ] ]
+
+```
+
+### Hierarchical Clustering
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Hierarchical clustering (unsupervised): merge the closest groups bottom-up into a tree,
+// then cut it to k clusters — no need to fix k before building.
+const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]]);
+
+const hierarchical = new ml.HierarchicalClustering();
+hierarchical.setNumberOfClusters(2).setLinkage('average'); // 'single' | 'complete' | 'average'
+
+hierarchical.train(inputs);
+
+const predictions = hierarchical.predict(inputs);
+console.log(predictions.toArray());
+// one-hot cluster membership (the low blob is one cluster, the high blob the other)
+// [ [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], [ 0, 1 ], [ 0, 1 ], [ 0, 1 ] ]
+
+console.log(hierarchical.getMergeHistory().map(m => Number(m.distance.toFixed(2))));
+// the dendrogram's merge heights, climbing until the two far-apart blobs join at the top
+// [ 1, 1, 1.21, 1.21, 14.17 ]
 
 ```
 

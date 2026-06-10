@@ -22,6 +22,7 @@ const RandomForestsTutorial = lazy(() => import('./content/random-forests.mdx'))
 const GradientBoostingTutorial = lazy(() => import('./content/gradient-boosting.mdx'));
 const SupportVectorMachinesTutorial = lazy(() => import('./content/support-vector-machines.mdx'));
 const KMeansTutorial = lazy(() => import('./content/k-means.mdx'));
+const HierarchicalClusteringTutorial = lazy(() => import('./content/hierarchical-clustering.mdx'));
 
 export function App() {
     return (
@@ -137,6 +138,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <KMeansTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="hierarchical-clustering"
+                    element={
+                        <TutorialPage>
+                            <HierarchicalClusteringTutorial />
                         </TutorialPage>
                     }
                 />

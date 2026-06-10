@@ -2,6 +2,8 @@ export { default as DecisionTree } from "./machine-learning/supervised/DecisionT
 export type { DecisionTreeNode } from "./machine-learning/supervised/DecisionTree";
 export { default as FeedforwardNeuralNetwork } from "./machine-learning/supervised/FeedforwardNeuralNetwork";
 export { default as GradientBoosting } from "./machine-learning/supervised/GradientBoosting";
+export { default as HierarchicalClustering } from "./machine-learning/unsupervised/HierarchicalClustering";
+export type { Linkage, HierarchicalMerge } from "./machine-learning/unsupervised/HierarchicalClustering";
 export { default as KMeans } from "./machine-learning/unsupervised/KMeans";
 export { default as LinearRegression } from "./machine-learning/supervised/LinearRegression";
 export { default as LogisticRegression } from "./machine-learning/supervised/LogisticRegression";

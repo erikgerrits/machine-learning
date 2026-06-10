@@ -78,6 +78,13 @@ export const SVM_LINEAR_EXPECTED_CLASSES = [1, 1, 1, 1, 0, 0, 0, 0];
 export const SVM_XOR_TARGETS = [[0], [1], [1], [0]];
 export const SVM_XOR_EXPECTED_CLASSES = [0, 1, 1, 0];
 
+/**
+ * Four points on a line for hierarchical clustering: a tight pair at 0–1, a lone point at 3, and a
+ * far point at 8. The merge order is unambiguous (0–1 first, then 2 joins, then 3 last), which lets
+ * tests pin the dendrogram's shape and its non-decreasing merge heights.
+ */
+export const HIERARCHICAL_LINE_INPUTS = [[0, 0], [1, 0], [3, 0], [8, 0]];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

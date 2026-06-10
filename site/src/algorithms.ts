@@ -141,6 +141,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_3,
     },
     {
+        id: 'hierarchical-clustering',
+        path: '/hierarchical-clustering',
+        title: 'Hierarchical Clustering',
+        tagline: 'Grow a family tree of customers — and cut it wherever you like.',
+        status: 'live',
+        chapter: 13,
+        part: PART_3,
+    },
+    {
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',
