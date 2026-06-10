@@ -30,11 +30,13 @@ generative). The built algorithms become the spine; everything else is roadmap.
 the whole of Part 2 (k‑NN, Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support
 Vector Machines), all of Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA, Anomaly Detection,
 Association Rules, Recommender Systems), and Part 4 — Time Series, the Perceptron interlude, Neural
-Networks, Convolutional Networks, and now **Ch 22 Recurrent Networks** (the newest chapter: a
-from-scratch trainable RNN with a learned embedding layer + backprop-through-time + gradient
-checking — again built fully rather than the planned "adopts" explainer). The two deep-learning
-frontier chapters (CNN, RNN) both became full trainable builds. Still roadmap: Transformers (Ch 23),
-the reinforcement-learning arc (Ch 24–27), generative, and Bayesian. See the status column below.
+Networks, Convolutional Networks, Recurrent Networks, and now **Ch 23 Transformers & Attention**
+(the newest chapter: a from-scratch trainable single self-attention block — Q/K/V, scaled
+dot-product attention, a CLS head, learned token + positional embeddings — with full backprop and
+gradient checking). **All three deep-learning frontier chapters (CNN, RNN, Transformer) became full
+trainable builds**, each gradient-checked, rather than the planned "adopts" explainers. That closes
+the built deep-learning arc (Ch 0–23). Still roadmap: the reinforcement-learning arc (Ch 24–27),
+generative (Ch 28–29), and Bayesian (Ch 30). See the status column below.
 
 ---
 
@@ -178,7 +180,7 @@ Every row's "Wall" is the previous tool failing.
 | 20 | **Neural Networks & Backprop** | Danger/delight hides in *combinations* of cues (XNOR-like) | k-NN is slow, memoryless, and dumb in high dimensions; linear can't combine → **stack layers that learn features**; backprop ("blame flows backward"); dropout; SGD/Adam | ✅ `FeedforwardNeuralNetwork` |
 | 21 | **Convolutional Nets (CNNs)** | Grade latte-art photos / spot pastry defects / scan receipts | Dense nets ignore spatial structure → **convolutions**, filters, pooling (computer vision) | ✅ `ConvolutionalNeuralNetwork` (built from scratch — exceeded the "adopts" plan) |
 | 22 | **Recurrent Nets / LSTMs** | Learn *sequence & text representations* (reviews, chat logs) — **not** forecasting (that's Ch 19) | Feedforward has no memory of order; this is the bridge to language → recurrence, memory, vanishing gradients. *Embeddings are introduced here as connective tissue* — learned word/item **vectors** where "similar sits close" (also reused by recsys, Ch 18) | ✅ `RecurrentNeuralNetwork` (built from scratch — RNN + embeddings + BPTT; exceeded the "adopts" plan) |
-| 23 | **Transformers & Attention** | The café's AI assistant / chatbot | RNNs forget long context & don't parallelize → **attention**; the modern backbone (and a nod to the model writing this) | ○ (adopts) |
+| 23 | **Transformers & Attention** | The café's AI assistant / chatbot | RNNs forget long context & don't parallelize → **attention**; the modern backbone (and a nod to the model writing this) | ✅ `Transformer` (built from scratch — single self-attention block + BPTT; exceeded the "adopts" plan) |
 
 ### Part 5 — Learning by doing: reinforcement learning (Season 4)
 | # | Chapter | Café problem | The Wall → The Idea | Status |

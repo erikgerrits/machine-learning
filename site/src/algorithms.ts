@@ -238,4 +238,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 22,
         part: PART_4,
     },
+    {
+        id: 'transformer',
+        path: '/transformer',
+        title: 'Transformers & Attention',
+        tagline: 'Let every word look at every other and decide what matters — the modern backbone.',
+        status: 'live',
+        chapter: 23,
+        part: PART_4,
+    },
 ];

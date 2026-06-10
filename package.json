@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -71,7 +71,10 @@
     "recurrent neural network",
     "rnn",
     "embeddings",
-    "nlp"
+    "nlp",
+    "transformer",
+    "attention",
+    "self-attention"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

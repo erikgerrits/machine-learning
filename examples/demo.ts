@@ -254,6 +254,26 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Transformer (self-attention): find the salient word anywhere in the sequence.
+    // Vocab: 0=<cls> 1=filler 2=good 3=bad. Class = which keyword appears, at any position.
+    const make = (pos: number, key: number) => { const s = [0, 1, 1, 1, 1]; s[pos] = key; return s; };
+    const sequences = new ml.Matrix([make(1, 2), make(3, 2), make(2, 3), make(4, 3), make(4, 2), make(1, 3)]);
+    const targets = new ml.Matrix([[1, 0], [1, 0], [0, 1], [0, 1], [1, 0], [0, 1]]);
+
+    const transformer = new ml.Transformer();
+    transformer.setVocabSize(4).setModelDim(8).setMaxLength(5).setLearningRate(0.05).setNumberOfEpochs(500).setSeed(0);
+
+    transformer.train(sequences, targets);
+    console.log(transformer.predict(sequences).getMaximumRowIndeces().toArray());
+    // [ [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ], [ 1 ] ]  ← "good" → 0, "bad" → 1, wherever it appears
+    // The [CLS] token's attention row concentrates on the keyword's position (here index 3):
+    console.log(transformer.getAttention(make(3, 2))[0].map(a => Number(a.toFixed(2))));
+    // [ 0.08, 0.13, 0.1, 0.55, 0.14 ]  ← CLS attends mostly to index 3, where the keyword sits
+    console.log('Transformer gradients verified:', transformer.checkGradients());
+    // Transformer gradients verified: true  ← finite-difference check of the attention backprop
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);
