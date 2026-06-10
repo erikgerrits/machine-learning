@@ -2,9 +2,11 @@ import type { Domain } from './datasets';
 import { gaussian, mulberry32 } from './rng';
 
 /**
- * Unlabelled 2-D point clouds for the k-means playground. Unlike the supervised datasets these
- * carry **no targets** — clustering is unsupervised, so all the model ever sees is `inputs`.
- * `recommendedClusters` is the value of k that matches the data's natural structure.
+ * Unlabelled customer clouds for the k-means playground (Chapter 12). Each point is one of Nadia's
+ * customers, placed by two things she can measure — roughly *how often they come in* (x) and *how
+ * much they spend* (y). Unlike the supervised datasets these carry **no targets**: nobody has
+ * labelled anyone, so all the model ever sees is `inputs`. `recommendedClusters` is the value of k
+ * that matches the data's natural structure.
  */
 export interface ClusteringDataset {
     id: string;
@@ -35,7 +37,7 @@ function ringOfBlobs(count: number, radius = 0.95, spread = 0.16) {
     };
 }
 
-/** Uniform noise — no real clusters, so k-means just tiles the plane into Voronoi cells. */
+/** Uniform noise — no real segments, so k-means just tiles the plane into Voronoi cells. */
 function scatter(seed: number, n: number) {
     const rand = mulberry32(seed);
     const inputs: number[][] = [];
@@ -45,7 +47,7 @@ function scatter(seed: number, n: number) {
     return { inputs };
 }
 
-/** Two interleaving crescents — round-cluster k-means can't follow the curve (a teachable miss). */
+/** Two interleaving crescents — round-segment k-means can't follow the curve (a teachable miss). */
 function moons(seed: number, n: number) {
     const rand = mulberry32(seed);
     const inputs: number[][] = [];
@@ -64,32 +66,32 @@ function moons(seed: number, n: number) {
 export const CLUSTERING_DATASETS: ClusteringDataset[] = [
     {
         id: 'blobs5',
-        label: 'Five blobs',
-        blurb: 'Five tidy Gaussian clusters — k-means nails these when k matches.',
+        label: 'Five types',
+        blurb: 'Five tidy knots of customers — grab-and-go, regulars, weekend treaters, and so on. k-means nails them when k = 5.',
         domain: DOMAIN,
         recommendedClusters: 5,
         generate: ringOfBlobs(5),
     },
     {
         id: 'blobs3',
-        label: 'Three blobs',
-        blurb: 'Three well-separated clusters around a triangle. Try k = 3.',
+        label: 'Three types',
+        blurb: 'Three clearly separated kinds of customer. Try k = 3 and watch the centres settle into them.',
         domain: DOMAIN,
         recommendedClusters: 3,
         generate: ringOfBlobs(3, 0.85, 0.18),
     },
     {
         id: 'scatter',
-        label: 'Uniform scatter',
-        blurb: 'No real structure — k-means still partitions the plane into k Voronoi cells.',
+        label: 'Festival day',
+        blurb: 'A street-fair crowd of one-off visitors — no real segments at all. k-means still carves the plane into k arbitrary patches.',
         domain: { xMin: -1.3, xMax: 1.3, yMin: -1.3, yMax: 1.3 },
         recommendedClusters: 4,
         generate: scatter,
     },
     {
         id: 'moons',
-        label: 'Two moons',
-        blurb: 'Curved clusters. k-means assumes round blobs, so it splits the moons oddly.',
+        label: 'Blended habits',
+        blurb: 'Two habits that curl into one another (the morning crowd shading into the lunch crowd). k-means assumes round groups, so it slices the curve in half.',
         domain: { xMin: -1.5, xMax: 2.5, yMin: -1.2, yMax: 1.6 },
         recommendedClusters: 2,
         generate: moons,

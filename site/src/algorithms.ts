@@ -135,7 +135,7 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         id: 'k-means',
         path: '/k-means',
         title: 'k-Means',
-        tagline: 'Finds clusters in unlabelled data all on its own.',
+        tagline: 'Who are my regulars? Find the customer groups with no labels at all.',
         status: 'live',
         chapter: 12,
         part: PART_3,

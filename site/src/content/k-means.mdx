@@ -1,26 +1,51 @@
 import { KMeansPlayground } from '../components/KMeansPlayground';
 
-# k-Means Clustering
+# Chapter 12 — Who are my regulars?
 
-Every other model on this site is **supervised** — it learns from inputs paired with the right
-answers. k-means is different: it's **unsupervised**. You hand it a pile of points with _no
-labels_ and it discovers the groups on its own. Below is the real
-[`KMeans`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/KMeans.ts)
-clustering live — press **Train** and watch the centroids slide into place.
+> *k-Means clustering.* For the first time, Nadia faces a question with no answer key — and meets a
+> model that learns without one.
+
+Tomás leans on the counter with his order pad. *"Who even are your regulars? Group them so I know
+what to stock."* Nadia pulls up her customer list — months of it, every visitor a couple of numbers
+she can actually measure: roughly **how often they come in**, and **how much they spend** when they
+do. She can see, squinting, that they're not all the same. There are knots of similar people in
+there. She just can't name them.
+
+## The wall: there's no answer key
+
+She reaches for the ledger and stops cold. *Every* tool on those pages — the regression line, the
+trees, the forest, last chapter's beautiful margin — learned from an **answer key**: orders already
+marked comp or no-comp, batches already labelled rose or flopped. You showed the model the right
+answers and it learned to copy them.
+
+Here there are no right answers. Nobody has ever sorted her customers into groups. There's no column
+that says which type anyone is — the types don't even exist yet. They're *hiding* in the data,
+waiting to be found. Every model she owns needs to be **told** the answer, and there's no one to
+tell it.
+
+## The idea: let the groups find themselves
+
+So Nadia stops trying to predict a label and starts trying to **discover** one. Her reasoning is
+almost physical. Say there are `k` groups. Drop `k` pins onto the chart at random. Now repeat two
+moves until they stop moving:
+
+1. **Assign** — colour every customer by whichever pin is nearest.
+2. **Move** — slide each pin to the dead centre of the customers that just chose it.
+
+Move the pins and the nearest-customer colouring shifts; recolour and the centres want to move
+again. Round after round the pins drift until they settle into the middle of real knots of people.
+That's it — that's **k-means**, and the two-step dance is **Lloyd's algorithm**. Press **Train** and
+watch the segment centres migrate into place:
 
 <div className="breakout">
   <KMeansPlayground />
 </div>
 
-## Lloyd's algorithm
+## How it works: assign, move, repeat
 
-k-means starts by scattering `k` **centroids** onto random data points, then repeats two steps
-until nothing changes:
-
-1. **Assign** every point to its nearest centroid — those are the coloured regions.
-2. **Move** every centroid to the mean of the points now assigned to it.
-
-That's the whole training loop, straight from the source:
+The whole training loop is those two steps in a `while`-until-nothing-changes, straight from the
+[`KMeans`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/KMeans.ts)
+source:
 
 ```ts
 for (let iteration = 0; iteration < this.numberOfIterations; iteration++) {
@@ -34,35 +59,54 @@ for (let iteration = 0; iteration < this.numberOfIterations; iteration++) {
 }
 ```
 
-Because each round can only ever lower the total distance from points to their centroids, the
-**inertia** curve on the right falls monotonically and then flattens — that flat line is
-convergence.
-
-## No targets, just inputs
-
-Look at the signature: `train(inputs)` takes a single matrix. There is no `targets` argument
-anywhere, which is what makes this unsupervised. `predict` then hands back **one-hot membership**
-— a `1` in the column of each point's cluster:
+The tell-tale sign that this is a different *kind* of model is the signature: `train(inputs)` takes
+a single matrix. There is **no `targets` argument anywhere** — that's what "unsupervised" means.
+Afterwards `predict` hands back **one-hot membership**: a `1` in the column of each customer's group.
 
 ```ts
-kmeans.train(new Matrix([[0, 0], [0, 1], [10, 10], [10, 11]]));
-kmeans.predict(new Matrix([[0, 0], [10, 10]])); // e.g. [[1, 0], [0, 1]]
-kmeans.getCentroids();                          // the cluster centres themselves
+kmeans.train(new Matrix(customers));   // no labels — just the customers
+kmeans.predict(new Matrix(customers)); // e.g. [[0, 1, 0], [1, 0, 0], …] — each row's group
+kmeans.getCentroids();                 // the group centres: Nadia's customer "types"
 ```
 
-## Where it shines, and where it doesn't
+What's it actually minimising? The **inertia** — the total squared distance from every customer to
+the centre of their group:
 
-On the **blobs** datasets, k-means is near-perfect once `k` matches the number of real clusters.
-But it always carves the plane into straight-edged Voronoi cells around round centres, so:
+$$
+J = \sum_{i=1}^{m} \big\lVert\, \mathbf{x}_i - \boldsymbol{\mu}_{c(i)} \,\big\rVert^{2}
+$$
 
-- On **uniform scatter** there's no real structure — it still tiles the plane into `k` arbitrary cells.
-- On **two moons** the round-cluster assumption breaks: it slices each crescent in half instead of
-  following the curve.
+Each assign-step can only move a point to a *nearer* centre, and each move-step sits each centre
+where it's closest to its points, so neither step can ever raise `J`. That's why the **Inertia**
+curve on the right falls and then flattens — and that flat line is convergence.
 
-The starting centroids are random, so the **seed** matters: a bad initialisation can settle into a
-worse grouping. Nudge the seed slider and watch the final clusters — and the converged inertia —
-change.
+## Try it yourself
 
-> For clusters that curve, or labels you actually have, reach for a non-linear
-> [neural network](/machine-learning/neural-network) or the local voting of
-> [k-nearest neighbours](/machine-learning/nearest-neighbors).
+- **Three types** / **Five types** — set `k` to match and the centres slide straight into the knots
+  of customers. Now Nadia has names to give Tomás: the grab-and-go crowd, the weekend treaters, the
+  daily regulars.
+- **Festival day** — a street-fair crowd of one-offs with no real groups. k-means *still* hands back
+  `k` tidy-looking segments. A reminder: it will always find groups, whether or not any exist.
+- **Blended habits** — two habits that curl into each other. k-means assumes round, blobby groups,
+  so it slices the crescents straight across instead of following the curve. A real miss — hold onto
+  it.
+- Nudge the **seed** on any dataset. Because the pins start on random customers, a bad start can
+  settle into a visibly worse grouping — same data, different answer.
+
+> **Field note — how do you choose k?** You can't just pick the k with the lowest inertia: more
+> groups *always* lower it (at `k = m`, every customer is its own group and inertia hits zero).
+> Instead, plot inertia as you raise k and look for the **elbow** — the point where adding another
+> group stops buying much. That kink is usually the number of groups the data actually has.
+
+## What broke
+
+k-means gave Nadia her segments, and it did it with no answer key at all — the first model in the
+ledger to learn from raw data alone. But it leans on assumptions she can already feel straining.
+She had to **tell it `k`** before it knew anything; it only finds **round, similar-sized** groups,
+so the blended habits defeated it; and a single unlucky **starting seed** can land it in the wrong
+grouping entirely.
+
+Real customers won't always clump into neat circles. Some groups curve. Some are tiny and tucked
+inside a bigger one. Some are just a thin rim of stragglers around the edge — the odd late-night
+crowd she'd love to recognise. To find shapes like those, Nadia's going to need a way to grow groups
+that don't have to be round, and that don't make her guess their number in advance.

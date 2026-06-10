@@ -212,15 +212,15 @@ export function KMeansPlayground() {
                     onChange={setSpeed}
                 />
                 <NumberField label="Random seed" value={seed} onChange={setSeed} />
-                <Hint>No labels needed — k-means groups the points all on its own.</Hint>
+                <Hint>No labels — nobody told it who's who. k-means finds the segments on its own.</Hint>
             </ControlPanel>
 
             <div className={styles.stage}>
                 <div className={styles.boundaryWrap}>
                     <canvas ref={boundaryCanvasRef} className={styles.boundary} />
                     <div className={styles.activation}>
-                        <span>◆ centroids</span>
-                        <span>● points by cluster</span>
+                        <span>◆ segment centre</span>
+                        <span>● customers by segment</span>
                     </div>
                 </div>
 
@@ -233,11 +233,11 @@ export function KMeansPlayground() {
 
                     <Card title="Lloyd's algorithm" subtitle="assign → move, repeat">
                         <p className={styles.note}>
-                            Each step does two things: every point is <strong>assigned</strong> to its
-                            nearest centroid (the coloured Voronoi cells), then every centroid{' '}
-                            <strong>moves</strong> to the mean of its points. Repeat until nothing moves —
-                            that's convergence. Change <strong>k</strong> or the <strong>seed</strong> to
-                            see it land in a different grouping.
+                            Each step does two things: every customer is <strong>assigned</strong> to the
+                            nearest segment centre (the coloured regions), then every centre{' '}
+                            <strong>moves</strong> to the average of its customers. Repeat until nothing
+                            moves — that's convergence. Change <strong>k</strong> or the{' '}
+                            <strong>seed</strong> to see it land in a different grouping.
                         </p>
                     </Card>
 

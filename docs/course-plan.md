@@ -26,11 +26,11 @@ generative). The built algorithms become the spine; everything else is roadmap.
 
 **Goal:** engaging, fun, genuinely educational, and very cool.
 
-**Status (this release).** Part 1 is fully woven (Ch 0–5), and so is the whole of Part 2 — k‑NN,
-Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, and now **Ch 11 Support Vector
-Machines** (the newest chapter). Two algorithms are *built but not yet woven into the story*:
-**k‑Means** (Ch 12) and the **Neural Network** (Ch 20) still ship their older generic tutorials and
-need the per-chapter café treatment. Everything else is roadmap. See the status column below.
+**Status (this release).** Woven through **Ch 0–12**: all of Part 1, the whole of Part 2 (k‑NN,
+Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support Vector Machines), and the
+opening of Part 3 — **Ch 12 k‑Means** (the newest chapter). One built algorithm is *not yet woven
+into the story*: the **Neural Network** (Ch 20) still ships its older generic tutorial and needs the
+per-chapter café treatment. Everything else is roadmap. See the status column below.
 
 ---
 
@@ -126,7 +126,7 @@ Ordered simplest → most advanced. Three states:
 - **✅ DONE** — built *and* woven into the café story: the algorithm lives in `src/lib` with a
   playground, and its tutorial follows the per-chapter template in Nadia's voice.
 - **◐ BUILT** — the algorithm + playground exist in the code, but the tutorial is still the older
-  generic explainer, *not yet re-themed* into the story. (Currently: k-Means, Neural Networks.)
+  generic explainer, *not yet re-themed* into the story. (Currently: Neural Networks.)
 - **○ ROADMAP** — a future chapter; the library grows into it.
 
 Every row's "Wall" is the previous tool failing.
@@ -158,7 +158,7 @@ Every row's "Wall" is the previous tool failing.
 ### Part 3 — Understanding customers (Season 2, unsupervised)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 12 | **k-Means Clustering** | Who *are* my regulars? (no labels) | Every method so far needed an answer key — here there's none → **unsupervised**; Lloyd's algorithm; inertia; choosing k | ◐ `KMeans` (tutorial not yet woven into the story) |
+| 12 | **k-Means Clustering** | Who *are* my regulars? (no labels) | Every method so far needed an answer key — here there's none → **unsupervised**; Lloyd's algorithm; inertia; choosing k | ✅ `KMeans` |
 | 13 | **Hierarchical Clustering** | A nested family tree of menu items / customer groups | k is unknown & structure is nested → **dendrograms** | ○ |
 | 14 | **DBSCAN** | A weird late-night cluster (possible fraud) | k-means forces every point into a round blob → **density-based** clusters + outliers | ○ |
 | 15 | **PCA / Dimensionality Reduction** | A 30-question taste survey you can't visualize | You can't see 30 dimensions; features are redundant → **principal components**: 30 → 2 "flavor axes" | ○ |
@@ -248,8 +248,8 @@ Canvas playgrounds). Realization is staged so we never block on the whole map:
 
 **Phase 1 — Re-frame the built algorithms into café chapters (no new algorithms). [mostly done]**
 - Rewrite the tutorials in `site/src/content/*.mdx` to follow the per-chapter template (Problem
-  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for Ch 0–11; the two
-  remaining built algorithms (k‑Means, Neural Network) still need this treatment.*
+  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for Ch 0–12; the one
+  remaining built algorithm (Neural Network, Ch 20) still needs this treatment.*
 - Re-theme datasets in `site/src/ml/*` (e.g. `datasets.ts`, `clusteringDatasets.ts`) to café data
   (demand, batches, pastries, regulars) **with the same underlying shapes/labels**, so the existing
   Canvas playgrounds and viz keep working unchanged.
