@@ -293,6 +293,26 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Contextual bandit (LinUCB): the best offer now depends on WHO is at the counter.
+    // Context = [isMorningRegular, isEveningTourist]. Two arms: a cinnamon roll vs an espresso tonic.
+    const types = [[1, 0], [0, 1]];                  // morning regular / evening tourist
+    const rate = [[0.8, 0.2], [0.2, 0.8]];           // hidden: roll wins mornings, tonic wins evenings
+
+    const bandit = new ml.ContextualBandit().setNumberOfArms(2).setContextDimensions(2).setStrategy('linucb').setSeed(0);
+
+    let lcg = 1;
+    const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647; // tiny seeded generator
+    for (let t = 0; t < 3000; t++) {
+        const context = types[rng() < 0.5 ? 0 : 1];                  // who walked in
+        const arm = bandit.selectArm(context);                       // pick an offer for them
+        const took = rng() < rate[arm][context[1] === 1 ? 1 : 0] ? 1 : 0;
+        bandit.update(arm, context, took);                           // learn from the outcome
+    }
+    console.log('morning →', bandit.selectArm([1, 0]), ' evening →', bandit.selectArm([0, 1]));
+    // morning → 0  evening → 1  ← it learned a per-customer policy: roll for regulars, tonic for tourists
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

@@ -257,4 +257,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 24,
         part: PART_5,
     },
+    {
+        id: 'contextual-bandits',
+        path: '/contextual-bandits',
+        title: 'Contextual Bandits',
+        tagline: 'The best offer depends on who walks in — learn a policy per customer.',
+        status: 'live',
+        chapter: 25,
+        part: PART_5,
+    },
 ];

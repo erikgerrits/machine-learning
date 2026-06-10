@@ -1,0 +1,106 @@
+import { ContextualBanditPlayground } from '../components/ContextualBanditPlayground';
+
+# Chapter 25 — It depends who's asking
+
+> *Contextual bandits.* Last chapter's bandit found the one special that sells best. But the morning
+> regular and the evening tourist don't want the same thing — so "the best special" is the wrong
+> question. The right one is **best for *whom*** — and that's a policy the café can learn.
+
+The plain bandit from Chapter 24 settled Nadia's chalkboard: feature the season's best seller, sample
+the rest now and then. But standing at the counter she notices something it can't see. The 7am
+regulars reliably grab a cinnamon roll; the same roll sits untouched when the after-dinner crowd
+drifts in for something sharp and cold. One number per special — its overall sell-rate — is blurring
+two different worlds together.
+
+## The wall: one best arm for everyone is too coarse
+
+A multi-armed bandit keeps a single running average per arm, so it can only ever crown **one** winner.
+When the cinnamon roll sells to half the room and flops with the other half, that average lands
+somewhere in the lukewarm middle — and the bandit either over-features it on the evening crowd or
+under-features it in the morning. It has no handle for *"it depends."* The information Nadia needs —
+who's at the counter — is sitting right there, and the model has no slot to put it in.
+
+## The idea: a model per arm, conditioned on context
+
+So before each choice, let the world hand the bandit a **context**: a little feature vector describing
+the customer (morning regular? evening tourist? sweet tooth? in a hurry?). Now give **each offer its
+own small model** that predicts *its* reward from that context, rather than a lone average. Learn those
+models online from what you observe, and at decision time, score every offer **for this specific
+customer** and pick the best.
+
+The classic recipe is **LinUCB**. Each arm fits a ridge regression — reward ≈ `θ_a · context` — and,
+just like UCB last chapter, it doesn't trust the prediction blindly. It adds an **optimism bonus**
+that's large where the arm has seen little data *for customers like this one*:
+
+$$
+\text{score}_a(x) = \underbrace{\theta_a \cdot x}_{\text{predicted reward}} + \;\alpha \underbrace{\sqrt{x^{\top} A_a^{-1}\, x}}_{\text{how unsure, for this } x}
+$$
+
+Each panel below is one kind of customer. Press **Train** and watch a **different ★ rise in each** —
+a single bandit learning a tailored policy per context:
+
+<div className="breakout">
+  <ContextualBanditPlayground />
+</div>
+
+## How it works: ridge regression you can update one row at a time
+
+Each arm keeps two running tallies: a matrix `A_a` (it starts as the identity, for ridge
+regularisation, and accumulates the outer product of every context it's been chosen for) and a vector
+`b_a` (the contexts weighted by the rewards they earned). Its weights are `θ_a = A_a⁻¹ b_a` — ordinary
+ridge regression, but maintained **incrementally**, straight from the
+[`ContextualBandit`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/reinforcement/ContextualBandit.ts)
+source:
+
+```ts
+// update(arm, context, reward): fold one outcome into that arm's model
+this.A[arm] = Matrix.add(this.A[arm], Matrix.multiply(x, Matrix.transpose(x))); // A += x·xᵀ
+this.b[arm] = Matrix.add(this.b[arm], Matrix.multiply(x, reward));              // b += reward·x
+```
+
+Selection inverts each arm's `A_a`, reads off its prediction, and — for LinUCB — adds the optimism
+bonus before taking the best:
+
+```ts
+const inverse = this.A[arm].getInverse();
+const theta = Matrix.multiply(inverse, this.b[arm]);  // ridge weights θ_a = A_a⁻¹ b_a
+let score = dot(theta, x);                            // predicted reward θ_a · x
+if (this.strategy === "linucb") {
+    score += this.alpha * Math.sqrt(dot(Matrix.multiply(inverse, x), x)); // wider where data is thin
+}
+```
+
+That `xᵀ A_a⁻¹ x` term is exactly the variance of the prediction for *this* context: tiny once an arm
+has served many similar customers, large for a customer type it's barely tried — so the bonus pushes
+the bandit to go gather precisely the data it's missing.
+
+## Try it yourself
+
+- **Rush hours.** Three customer types, a different winner in each. Watch the three ★s land on three
+  *different* offers — one bandit, three policies. A plain Chapter-24 bandit could never split these.
+- **One size fits all.** Context is a decoy here — the cookie wins for everyone. The bandit discovers
+  the customer type doesn't move the needle and crowns the cookie in *both* panels, quietly behaving
+  like a plain bandit. Conditioning on context never hurts; it just stops helping.
+- **Optimism α.** Turn it up and LinUCB probes harder — it'll keep trying the unproven offers on a rare
+  customer type longer before committing. Turn it to 0 and it can prematurely lock a column onto a
+  lucky early guess. Compare against plain **ε-greedy**, which explores blindly across all contexts.
+- **Two crowds.** Note the oat flat white never earns a ★ — it's nobody's favourite, and the bandit
+  learns to skip it for both crowds.
+
+> **Field note — this is still a *one-shot* world.** Each customer's reward depends only on the offer
+> you make *them*, right now. Featuring the roll for the morning regular doesn't change who walks in
+> next, or what they'll want. The context is given, never *caused* by your past actions. That
+> independence is what keeps the math a tidy per-arm regression.
+
+## What broke — nothing; but the world is about to start remembering
+
+Nothing broke. The café now personalises: read the customer, make the offer most likely to land,
+and get sharper with every interaction. Bandits — plain and contextual — are the workhorses behind
+real recommendation, ad, and pricing systems for exactly this reason.
+
+But notice the quiet assumption in that field note: every turn is independent. Real decisions aren't
+always so kind. Set a price today and you change which customers come back next month; seat a party
+here and you shape the room for the next hour. When **an action moves you to a new situation** and the
+rewards ripple *forward in time*, a per-turn model isn't enough — you need to reason about **states**
+and a future you partly create. That's the leap to full reinforcement learning, and the next stop on
+the map (`docs/course-plan.md`).
