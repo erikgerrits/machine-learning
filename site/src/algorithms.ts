@@ -204,6 +204,14 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_4,
     },
     {
+        id: 'perceptron',
+        path: '/perceptron',
+        title: 'Interlude · The Perceptron',
+        tagline: 'One neuron, one straight line — and the problem that stalled it.',
+        status: 'live',
+        part: PART_4,
+    },
+    {
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',

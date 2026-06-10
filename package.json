@@ -62,7 +62,8 @@
     "matrix factorization",
     "time series",
     "forecasting",
-    "exponential smoothing"
+    "exponential smoothing",
+    "perceptron"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

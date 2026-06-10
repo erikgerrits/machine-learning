@@ -28,6 +28,7 @@ Below are some simple code usage examples.
 * [Logistic Regression](#logistic-regression)
 * [Multiclass Logistic Regression](#multiclass-logistic-regression)
 * [Nearest Neighbors](#nearest-neighbors)
+* [Perceptron](#perceptron)
 * [Naive Bayes](#naive-bayes)
 * [Decision Tree](#decision-tree)
 * [Random Forest](#random-forest)
@@ -137,6 +138,28 @@ const unknowns = new ml.Matrix([[0.5, 0.5], [1.5, 1.5], [1.75, 1.75]]);
 const predictions = nearestNeighbors.predict(unknowns);
 console.log(predictions.toArray());
 // [ [ 0.4, 0.2, 0.2, 0.2 ], [ 0.6666666666666666, 0, 0, 0.3333333333333333 ], [ 0, 0, 0, 1 ] ]
+
+```
+
+### Perceptron
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Perceptron (a single neuron): learns AND, but one straight line can't solve XOR.
+const inputs = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]);
+
+const perceptron = new ml.Perceptron();
+perceptron.setLearningRate(0.1).setNumberOfEpochs(100);
+
+perceptron.train(inputs, new ml.Matrix([[0], [0], [0], [1]])); // AND
+console.log(perceptron.predict(inputs).toArray());
+// [ [ 0 ], [ 0 ], [ 0 ], [ 1 ] ]  <- solves AND (linearly separable)
+
+perceptron.reset();
+perceptron.train(inputs, new ml.Matrix([[0], [1], [1], [0]])); // XOR
+console.log(perceptron.predict(inputs).toArray());
+// [ [ 1 ], [ 1 ], [ 0 ], [ 0 ] ] != [0,1,1,0]  <- one neuron is one line; XOR needs a layered network
 
 ```
 

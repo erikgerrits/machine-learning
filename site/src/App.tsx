@@ -29,6 +29,7 @@ const AnomalyDetectionTutorial = lazy(() => import('./content/anomaly-detection.
 const AssociationRulesTutorial = lazy(() => import('./content/association-rules.mdx'));
 const RecommenderSystemsTutorial = lazy(() => import('./content/recommender-systems.mdx'));
 const TimeSeriesTutorial = lazy(() => import('./content/time-series.mdx'));
+const PerceptronTutorial = lazy(() => import('./content/perceptron.mdx'));
 
 export function App() {
     return (
@@ -200,6 +201,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <TimeSeriesTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="perceptron"
+                    element={
+                        <TutorialPage>
+                            <PerceptronTutorial />
                         </TutorialPage>
                     }
                 />

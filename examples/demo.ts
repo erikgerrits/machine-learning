@@ -286,6 +286,23 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Perceptron (a single neuron): learns AND, but one straight line can't solve XOR.
+    const gates = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]);
+
+    const perceptron = new ml.Perceptron();
+    perceptron.setLearningRate(0.1).setNumberOfEpochs(100);
+
+    perceptron.train(gates, new ml.Matrix([[0], [0], [0], [1]])); // AND
+    console.log(perceptron.predict(gates).toArray());
+    // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ] ]  ← solves AND (linearly separable)
+
+    perceptron.reset();
+    perceptron.train(gates, new ml.Matrix([[0], [1], [1], [0]])); // XOR
+    console.log(perceptron.predict(gates).toArray());
+    // [ [ 1 ], [ 1 ], [ 0 ], [ 0 ] ] ≠ [0,1,1,0] — XOR isn't linearly separable; it takes a layered network (below)
+}
+
+{
     const nn = new ml.FeedforwardNeuralNetwork([40, 40, 40, 40, 40]);
     console.log('');
     console.log('Checking FeedforwardNeuralNetwork gradients...');

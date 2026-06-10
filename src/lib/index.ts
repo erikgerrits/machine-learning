@@ -17,6 +17,7 @@ export { default as MulticlassLogisticRegression } from "./machine-learning/supe
 export { default as NaiveBayes } from "./machine-learning/supervised/NaiveBayes";
 export { default as NearestNeighbors } from "./machine-learning/supervised/NearestNeighbors";
 export { default as PCA } from "./machine-learning/unsupervised/PCA";
+export { default as Perceptron } from "./machine-learning/supervised/Perceptron";
 export { default as RandomForest } from "./machine-learning/supervised/RandomForest";
 export { default as Recommender } from "./machine-learning/unsupervised/Recommender";
 export { default as SupportVectorMachine } from "./machine-learning/supervised/SupportVectorMachine";

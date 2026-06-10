@@ -5,6 +5,12 @@
 export const XNOR_INPUTS = [[0, 0], [0, 1], [1, 0], [1, 1]];
 export const XNOR_TARGETS = [[1], [0], [0], [1]];
 
+/** The four logic-gate inputs, with AND / OR / XOR labels. AND and OR are linearly separable; XOR is not. */
+export const GATE_INPUTS = [[0, 0], [0, 1], [1, 0], [1, 1]];
+export const AND_TARGETS = [[0], [0], [0], [1]];
+export const OR_TARGETS = [[0], [1], [1], [1]];
+export const XOR_TARGETS = [[0], [1], [1], [0]];
+
 /** A perfectly linear relationship: y = 1000 + 200 * x. */
 export const LINEAR_INPUTS = [[5], [7], [9], [11], [13]];
 export const LINEAR_TARGETS = [[2000], [2400], [2800], [3200], [3600]];
