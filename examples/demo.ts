@@ -233,6 +233,27 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Recurrent neural network: read a sequence (a tiny review) and classify its sentiment.
+    // Vocabulary: 0=<pad> 1=the 2=coffee 3=service 4=was 5=great 6=terrible
+    const reviews = new ml.Matrix([
+        [1, 2, 4, 5, 0], // the coffee was great   → positive
+        [1, 3, 4, 5, 0], // the service was great  → positive
+        [1, 2, 4, 6, 0], // the coffee was terrible → negative
+        [1, 3, 4, 6, 0], // the service was terrible → negative
+    ]);
+    const sentiment = new ml.Matrix([[1, 0], [1, 0], [0, 1], [0, 1]]); // [positive, negative]
+
+    const rnn = new ml.RecurrentNeuralNetwork();
+    rnn.setVocabSize(7).setEmbeddingDim(2).setHiddenSize(8).setLearningRate(0.1).setNumberOfEpochs(400).setSeed(0);
+
+    rnn.train(reviews, sentiment);
+    console.log(rnn.predict(reviews).getMaximumRowIndeces().toArray());
+    // [ [ 0 ], [ 0 ], [ 1 ], [ 1 ] ]  ← "great" reviews → positive (0), "terrible" → negative (1)
+    console.log('RNN gradients verified:', rnn.checkGradients());
+    // RNN gradients verified: true  ← finite-difference check of backprop-through-time
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

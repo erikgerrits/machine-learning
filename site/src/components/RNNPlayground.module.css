@@ -1,0 +1,83 @@
+.playground {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.stage {
+    display: grid;
+    grid-template-columns: minmax(0, 460px) minmax(260px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.boundaryWrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px -30px rgba(56, 189, 248, 0.5);
+    aspect-ratio: 1 / 1;
+}
+
+.boundary {
+    width: 100%;
+    height: 100%;
+}
+
+.legend {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    background: rgba(11, 17, 32, 0.6);
+    padding: 4px 10px;
+    border-radius: 999px;
+    backdrop-filter: blur(4px);
+}
+
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sampleList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sample {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+}
+
+.sampleText {
+    color: var(--muted);
+    font-style: italic;
+}
+
+.lossCanvas {
+    display: block;
+    width: 100%;
+    height: 130px;
+}
+
+@media (max-width: 900px) {
+    .playground {
+        grid-template-columns: 1fr;
+    }
+
+    .stage {
+        grid-template-columns: 1fr;
+    }
+}

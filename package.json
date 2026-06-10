@@ -67,7 +67,11 @@
     "convolutional neural network",
     "cnn",
     "deep learning",
-    "computer vision"
+    "computer vision",
+    "recurrent neural network",
+    "rnn",
+    "embeddings",
+    "nlp"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

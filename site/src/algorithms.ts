@@ -229,4 +229,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 21,
         part: PART_4,
     },
+    {
+        id: 'rnn',
+        path: '/rnn',
+        title: 'Recurrent Networks',
+        tagline: 'Read a sequence word by word, carrying a memory of what came before.',
+        status: 'live',
+        chapter: 22,
+        part: PART_4,
+    },
 ];
