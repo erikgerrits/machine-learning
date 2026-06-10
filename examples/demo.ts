@@ -154,6 +154,27 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Association rules (unsupervised): mine "basket" data for "buys X also buys Y".
+    // Items: 0=coffee, 1=croissant, 2=tea, 3=cookie. One row per receipt, 1 = item present.
+    const inputs = new ml.Matrix([
+        [1, 1, 0, 0],
+        [1, 1, 0, 0],
+        [1, 1, 0, 1],
+        [0, 0, 1, 1],
+        [0, 0, 1, 1],
+        [1, 0, 1, 1],
+    ]);
+
+    const rules = new ml.AssociationRules();
+    rules.setMinSupport(0.3).setMinConfidence(0.6);
+
+    rules.train(inputs);
+    const top = rules.getRules()[0];
+    console.log(top.antecedent, '->', top.consequent, '| confidence', top.confidence.toFixed(2), 'lift', top.lift.toFixed(2));
+    // [ 1 ] -> [ 0 ] | confidence 1.00 lift 1.50  ← everyone who bought a croissant also bought coffee
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

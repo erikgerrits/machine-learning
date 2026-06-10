@@ -26,6 +26,7 @@ const HierarchicalClusteringTutorial = lazy(() => import('./content/hierarchical
 const DBSCANTutorial = lazy(() => import('./content/dbscan.mdx'));
 const PCATutorial = lazy(() => import('./content/pca.mdx'));
 const AnomalyDetectionTutorial = lazy(() => import('./content/anomaly-detection.mdx'));
+const AssociationRulesTutorial = lazy(() => import('./content/association-rules.mdx'));
 
 export function App() {
     return (
@@ -173,6 +174,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <AnomalyDetectionTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="association-rules"
+                    element={
+                        <TutorialPage>
+                            <AssociationRulesTutorial />
                         </TutorialPage>
                     }
                 />

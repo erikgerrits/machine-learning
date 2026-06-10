@@ -1,0 +1,107 @@
+import { AssociationRulesPlayground } from '../components/AssociationRulesPlayground';
+
+# Chapter 17 — What goes with what
+
+> *Association rules.* Every model so far read a row as a point with fixed features. A receipt isn't
+> a point — it's a basket of items. Nadia wants the patterns hiding in the baskets.
+
+Nadia has a year of receipts and a hunch she's leaving money on the counter. Which items sell
+*together*? If everyone who buys a croissant also buys a coffee, she can bundle them, reposition the
+pastry case, or train the till to suggest the pairing. The anomaly detector from last chapter looked
+at each transaction in isolation; this question is the opposite — it lives entirely in the
+**combinations**.
+
+## The wall: a receipt isn't a point in space
+
+Here every tool in the ledger stalls. Regression, clustering, the Gaussian detector — all of them
+need a row to be a point with the same fixed coordinates. A receipt is a *set*: three items today,
+one tomorrow, in any order, drawn from a menu of dozens. There's no x and y to measure, no distance
+to take. And the obvious approach — "just count which pairs show up together" — drowns instantly:
+coffee is on half the receipts, so it co-occurs with *everything*, and the genuinely interesting
+combos hide under a pile of coincidences.
+
+## The idea: support, then confidence, then lift
+
+So Nadia counts, but carefully, with three questions. First, **how often** does a combo actually
+appear? — its **support**. Keep only the combos common enough to matter. Then, of the receipts that
+have the first item, **how reliably** do they also have the second? — the **confidence**. And
+finally the catch that saves her from the coffee trap: is the pairing **more than chance**? — the
+**lift**, which divides the confidence by how popular the consequent is on its own.
+
+$$
+\text{support}(X) = \frac{\#\{\text{baskets} \supseteq X\}}{N}, \quad
+\text{conf}(A\!\to\!B) = \frac{\text{support}(A \cup B)}{\text{support}(A)}, \quad
+\text{lift} = \frac{\text{conf}(A\!\to\!B)}{\text{support}(B)}
+$$
+
+A lift above 1 means the two appear together *more* than their popularity alone would predict — a
+real pairing. Below 1 they actually repel. Below, items ring the circle and each arrow is a
+rule, thicker and brighter for higher lift. Drag the **support** and **confidence** bars and watch
+the coincidences burn away:
+
+<div className="breakout">
+  <AssociationRulesPlayground />
+</div>
+
+## How it works: the Apriori shortcut
+
+Counting *every* possible combo would explode — a menu of 30 items has over a billion subsets. The
+**Apriori** algorithm dodges that with one observation: *a combo can't be frequent unless every one
+of its sub-combos is frequent too.* So it builds frequent sets level by level — singles, then pairs
+grown only from frequent singles, then triples grown only from frequent pairs — never even
+considering a set built on a rare one. Straight from the
+[`AssociationRules`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/AssociationRules.ts)
+source:
+
+```ts
+for (let k = 2; k <= this.maxItemsetSize && current.length > 0; k++) {
+    const candidates = generateCandidates(current, frequentSingles); // grow each frequent set by one item
+    const next = [];
+    for (const candidate of candidates) {
+        let count = 0;
+        for (const basket of baskets) if (candidate.every(item => basket.has(item))) count++;
+        if (count >= minCount) { next.push(candidate); this.record(candidate, count / n); }
+    }
+    current = next; // only frequent sets seed the next, bigger level
+}
+```
+
+Then every frequent set is split into candidate rules, and the ones that clear the confidence bar
+are kept, scored by lift:
+
+```ts
+const confidence = itemset.support / this.support(antecedent);
+if (confidence >= this.minConfidence) {
+    const lift = confidence / this.support(consequent);
+    this.rules.push({ antecedent, consequent, support: itemset.support, confidence, lift });
+}
+```
+
+## Try it yourself
+
+- **Café receipts** — the planted combos light up as the boldest arrows: espresso↔croissant,
+  latte↔muffin, tea↔cookie. The web *is* the menu's hidden structure.
+- **Busy menu** — noisier, with overlapping habits. At a low support bar you get a tangle of weak,
+  probably-coincidental rules; raise support and confidence and the web thins down to the few
+  pairings actually worth acting on.
+- Watch the difference between **confidence** and **lift**. A rule into a very popular item can show
+  high confidence and still have lift near 1 — reliable, but no real pull. The thick arrows are the
+  ones with high *lift*: genuine affinities, not just popularity.
+
+> **Field note — don't be fooled by confidence alone.** "Anything → coffee" looks confident simply
+> because almost everyone buys coffee. Lift is the honest measure: it asks whether knowing about A
+> actually changes how likely B is. A bundle is only worth building when the lift says the two truly
+> travel together.
+
+## What broke
+
+Association rules turned a shoebox of receipts into a map of what-goes-with-what, and lift kept Nadia
+honest about which pairings are real. For arranging the counter and bundling the menu, it's exactly
+the right lens.
+
+But it's a portrait of the *average* customer, and that's its ceiling. Every rule is the same advice
+for everyone — "had a croissant? here's a coffee" — when her actual regulars are gloriously
+specific: the one who pairs tea with a bagel, the late-night cookie-and-espresso crowd. Those
+personal patterns never clear the support bar; they get averaged into the crowd and lost. To suggest
+the *right* thing to *each* person — to fill in what a particular customer would love but hasn't
+tried — Nadia needs to stop mining the crowd and start learning individual taste.

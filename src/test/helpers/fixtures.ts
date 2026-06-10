@@ -114,6 +114,20 @@ export const ANOMALY_NORMAL = [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1], [1, 1],
  */
 export const ANOMALY_CORRELATED = [[-2, -2.1], [-1, -0.9], [0, 0.1], [1, 1.1], [2, 1.9], [-1.5, -1.6], [1.5, 1.4], [0.5, 0.6]];
 
+/**
+ * Association rules: a tiny basket matrix over 4 items (columns 0–3), 6 baskets. Item 1 almost
+ * always rides along with item 0, so "1 → 0" is a confident rule. Supports: 0 in 5/6 baskets,
+ * 1 in 4/6, {0,1} in 4/6 — so confidence(1→0)=1.0, confidence(0→1)=0.8.
+ */
+export const ASSOCIATION_INPUTS = [
+    [1, 1, 0, 0],
+    [1, 1, 1, 0],
+    [1, 1, 0, 0],
+    [0, 0, 1, 1],
+    [1, 0, 1, 0],
+    [1, 1, 0, 1],
+];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

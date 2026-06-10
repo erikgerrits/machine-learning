@@ -177,6 +177,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_3,
     },
     {
+        id: 'association-rules',
+        path: '/association-rules',
+        title: 'Association Rules',
+        tagline: 'The coffee-and-croissant combos hiding in the receipts.',
+        status: 'live',
+        chapter: 17,
+        part: PART_3,
+    },
+    {
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',

@@ -1,4 +1,6 @@
 export { default as AnomalyDetector } from "./machine-learning/unsupervised/AnomalyDetector";
+export { default as AssociationRules } from "./machine-learning/unsupervised/AssociationRules";
+export type { AssociationRule, FrequentItemset } from "./machine-learning/unsupervised/AssociationRules";
 export { default as DBSCAN } from "./machine-learning/unsupervised/DBSCAN";
 export { default as DecisionTree } from "./machine-learning/supervised/DecisionTree";
 export type { DecisionTreeNode } from "./machine-learning/supervised/DecisionTree";

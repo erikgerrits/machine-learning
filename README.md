@@ -38,6 +38,7 @@ Below are some simple code usage examples.
 * [DBSCAN](#dbscan)
 * [PCA](#pca)
 * [Anomaly Detection](#anomaly-detection)
+* [Association Rules](#association-rules)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -351,6 +352,33 @@ console.log(detector.predict(new ml.Matrix([[0, 0], [0.5, 0.5], [8, 8]])).toArra
 
 console.log(detector.score(new ml.Matrix([[8, 8]])).toArray());
 // [ [ 12.22 ] ]  <- its Mahalanobis distance, far past the threshold
+
+```
+
+### Association Rules
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Association rules (unsupervised): mine "basket" data for "buys X also buys Y".
+// Items: 0=coffee, 1=croissant, 2=tea, 3=cookie. One row per receipt, 1 = item present.
+const inputs = new ml.Matrix([
+    [1, 1, 0, 0],
+    [1, 1, 0, 0],
+    [1, 1, 0, 1],
+    [0, 0, 1, 1],
+    [0, 0, 1, 1],
+    [1, 0, 1, 1],
+]);
+
+const rules = new ml.AssociationRules();
+rules.setMinSupport(0.3).setMinConfidence(0.6); // support/confidence bars for keeping a rule
+
+rules.train(inputs);
+
+const top = rules.getRules()[0]; // rules come sorted strongest (highest lift) first
+console.log(top.antecedent, '->', top.consequent, '| confidence', top.confidence, 'lift', top.lift);
+// [ 1 ] -> [ 0 ] | confidence 1 lift 1.5  <- everyone who bought a croissant also bought coffee
 
 ```
 

@@ -53,7 +53,10 @@
     "principal component analysis",
     "dimensionality reduction",
     "outlier detection",
-    "mahalanobis"
+    "mahalanobis",
+    "association rules",
+    "apriori",
+    "market basket analysis"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",
