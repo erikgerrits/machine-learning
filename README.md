@@ -486,3 +486,16 @@ yarn build              # production build (deployed to GitHub Pages by deploy-s
 
 > **Enabling the live site:** in the repo, go to **Settings → Pages → Build and deployment →
 > Source: "GitHub Actions"**. Pushes to `master` then deploy automatically.
+
+### Releasing
+
+The npm package is published by CI when a version tag is pushed:
+
+```bash
+# bump "version" in package.json, commit as "Release X.Y.Z", merge to master, then:
+git tag vX.Y.Z
+git push --tags        # publish.yml type-checks, tests, builds, and runs `npm publish`
+```
+
+> Requires an **`NPM_TOKEN`** repository secret (an npm *automation* token for the package owner):
+> **Settings → Secrets and variables → Actions → New repository secret**.
