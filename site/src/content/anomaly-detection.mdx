@@ -1,0 +1,102 @@
+import { AnomalyDetectionPlayground } from '../components/AnomalyDetectionPlayground';
+
+# Chapter 16 — What doesn't fit
+
+> *Anomaly detection.* Nadia can't show a model examples of fraud — she barely has any, and tomorrow's
+> won't look like today's. So she models the one thing she has plenty of: normal.
+
+A few transactions in the books look *off* — a charge at 3am two towns over, a sudden order ten times
+the usual size. Nadia wants to catch them, but she's stuck. She can't train a classifier: fraud is
+rare, unlabelled, and shape-shifting — there's no tidy column of "this one was fraud" and no reason
+next month's scam resembles last month's. Every method in the ledger so far wanted either labels or
+groups. She has neither.
+
+## The wall: you can't learn a class you've barely seen
+
+A classifier needs examples of *both* sides, and clustering insists every point join some group. Both
+quietly assume the thing you're hunting is common enough to characterise. Fraud isn't. What Nadia
+*does* have is thousands of ordinary transactions — a dense, well-behaved crowd. The signal isn't in
+the rare events themselves; it's in how far they sit from everything ordinary.
+
+## The idea: model normal, flag the tails
+
+So she flips the problem. Don't model fraud — model **normal**, and flag whatever doesn't fit. Fit a
+single bell curve to the everyday transactions: a centre (the mean) and a spread (the covariance).
+Now score each transaction by how far out in the tails it lands; the ones past a cutoff are the
+anomalies.
+
+"Far" needs care, though. A transaction can be far from the centre in raw distance yet perfectly
+ordinary — if it sits along the direction the data naturally varies. So she measures distance in
+*standard deviations, in the data's own shape* — the **Mahalanobis distance**. Two steps along the
+grain is normal; two steps across it is alarming. Drag the **threshold** and watch the normal region
+(blue) tighten and more transactions flip to flagged (red):
+
+<div className="breakout">
+  <AnomalyDetectionPlayground />
+</div>
+
+## How it works: a bell curve and a warped ruler
+
+Training is just two summary statistics: the mean, and the covariance (with a hair of regularisation
+so it's always invertible), straight from the
+[`AnomalyDetector`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/AnomalyDetector.ts)
+source:
+
+```ts
+const covariance = covarianceMatrix(centered, d);
+for (let i = 0; i < d; i++) covariance[i][i] += 1e-6; // ridge: keep it invertible
+this.inverseCovariance = new Matrix(covariance).getInverse().toArray();
+```
+
+The inverse covariance is the "warped ruler." A point's score is its **Mahalanobis distance** —
+Euclidean distance bent by `Σ⁻¹` so it counts standard deviations rather than raw units:
+
+$$
+d_M(\mathbf{x}) = \sqrt{(\mathbf{x} - \boldsymbol{\mu})^{\top}\, \Sigma^{-1}\, (\mathbf{x} - \boldsymbol{\mu})}
+$$
+
+```ts
+// squared distance = diffᵀ · Σ⁻¹ · diff
+let squared = 0;
+for (let i = 0; i < difference.length; i++) {
+    let inner = 0;
+    for (let j = 0; j < difference.length; j++) inner += inverse[i][j] * difference[j];
+    squared += difference[i] * inner;
+}
+return Math.sqrt(Math.max(0, squared));
+```
+
+Anything past the threshold is flagged. That's the whole model: `score(x) > threshold ? anomaly : normal`.
+
+## Try it yourself
+
+- **Everyday transactions** — a round crowd of normal charges. The detector learns the blob; the
+  scattered wild ones light up red. Drop the threshold and the blue region shrinks until even
+  ordinary transactions start tripping it — that's the price of being too sensitive.
+- **Tilted normal** — spend and frequency rise together, so "normal" is a tilted ellipse. Find the
+  pair of points the same distance from the centre, one **along** the diagonal and one **across** it:
+  only the across-the-grain point gets flagged. That's Mahalanobis distance earning its keep — plain
+  Euclidean distance would wrongly flag both or neither.
+- **Two habits** — two separate crowds. One Gaussian has to span both, so its centre lands in the
+  empty gap between them and the "normal" ellipse bulges over territory where nobody actually shops.
+  Watch it miss the point.
+
+> **Field note — the threshold is a business call.** It's the precision/recall dial again. A missed
+> fraud (false negative) costs Nadia real money; a flagged-but-fine transaction (false positive)
+> annoys a good customer and wastes a review. Where she sets the cutoff depends entirely on which
+> mistake hurts more — and it rests on the assumption that her training data really was *mostly* normal.
+
+## What broke
+
+Modelling normal turned an impossible problem — *learn a class you've barely seen* — into an easy
+one, and Mahalanobis distance made it honour the real shape of ordinary. For a single, roughly-Gaussian
+crowd, it's hard to beat.
+
+But the **Two habits** dataset exposed the catch: real "normal" often has several modes, and one bell
+curve can't straddle them without inventing a normal region in the empty space between. (Fitting a
+*mixture* of Gaussians is the natural fix.) And there's a blind spot the playground can't show:
+the detector scores each transaction **in isolation**. It would never notice that two perfectly
+ordinary purchases are suspicious *together* — a coffee here and a big-ticket order across town
+minutes later. To catch that, Nadia needs to stop looking at points in space and start looking at
+what tends to happen *together*: which items share a basket, which events co-occur. That's a
+different question entirely.

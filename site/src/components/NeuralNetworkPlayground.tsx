@@ -261,8 +261,8 @@ export function NeuralNetworkPlayground() {
                 <div className={styles.boundaryWrap}>
                     <canvas ref={boundaryCanvasRef} className={styles.boundary} />
                     <div className={styles.activation}>
-                        <span style={{ color: 'var(--accent)' }}>● class 0</span>
-                        <span style={{ color: 'var(--accent-2)' }}>● class 1</span>
+                        <span style={{ color: 'var(--accent)' }}>● flop</span>
+                        <span style={{ color: 'var(--accent-2)' }}>● delight</span>
                     </div>
                 </div>
 

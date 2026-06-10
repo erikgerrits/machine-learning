@@ -1,0 +1,81 @@
+.playground {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.stage {
+    display: grid;
+    grid-template-columns: minmax(0, 460px) minmax(260px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.boundaryWrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px -30px rgba(56, 189, 248, 0.5);
+    aspect-ratio: 1 / 1;
+}
+
+.boundary {
+    width: 100%;
+    height: 100%;
+}
+
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.note {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.ruleList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rule {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+}
+
+.ruleText {
+    color: var(--text, #e2e8f0);
+}
+
+.arrow {
+    color: var(--accent-2, #fb923c);
+    font-weight: 600;
+}
+
+.ruleStats {
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+    .playground {
+        grid-template-columns: 1fr;
+    }
+
+    .stage {
+        grid-template-columns: 1fr;
+    }
+}

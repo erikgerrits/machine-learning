@@ -1,0 +1,98 @@
+import { RecommenderPlayground } from '../components/RecommenderPlayground';
+
+# Chapter 18 — Tastes, not crowds
+
+> *Recommender systems.* Association rules described the average customer. The loyalty app needs to
+> speak to *one* customer at a time — and suggest what they'll love but haven't tried.
+
+Nadia's building a loyalty app, and she wants it to feel like the café knows you: open it and it
+nudges you toward the thing you didn't order but would adore. Last chapter's rules can't do that —
+"croissant → coffee" is the same line for everyone. Mr Alvarez and Priya have wildly different
+tastes, and the recommendation should too. The trouble is, each regular has only ever tried a
+handful of the menu. Her ratings grid is mostly **blank**.
+
+## The wall: crowd rules can't see a person
+
+Association rules average everyone together, so anything personal dissolves: the one regular who
+pairs tea with a bagel never clears the support bar. And the obvious fix — hand-write each
+customer's taste — doesn't scale and goes stale. What Nadia has is a big, sparse grid of *who rated
+what*, and a need to fill the empty cells **per person**. Nothing so far fills blanks in a table by
+borrowing from similar rows and columns at once.
+
+## The idea: explain ratings as taste × profile
+
+So she assumes the ratings hide a simple structure. Give every customer a short vector of **latent
+taste factors** — how much they lean strong-vs-mild, sweet-vs-savoury, whatever the data implies —
+and give every item a profile in those same factors. A rating is then just how well a person's taste
+lines up with an item: their **dot product**. Learn both sets of vectors from the ratings you *do*
+have, and the very same dot product predicts the ones you don't — that's **matrix factorization**,
+the heart of collaborative filtering. Press **Train** and watch the blanks fill in; click a name for
+their top picks:
+
+<div className="breakout">
+  <RecommenderPlayground />
+</div>
+
+## How it works: factor the ratings matrix
+
+The model says the ratings matrix `R` is approximately a global average plus the product of a skinny
+**users × factors** matrix and a skinny **items × factors** one: `R ≈ μ + U Vᵀ`. It learns `U` and
+`V` by plain gradient descent over the *observed* ratings only — nudging each taste vector and each
+item vector toward the ratings it got wrong, shrinking them a little so it doesn't overfit. Straight
+from the
+[`Recommender`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/Recommender.ts)
+source:
+
+```ts
+const error = rating - this.globalMean - dot(userVector, itemVector);
+for (let f = 0; f < k; f++) {
+    const uf = userVector[f];
+    const vf = itemVector[f];
+    userVector[f] += lr * (error * vf - reg * uf); // move taste toward the item it mis-rated
+    itemVector[f] += lr * (error * uf - reg * vf); // and the item toward the taste
+}
+```
+
+Once the vectors settle, predicting any rating — including every blank — is one dot product:
+
+```ts
+this.itemFactors.map(itemVector => this.globalMean + dot(userVector, itemVector));
+```
+
+The lovely part: nobody *told* the model what the factors mean. It invents whatever hidden axes best
+explain the ratings — and "people who agree on what they've tried will agree on what they haven't"
+falls out for free.
+
+## Try it yourself
+
+- **The regulars** — train it and the empty cells fill with each person's predicted ratings, bright
+  where they'll likely love it. Click around: the strong-and-savoury crowd gets pointed at espresso
+  and bagels, the sweet tooths at cocoa and cookies — picks the app can actually make.
+- **Barely any data** — most of the grid is blank. Predictions still form, but they're shakier and
+  the RMSE settles higher: collaborative filtering leans on the crowd, and here there's less crowd
+  to lean on.
+- Slide **taste factors** up and down. One factor is a single taste axis; a few capture real
+  nuance — but push it high on sparse data and the model starts memorising the handful of ratings
+  it has instead of generalising (overfitting, again).
+
+> **Field note — the cold-start problem.** A brand-new customer who's rated nothing, or a new menu
+> item nobody's tried, has no vector to learn from — the model is blind to them. Real apps paper over
+> this by falling back to plain popularity ("our best-sellers") until enough ratings trickle in to
+> place the newcomer in taste-space.
+
+## What broke
+
+Matrix factorization gave Nadia exactly what the app needed: a personal guess for every regular,
+squeezed out of a grid that was mostly empty. It's the engine behind the recommendations you see
+everywhere.
+
+But notice what it leans on — and what it can't do. It's stuck on **cold starts**, blind to anyone
+new. Its notion of taste is a **dot product**, a fundamentally straight-line idea of how people and
+items relate. And, like everything in Part 3, it treats the world as one static **table of numbers**:
+who rated what, frozen in time.
+
+The café is about to outgrow that table. Nadia's opening a second location and an app, and the data
+coming in won't be tidy columns anymore — it'll be **photos** of latte art, **written reviews**,
+**sequences** of visits unfolding over weeks. None of it fits in a ratings grid, and a dot product
+can't bend around it. To go there she needs a model that learns its *own* features from raw, messy
+input — one that can bend curves no straight line, tree, or dot product ever could.

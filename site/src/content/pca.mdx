@@ -1,0 +1,105 @@
+import { PCAPlayground } from '../components/PCAPlayground';
+
+# Chapter 15 — Thirty questions, two axes
+
+> *Principal Component Analysis.* Nadia's new survey asks each customer thirty questions. She can't
+> picture thirty dimensions — and most of the questions are saying the same thing twice.
+
+To understand her regulars better, Nadia runs a taste survey: thirty questions, scored 1–5. *"Do you
+like it strong? Bitter? Do you add sugar? Order the dark roast?"* Now every customer is thirty
+numbers. She wants to cluster them, or at least *see* them — but a scatter plot has two axes, and she
+has thirty. Worse, the questions overlap: "likes it strong" and "likes the dark roast" rise and fall
+together. She's drowning in columns that mostly repeat each other.
+
+## The wall: you can't see thirty dimensions (and they lie)
+
+Her instinct is to just plot two of the questions and look. But which two? Pick any pair of the
+thirty and you get a smeared blob — each single question is a thin, noisy slice of the real picture.
+And the clustering tools from the last few chapters quietly fail her here too: in thirty dimensions
+every customer ends up roughly the same distance from every other (distance stops discriminating),
+and the redundant questions count the same trait three times over. She doesn't need to *pick* two of
+the thirty axes. She needs two *better* axes.
+
+## The idea: let the data choose the axes
+
+So Nadia stops choosing axes from the menu of questions and asks the data to draw its own. The key
+insight: the directions worth keeping are the ones the customers actually **vary** along. If "strong"
+and "dark roast" move together, that shared movement is really *one* underlying axis — call it
+"intensity-lover" — and she can replace both questions with their combined direction, losing almost
+nothing.
+
+That's PCA. It finds the single direction of greatest variance (the **first principal component**),
+then the greatest direction at a right angle to it (the second), and so on — each a blend of the
+original questions, ordered by how much of the spread it explains. Keep the top two and thirty
+columns become a picture. Below it's just two questions so you can watch it work; tick **Reduce to 1
+axis** and see the customers collapse onto the one that matters:
+
+<div className="breakout">
+  <PCAPlayground />
+</div>
+
+## How it works: the axes of variance
+
+The directions of greatest variance are the **eigenvectors of the covariance matrix** — the table of
+how every feature varies with every other. Center the data, build that matrix, and decompose it,
+straight from the
+[`PCA`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/PCA.ts)
+source:
+
+```ts
+// Covariance matrix: Cᵢⱼ = average product of centred features i and j (symmetric, d × d).
+const covariance = covarianceMatrix(centered, d);
+
+// Eigen-decompose it: each eigenvector is a direction, its eigenvalue the variance along it.
+const { values, vectors } = jacobiEigen(covariance);
+```
+
+Sort those eigenvectors by eigenvalue (variance), biggest first, keep the top `k`, and **projecting**
+a customer is just measuring how far along each kept axis they sit:
+
+```ts
+const centered = row.map((value, j) => value - this.mean[j]);
+return this.components.map(component => dot(centered, component)); // coordinates on each new axis
+```
+
+The eigenvalues double as a receipt. The fraction
+
+$$
+\text{explained variance}_i = \frac{\lambda_i}{\sum_j \lambda_j}
+$$
+
+tells you exactly how much of the picture each axis keeps — so "30 → 2" isn't a leap of faith, it's
+"PC1 and PC2 hold 94% of the variance; the other 28 axes were mostly noise."
+
+## Try it yourself
+
+- **Two tastes, one axis** — the two questions move together, so PC1 holds almost all the variance
+  (watch the percentage). Reduce to one axis and the points barely budge: the second question really
+  was redundant.
+- **Two crowds** — PC1 lines up with the gap between the groups. Flatten onto it and the two crowds
+  stay clearly apart — you threw away a dimension and kept the thing that mattered.
+- **No clear axis** — a round blob where neither direction dominates (PC1 ≈ PC2 ≈ 50%). Reduce here
+  and the points fall a long way onto the line: PCA is telling you, honestly, that there's nothing
+  safe to drop.
+
+> **Field note — how many components?** Plot the explained-variance ratios in order and watch where
+> the curve flattens (the "scree" elbow), or just keep enough components to cover ~90–95% of the
+> variance. Two is for *seeing*; for feeding another model you keep however many it takes to stop
+> throwing away signal.
+
+## What broke
+
+PCA turned Nadia's unmanageable thirty-question survey into a two-axis map she can actually plot and
+cluster — and it told her, in a single percentage, how much she kept. It's the quiet workhorse that
+makes high-dimensional data usable.
+
+But it only ever draws **straight** axes. PCA captures directions of variance, and "most variance"
+isn't always "most meaning" — a loud, high-variance question can dominate a component while the
+subtle signal she cares about hides in a low-variance direction it discards. It also can't unfold
+anything curved: hand it the two-moons shape and it just rotates it, never separates it.
+
+There's a more pointed use lurking here, though. PCA has, in effect, learned the *shape of a normal
+customer* — the few axes everyone varies along. So what about the customer who **doesn't** fit that
+shape, whose answers PCA can't rebuild from those two axes without a big error? That misfit might be
+a bad survey, a bot… or exactly the fraud signal Nadia keeps almost catching. Modelling "normal" to
+hunt the abnormal is the next problem.

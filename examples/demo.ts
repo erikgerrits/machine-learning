@@ -95,6 +95,122 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Hierarchical clustering (unsupervised): merge the closest groups bottom-up into a tree, then
+    // cut it to k clusters — no need to fix k before building. Same two blobs as k-means.
+    const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]]);
+
+    const hierarchical = new ml.HierarchicalClustering();
+    hierarchical.setNumberOfClusters(2).setLinkage('average');
+
+    hierarchical.train(inputs);
+    console.log(hierarchical.predict(inputs).toArray());
+    // one-hot membership: the low blob is one cluster, the high blob the other
+    // [ [ 1, 0 ], [ 1, 0 ], [ 1, 0 ], [ 0, 1 ], [ 0, 1 ], [ 0, 1 ] ]
+    console.log(hierarchical.getMergeHistory().map(m => Number(m.distance.toFixed(2))));
+    // [ 1, 1, 1.21, 1.21, 14.17 ]  ← merge heights climbing until the two far-apart blobs join at the top
+}
+
+{
+    // DBSCAN (unsupervised): clusters by density and flags stragglers as noise — no k needed.
+    const inputs = new ml.Matrix([[0, 0], [0.1, 0], [0, 0.1], [0.1, 0.1], [5, 5], [5.1, 5], [5, 5.1], [5.1, 5.1], [10, 0]]);
+
+    const dbscan = new ml.DBSCAN();
+    dbscan.setEpsilon(0.5).setMinPoints(3);
+
+    dbscan.train(inputs);
+    console.log(dbscan.getLabels());
+    // [ 0, 0, 0, 0, 1, 1, 1, 1, -1 ]  ← two dense blobs (clusters 0 and 1), the lone point is noise (-1)
+    console.log(dbscan.getClusterCount());
+    // 2
+}
+
+{
+    // PCA (unsupervised): find the axes of greatest variance and project onto the top ones.
+    // These points lie exactly on the line y = x, so a single axis captures all the variance.
+    const inputs = new ml.Matrix([[-2, -2], [-1, -1], [0, 0], [1, 1], [2, 2]]);
+
+    const pca = new ml.PCA();
+    pca.setNumberOfComponents(1);
+
+    pca.train(inputs);
+    console.log(pca.predict(inputs).toArray());
+    // each point's position along the one axis: [ [ -2.83 ], [ -1.41 ], [ 0 ], [ 1.41 ], [ 2.83 ] ]
+    console.log(pca.getExplainedVarianceRatio());
+    // [ 1 ]  ← that single axis holds 100% of the variance (the 2nd dimension was redundant)
+}
+
+{
+    // Anomaly detection (unsupervised): fit a Gaussian to "normal" data, flag the unlikely points.
+    const inputs = new ml.Matrix([[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, -1], [0.5, -0.5]]);
+
+    const detector = new ml.AnomalyDetector();
+    detector.setThreshold(3); // flag points more than 3 Mahalanobis "std devs" from the centre
+
+    detector.train(inputs);
+    console.log(detector.predict(new ml.Matrix([[0, 0], [0.5, 0.5], [8, 8]])).toArray());
+    // [ [ 0 ], [ 0 ], [ 1 ] ]  ← the far-out point is the anomaly
+    console.log(detector.score(new ml.Matrix([[8, 8]])).toArray());
+    // [ [ 12.22 ] ]  ← its Mahalanobis distance, far past the threshold of 3
+}
+
+{
+    // Association rules (unsupervised): mine "basket" data for "buys X also buys Y".
+    // Items: 0=coffee, 1=croissant, 2=tea, 3=cookie. One row per receipt, 1 = item present.
+    const inputs = new ml.Matrix([
+        [1, 1, 0, 0],
+        [1, 1, 0, 0],
+        [1, 1, 0, 1],
+        [0, 0, 1, 1],
+        [0, 0, 1, 1],
+        [1, 0, 1, 1],
+    ]);
+
+    const rules = new ml.AssociationRules();
+    rules.setMinSupport(0.3).setMinConfidence(0.6);
+
+    rules.train(inputs);
+    const top = rules.getRules()[0];
+    console.log(top.antecedent, '->', top.consequent, '| confidence', top.confidence.toFixed(2), 'lift', top.lift.toFixed(2));
+    // [ 1 ] -> [ 0 ] | confidence 1.00 lift 1.50  ← everyone who bought a croissant also bought coffee
+}
+
+{
+    // Recommender (matrix factorization): fill in ratings nobody gave, suggest what each person likes.
+    // 4 users x 4 items, 0 = not rated. Two taste groups: users 0–1 vs users 2–3.
+    const ratings = new ml.Matrix([
+        [5, 5, 1, 0],
+        [5, 0, 1, 1],
+        [1, 1, 5, 5],
+        [0, 1, 5, 5],
+    ]);
+
+    const recommender = new ml.Recommender();
+    recommender.setNumberOfFactors(2).setNumberOfEpochs(500).setLearningRate(0.02).setSeed(0);
+
+    recommender.train(ratings);
+    console.log(recommender.recommend(1)); // user 1's unrated items, best first
+    // [ { item: 1, score: 5.24 } ]  ← predicts user 1 will love item 1 (their taste group does)
+    console.log(recommender.predict().toArray()[3][0].toFixed(2)); // user 3's hidden item 0 → low
+    // 1.29
+}
+
+{
+    // Exponential smoothing (Holt-Winters): forecast a series with a weekly rhythm.
+    // Two weeks of daily croissant demand (Mon..Sun) — quiet midweek, busy weekends, slight uptrend.
+    const demand = new ml.Matrix([
+        [40], [42], [45], [50], [80], [95], [70],
+        [44], [46], [49], [55], [85], [100], [74],
+    ]);
+
+    const model = new ml.ExponentialSmoothing();
+    model.setAlpha(0.4).setBeta(0.1).setGamma(0.5).setSeasonLength(7);
+
+    model.train(demand);
+    console.log(model.predict(7).toArray().map(row => Math.round(row[0])));
+    // [ 47, 49, 52, 57, 87, 103, 78 ]  ← next week, continuing the weekly rhythm (busy Fri/Sat) + uptrend
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);
@@ -149,6 +265,41 @@ import * as ml from '../src/lib';
     const predictions = gradientBoosting.predict(inputs);
     console.log(predictions.getMaximumRowIndeces().toArray());
     // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ], [ 1 ], [ 0 ] ]  ← boosted into the same AND rule
+}
+
+{
+    // Support vector machine: the widest-margin boundary between two classes. A linear kernel draws
+    // a straight max-margin line; swap in .setKernel('rbf') to carve curved boundaries (the kernel trick).
+    const inputs = new ml.Matrix([[2, 2], [3, 3], [3, 1], [1, 3], [-2, -2], [-3, -3], [-3, -1], [-1, -3]]);
+    const targets = new ml.Matrix([[1], [1], [1], [1], [0], [0], [0], [0]]);
+
+    const supportVectorMachine = new ml.SupportVectorMachine();
+    supportVectorMachine.setKernel('linear').setRegularization(10).setNumberOfIterations(50);
+
+    supportVectorMachine.train(inputs, targets);
+    // predict returns the raw decision score per row; its sign is the class (≥ 0 → class 1).
+    const predictions = supportVectorMachine.predict(inputs);
+    console.log(predictions.transform(score => (score >= 0 ? 1 : 0)).toArray());
+    // [ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 0 ], [ 0 ], [ 0 ], [ 0 ] ]
+    console.log(supportVectorMachine.getSupportVectorIndices());
+    // [ 0, 2, 3, 4, 6 ]  ← the boundary-hugging points the line balances on (the rest could be deleted)
+}
+
+{
+    // Perceptron (a single neuron): learns AND, but one straight line can't solve XOR.
+    const gates = new ml.Matrix([[0, 0], [0, 1], [1, 0], [1, 1]]);
+
+    const perceptron = new ml.Perceptron();
+    perceptron.setLearningRate(0.1).setNumberOfEpochs(100);
+
+    perceptron.train(gates, new ml.Matrix([[0], [0], [0], [1]])); // AND
+    console.log(perceptron.predict(gates).toArray());
+    // [ [ 0 ], [ 0 ], [ 0 ], [ 1 ] ]  ← solves AND (linearly separable)
+
+    perceptron.reset();
+    perceptron.train(gates, new ml.Matrix([[0], [1], [1], [0]])); // XOR
+    console.log(perceptron.predict(gates).toArray());
+    // [ [ 1 ], [ 1 ], [ 0 ], [ 0 ] ] ≠ [0,1,1,0] — XOR isn't linearly separable; it takes a layered network (below)
 }
 
 {

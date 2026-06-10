@@ -1,0 +1,65 @@
+import { PerceptronPlayground } from '../components/PerceptronPlayground';
+
+# Interlude — The Perceptron
+
+> Priya looks over Nadia's shoulder at the neural-network chapter she's about to start and grins:
+> *"Before you build a brain, you should meet the single brain cell — and the argument that nearly
+> killed the whole idea."*
+
+Nadia keeps hitting the same wall in different costumes. The logistic line that couldn't bend around
+two proofing methods. The straight fence that couldn't carve a spiral. The smoother that flattened a
+Saturday into a Tuesday. Every time, the limit was the same shape: *a single straight boundary isn't
+enough.* Priya tells her that boundary-drawing machine has a name, a birthday, and a scar.
+
+## One neuron: weighted sum, then fire
+
+The **perceptron** (Frank Rosenblatt, 1958) is the first artificial neuron, and it's almost
+insultingly simple. Take the inputs, multiply each by a weight, add a bias, and **fire** a `1` if the
+total clears zero — otherwise `0`. That's it. It's the same weighted sum as logistic regression from
+Chapter 4, with the soft sigmoid swapped for a hard on/off switch. Its boundary is, inevitably, a
+single straight line.
+
+It learns without any calculus at all — just a rule. Walk the examples; whenever it gets one wrong,
+shove the line a little toward that point. From the
+[`Perceptron`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/Perceptron.ts)
+source:
+
+```ts
+const error = labels[i] - prediction; // -1, 0, or +1
+if (error !== 0) {
+    for (let f = 0; f < featureCount; f++) weights[f] += learningRate * error * rows[i][f];
+    bias += learningRate * error;
+}
+```
+
+Rosenblatt proved that if the two classes *can* be split by a straight line, this rule will find one
+in a finite number of passes. The press ran wild — a machine that learns! — and imagined brains in
+boxes any year now.
+
+## Try it: AND, OR… and XOR
+
+Watch it learn the logic gates. **AND** and **OR** are one line away, so the boundary swings into
+place and the misclassified count drops to zero. Then switch to **XOR** — fire when *exactly one*
+input is high — and watch what happens:
+
+<div className="breakout">
+  <PerceptronPlayground />
+</div>
+
+On XOR the line never stops. The positive cases sit on *opposite* corners, so no straight cut can
+keep them on one side. The perceptron lurches back and forth forever, always at least one point
+wrong, never converging.
+
+## The scar
+
+In 1969, Marvin Minsky and Seymour Papert wrote a careful little book that proved exactly this: a
+single perceptron cannot learn XOR. It landed hard. Funding dried up, the hype curdled, and the field
+slid into one of its "AI winters." The cruel irony, Priya notes, is that the fix was already obvious
+on paper — *stack the neurons.* Feed the outputs of one layer of perceptrons into another, and the
+combination can carve XOR easily. What was missing was a practical way to *train* those inner
+neurons, since the perceptron's nudge-the-line rule doesn't know how to assign blame to a neuron
+buried in the middle.
+
+That missing piece — letting blame flow backward through the layers — is **backpropagation**, and
+it's what turns a pile of these single cells into something that can bend around any shape at all.
+Which is exactly where Nadia goes next.

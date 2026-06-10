@@ -111,7 +111,7 @@ export const DATASETS: DatasetSpec[] = [
     {
         id: 'xnor',
         label: 'XNOR',
-        blurb: 'The classic. Two diagonal corners share a class — impossible for a straight line.',
+        blurb: 'The matching-dials pairing: delight when both cues agree (bold-bold or mild-mild), a flop when they clash. The "both-or-neither" shape the perceptron just failed on.',
         domain: LOGIC_DOMAIN,
         recommendedLr: 1,
         recommendedHidden: [8],
@@ -120,7 +120,7 @@ export const DATASETS: DatasetSpec[] = [
     {
         id: 'xor',
         label: 'XOR',
-        blurb: 'XNOR flipped. Same four points, opposite labels.',
+        blurb: 'The mirror image: a pairing works only when the two cues differ. Same four corners, opposite calls.',
         domain: LOGIC_DOMAIN,
         recommendedLr: 1,
         recommendedHidden: [8],
@@ -129,7 +129,7 @@ export const DATASETS: DatasetSpec[] = [
     {
         id: 'moons',
         label: 'Two moons',
-        blurb: 'Two interleaving crescents — the boundary curves beautifully as it learns.',
+        blurb: 'Two tastes that interleave like crescents — the boundary curves beautifully as it learns.',
         domain: { xMin: -1.5, xMax: 2.5, yMin: -1.2, yMax: 1.6 },
         recommendedLr: 3,
         recommendedHidden: [12],
@@ -138,7 +138,7 @@ export const DATASETS: DatasetSpec[] = [
     {
         id: 'circles',
         label: 'Circles',
-        blurb: 'A ring inside a ring. The network must learn a closed region.',
+        blurb: 'A core preference ringed by its opposite. The network has to learn a closed region.',
         domain: { xMin: -1.4, xMax: 1.4, yMin: -1.4, yMax: 1.4 },
         recommendedLr: 1,
         recommendedHidden: [8],
@@ -147,7 +147,7 @@ export const DATASETS: DatasetSpec[] = [
     {
         id: 'spiral',
         label: 'Spiral',
-        blurb: 'The showstopper. A deeper network untangles the two arms — give it a moment.',
+        blurb: 'The showstopper: two tastes wound tightly together. A deeper network untangles the arms — give it a moment.',
         domain: { xMin: -1.2, xMax: 1.2, yMin: -1.2, yMax: 1.2 },
         recommendedLr: 3,
         recommendedHidden: [16, 16],
@@ -156,7 +156,7 @@ export const DATASETS: DatasetSpec[] = [
     {
         id: 'blobs',
         label: 'Blobs',
-        blurb: 'Two well-separated clusters — even a tiny network nails it fast.',
+        blurb: 'Two clearly separate crowds — even a tiny network nails it fast.',
         domain: { xMin: -1.5, xMax: 1.5, yMin: -1.5, yMax: 1.5 },
         recommendedLr: 1,
         recommendedHidden: [8],

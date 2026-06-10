@@ -7,9 +7,9 @@
 
 ## Context — why we're doing this
 
-The site already has six excellent, technically-honest tutorials (Linear/Logistic/Multiclass
-Regression, k‑NN, a neural net, k‑Means), each mapping real math onto the real library source via
-live Canvas playgrounds. The weakness is **motivation**: the problems are abstract toy datasets
+When this plan was written, the site had six excellent, technically-honest tutorials
+(Linear/Logistic/Multiclass Regression, k‑NN, a neural net, k‑Means), each mapping real math onto
+the real library source via live Canvas playgrounds. The weakness was **motivation**: the problems were abstract toy datasets
 ("here is a cloud of points"). Nothing pulls you from one algorithm to the next.
 
 This plan reframes the whole thing as a **narrative course**: one character, Nadia, revives a
@@ -22,9 +22,19 @@ before you're taught it.
 We also use this as the excuse to **widen the curriculum massively** — simpler starting points,
 the missing in-between methods, advanced models, and whole other paradigms (ensembles,
 dimensionality reduction, recommenders, sequences, deep learning, reinforcement learning,
-generative). The 6 built algorithms become the spine; everything else is roadmap.
+generative). The built algorithms become the spine; everything else is roadmap.
 
 **Goal:** engaging, fun, genuinely educational, and very cool.
+
+**Status (this release).** Woven through **Ch 0–19**: all of Part 1, the whole of Part 2 (k‑NN,
+Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support Vector Machines), all of
+Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA, Anomaly Detection, Association Rules,
+Recommender Systems), and Part 4 so far — **Ch 19 Time Series** (Holt-Winters exponential
+smoothing), the **Perceptron interlude**, and now **Ch 20 Neural Networks** (the newest weave: the
+matching-dials XNOR problem → hidden layers + backprop). **Every built algorithm is now woven into
+the café story** — there is no longer a built-but-unwoven chapter. Everything past Ch 20 (CNNs,
+RNNs/transformers, reinforcement learning, generative, Bayesian) is roadmap: new builds the library
+grows into. See the status column below.
 
 ---
 
@@ -115,51 +125,57 @@ grows and the *kind* of question changes. This is the engine that keeps the syll
 
 ## The course map (the wide, adaptable outline)
 
-Ordered simplest → most advanced. **★ BUILT** = the algorithm already exists in `src/lib` with a
-playground (we re-theme its tutorial). **○ ROADMAP** = a future chapter; the library grows into it.
+Ordered simplest → most advanced. Three states:
+
+- **✅ DONE** — built *and* woven into the café story: the algorithm lives in `src/lib` with a
+  playground, and its tutorial follows the per-chapter template in Nadia's voice.
+- **◐ BUILT** — the algorithm + playground exist in the code, but the tutorial is still the older
+  generic explainer, *not yet re-themed* into the story. (Currently: none — every built algorithm is woven.)
+- **○ ROADMAP** — a future chapter; the library grows into it.
+
 Every row's "Wall" is the previous tool failing.
 
 ### Part 0 — Foundations (the data mindset)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 0 | **The Ledger** | Make sense of a shoebox of receipts | No method yet → learn to think in *observations, features, train vs. predict, error*; meet the baseline predictors (**predict the mean** / **predict the majority**) and the rule "you must beat the baseline" | ○ (intro) |
+| 0 | **The Ledger** | Make sense of a shoebox of receipts | No method yet → learn to think in *observations, features, train vs. predict, error*; meet the baseline predictors (**predict the mean** / **predict the majority**) and the rule "you must beat the baseline" | ✅ DONE (intro) |
 
 ### Part 1 — Predicting & deciding (Season 1)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 1 | **Linear Regression** | How many croissants to bake tomorrow? | Baking the daily *average* wastes stock on slow days and sells out on sunny Saturdays → fit a **line** through demand vs. temperature; MSE; gradient descent | ★ `LinearRegression` |
-| 2 | **Many features** | Demand depends on temp **and** weekday **and** foot traffic | One input is too crude → **multiple** features as a weighted sum; feature scaling; the **Matrix** as "a page of measurements" | ★ `LinearRegression` (multi-feature) |
-| 3 | **Overfitting & Regularization** | She adds 30 features incl. silly ones; nails last week, flops on next week | "More features = better?" No → **train/test split**, overfitting, **L2/ridge** to shrink weights | ★ `Regression` (`regularizationFactor`) |
-| 4 | **Logistic Regression** | Will this dough batch rise? (good / bad) | Regression-on-0/1 overshoots past 1, one bad batch tilts the line, "0.5 risen" is nonsense → **sigmoid** → probability; decision boundary; log-loss | ★ `LogisticRegression` |
-| 5 | **Multiclass / Softmax** | Auto-sort pastries into 5 types on the line | Yes/no can't pick among 5 → **one-vs-rest**, one-hot, argmax | ★ `MulticlassLogisticRegression` |
+| 1 | **Linear Regression** | How many croissants to bake tomorrow? | Baking the daily *average* wastes stock on slow days and sells out on sunny Saturdays → fit a **line** through demand vs. temperature; MSE; gradient descent | ✅ `LinearRegression` |
+| 2 | **Many features** | Demand depends on temp **and** weekday **and** foot traffic | One input is too crude → **multiple** features as a weighted sum; feature scaling; the **Matrix** as "a page of measurements" | ✅ `LinearRegression` (multi-feature) |
+| 3 | **Overfitting & Regularization** | She adds 30 features incl. silly ones; nails last week, flops on next week | "More features = better?" No → **train/test split**, overfitting, **L2/ridge** to shrink weights | ✅ `Regression` (`regularizationFactor`) |
+| 4 | **Logistic Regression** | Will this dough batch rise? (good / bad) | Regression-on-0/1 overshoots past 1, one bad batch tilts the line, "0.5 risen" is nonsense → **sigmoid** → probability; decision boundary; log-loss | ✅ `LogisticRegression` |
+| 5 | **Multiclass / Softmax** | Auto-sort pastries into 5 types on the line | Yes/no can't pick among 5 → **one-vs-rest**, one-hot, argmax | ✅ `MulticlassLogisticRegression` |
 
 ### Part 2 — A wider toolbox (Season 2)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 6 | **k-Nearest Neighbors** | Lookalike customers/items that swirl together | Straight boundaries *cannot* carve a spiral → **ask the neighbors**; Euclidean distance; lazy learning; choosing k | ★ `NearestNeighbors` |
-| 7 | **Naive Bayes** | Filter spam reservations & complaint emails | k-NN/logistic need numbers; this is *text* → **Bayes' rule**, bag-of-words, fast & probabilistic | ○ |
-| 8 | **Decision Trees** | Staff need an explainable "comp this order?" rulebook | Linear models & k-NN are opaque → a **flowchart of yes/no splits**; entropy/info-gain; interpretability | ○ |
-| 9 | **Random Forests / Bagging** | One tree's calls are jumpy & overfit | A single tree is unstable → **many trees vote**; bagging; feature importance | ○ |
-| 10 | **Gradient Boosting** | Cogwheel's forecasts beat hers | Need the tabular workhorse → **boost**: each model fixes the last one's mistakes | ○ |
-| 11 | **Support Vector Machines** | Find the *safest* boundary, not just *a* boundary | Logistic gives any separating line → **max-margin** + the **kernel trick** for nonlinearity without nets | ○ |
+| 6 | **k-Nearest Neighbors** | Lookalike customers/items that swirl together | Straight boundaries *cannot* carve a spiral → **ask the neighbors**; Euclidean distance; lazy learning; choosing k | ✅ `NearestNeighbors` |
+| 7 | **Naive Bayes** | Filter spam reservations & complaint emails | k-NN/logistic need numbers; this is *text* → **Bayes' rule**, bag-of-words, fast & probabilistic | ✅ `NaiveBayes` |
+| 8 | **Decision Trees** | Staff need an explainable "comp this order?" rulebook | Linear models & k-NN are opaque → a **flowchart of yes/no splits**; entropy/info-gain; interpretability | ✅ `DecisionTree` |
+| 9 | **Random Forests / Bagging** | One tree's calls are jumpy & overfit | A single tree is unstable → **many trees vote**; bagging; feature importance | ✅ `RandomForest` |
+| 10 | **Gradient Boosting** | Cogwheel's forecasts beat hers | Need the tabular workhorse → **boost**: each model fixes the last one's mistakes | ✅ `GradientBoosting` |
+| 11 | **Support Vector Machines** | Find the *safest* boundary, not just *a* boundary | Logistic gives any separating line → **max-margin** + the **kernel trick** for nonlinearity without nets | ✅ `SupportVectorMachine` |
 
 ### Part 3 — Understanding customers (Season 2, unsupervised)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 12 | **k-Means Clustering** | Who *are* my regulars? (no labels) | Every method so far needed an answer key — here there's none → **unsupervised**; Lloyd's algorithm; inertia; choosing k | ★ `KMeans` |
-| 13 | **Hierarchical Clustering** | A nested family tree of menu items / customer groups | k is unknown & structure is nested → **dendrograms** | ○ |
-| 14 | **DBSCAN** | A weird late-night cluster (possible fraud) | k-means forces every point into a round blob → **density-based** clusters + outliers | ○ |
-| 15 | **PCA / Dimensionality Reduction** | A 30-question taste survey you can't visualize | You can't see 30 dimensions; features are redundant → **principal components**: 30 → 2 "flavor axes" | ○ |
-| 16 | **Anomaly Detection** | Catch the fraudulent transaction / spoiled batch | Rare events drown in normal data → model "normal," flag the rest | ○ |
-| 17 | **Association Rules** | "Coffee + muffin" basket combos | Need co-occurrence patterns → Apriori; support/confidence/lift | ○ |
-| 18 | **Recommender Systems** | The loyalty app suggests items per person | Basket rules are global, not personal → **collaborative filtering / matrix factorization**; latent taste factors | ○ |
+| 12 | **k-Means Clustering** | Who *are* my regulars? (no labels) | Every method so far needed an answer key — here there's none → **unsupervised**; Lloyd's algorithm; inertia; choosing k | ✅ `KMeans` |
+| 13 | **Hierarchical Clustering** | A nested family tree of menu items / customer groups | k is unknown & structure is nested → **dendrograms** | ✅ `HierarchicalClustering` |
+| 14 | **DBSCAN** | A weird late-night cluster (possible fraud) | k-means forces every point into a round blob → **density-based** clusters + outliers | ✅ `DBSCAN` |
+| 15 | **PCA / Dimensionality Reduction** | A 30-question taste survey you can't visualize | You can't see 30 dimensions; features are redundant → **principal components**: 30 → 2 "flavor axes" | ✅ `PCA` |
+| 16 | **Anomaly Detection** | Catch the fraudulent transaction / spoiled batch | Rare events drown in normal data → model "normal," flag the rest | ✅ `AnomalyDetector` |
+| 17 | **Association Rules** | "Coffee + muffin" basket combos | Need co-occurrence patterns → Apriori; support/confidence/lift | ✅ `AssociationRules` |
+| 18 | **Recommender Systems** | The loyalty app suggests items per person | Basket rules are global, not personal → **collaborative filtering / matrix factorization**; latent taste factors | ✅ `Recommender` |
 
 ### Part 4 — Scale, sequences & deep learning (Season 3)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 19 | **Time Series Forecasting** | *Forecasting numbers* across weeks & seasons | Plain regression ignores order & seasonality → moving averages, exponential smoothing, trend/seasonality (ARIMA-lite) | ○ |
-| — | *Interlude: The Perceptron* | A single artificial "brain cell" | **Not a standalone café problem** — a short history interlude (Priya shows Nadia where neural nets came from), or folded into the open of Ch 21: weighted sum + activation; why one neuron can't do XOR | ○ (interlude) |
-| 20 | **Neural Networks & Backprop** | Danger/delight hides in *combinations* of cues (XNOR-like) | k-NN is slow, memoryless, and dumb in high dimensions; linear can't combine → **stack layers that learn features**; backprop ("blame flows backward"); dropout; SGD/Adam | ★ `FeedforwardNeuralNetwork` |
+| 19 | **Time Series Forecasting** | *Forecasting numbers* across weeks & seasons | Plain regression ignores order & seasonality → moving averages, exponential smoothing, trend/seasonality (ARIMA-lite) | ✅ `ExponentialSmoothing` |
+| — | *Interlude: The Perceptron* | A single artificial "brain cell" | Built as a short history interlude (Priya shows Nadia where neural nets came from): weighted sum + activation; why one neuron can't do XOR | ✅ `Perceptron` (interlude) |
+| 20 | **Neural Networks & Backprop** | Danger/delight hides in *combinations* of cues (XNOR-like) | k-NN is slow, memoryless, and dumb in high dimensions; linear can't combine → **stack layers that learn features**; backprop ("blame flows backward"); dropout; SGD/Adam | ✅ `FeedforwardNeuralNetwork` |
 | 21 | **Convolutional Nets (CNNs)** | Grade latte-art photos / spot pastry defects / scan receipts | Dense nets ignore spatial structure → **convolutions**, filters, pooling (computer vision) | ○ (adopts) |
 | 22 | **Recurrent Nets / LSTMs** | Learn *sequence & text representations* (reviews, chat logs) — **not** forecasting (that's Ch 19) | Feedforward has no memory of order; this is the bridge to language → recurrence, memory, vanishing gradients. *Embeddings are introduced here as connective tissue* — learned word/item **vectors** where "similar sits close" (also reused by recsys, Ch 18) | ○ (adopts) |
 | 23 | **Transformers & Attention** | The café's AI assistant / chatbot | RNNs forget long context & don't parallelize → **attention**; the modern backbone (and a nod to the model writing this) | ○ (adopts) |
@@ -234,9 +250,11 @@ deep-dive blocks.
 We already know the exact extension points from the existing site (registry-driven MDX +
 Canvas playgrounds). Realization is staged so we never block on the whole map:
 
-**Phase 1 — Re-frame the built six into café chapters (no new algorithms).**
-- Rewrite the six tutorials in `site/src/content/*.mdx` to follow the per-chapter template (Problem
-  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice.
+**Phase 1 — Re-frame the built algorithms into café chapters (no new algorithms). [mostly done]**
+- Rewrite the tutorials in `site/src/content/*.mdx` to follow the per-chapter template (Problem
+  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for every built
+  algorithm (Ch 0–20 plus the Perceptron interlude). Phase 1 is complete; future chapters are new
+  builds (Phase 2+).*
 - Re-theme datasets in `site/src/ml/*` (e.g. `datasets.ts`, `clusteringDatasets.ts`) to café data
   (demand, batches, pastries, regulars) **with the same underlying shapes/labels**, so the existing
   Canvas playgrounds and viz keep working unchanged.

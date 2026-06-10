@@ -1,0 +1,108 @@
+import { HierarchicalClusteringPlayground } from '../components/HierarchicalClusteringPlayground';
+
+# Chapter 13 — A family tree of regulars
+
+> *Hierarchical clustering.* k-means made Nadia guess how many groups there were. What if she
+> didn't have to decide that until she'd seen the whole shape of her crowd?
+
+The segments from last chapter were useful — until Bea looked at them. *"Your 'morning regulars'
+aren't one thing,"* she says. *"There's the espresso-and-run lot and the sit-with-a-drip lot. And
+honestly those two are closer to each other than either is to the weekend crowd."* She's describing
+**types within types** — a hierarchy. And Nadia realises she never actually knew the right number of
+groups; she just typed `5` into k-means and took what it gave her.
+
+## The wall: k-means makes you commit, blindly
+
+k-means has to be told `k` before it knows anything, and the answer lurches as you change it: run it
+at 4 and at 6 and you don't get the 4-group answer with one group split — you get two *unrelated*
+groupings. Nothing tells Nadia which `k` is right, and nothing reveals that her big "morning" blob is
+really two. It hands back a flat list of groups and hides everything about how they relate.
+
+## The idea: build the tree first, choose the number later
+
+So Nadia turns it upside down. Don't start from `k` groups — start from **every customer in their
+own group**, then repeatedly fuse the **two closest groups** into one. Two espresso regulars merge
+first. Their little group later merges with the drip regulars into "morning." "Morning" eventually
+merges with "weekend" near the very top. Keep going until everyone is in one big group.
+
+The record of *what merged when* is a tree — a **dendrogram**. And here's the trick: she never has
+to pick a number in advance. She builds the whole tree once, then **slices it at a height** —
+slice low for many small groups, high for a few big ones. Drag the **k** slider and watch the cut
+line slide up and down the tree:
+
+<div className="breakout">
+  <HierarchicalClusteringPlayground />
+</div>
+
+## How it works: merge the closest, over and over
+
+The training loop is exactly that sentence — find the closest pair of clusters, merge them, repeat —
+straight from the
+[`HierarchicalClustering`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/HierarchicalClustering.ts)
+source:
+
+```ts
+while (active.size > 1) {
+    const [a, b, distance] = this.closestPair(active, distances);   // the two nearest groups
+    this.merges.push({ left: a, right: b, distance, /* … */ });     // record the join (a tree node)
+
+    // The merged group's distance to everyone else is a quick combination of the two old
+    // distances (Lance–Williams) — no need to revisit the raw customers.
+    for (const c of active) {
+        newDistances.set(c, this.linkageDistance(dist(a, c), dist(b, c), sizeA, sizeB));
+    }
+    // …retire a and b, add the merged group, continue.
+}
+```
+
+The one real choice is what *"closest"* means between two **groups** of points. That's the
+**linkage**, and it's the whole switch:
+
+```ts
+case 'single':   return Math.min(distanceAC, distanceBC);              // nearest pair of members
+case 'complete': return Math.max(distanceAC, distanceBC);              // farthest pair of members
+case 'average':  return (sizeA * distanceAC + sizeB * distanceBC) / (sizeA + sizeB); // mean pair
+```
+
+- **Single** links groups by their *closest* two members, so a chain of nearby points pulls a whole
+  group along — it can follow a curve, but a single stepping-stone customer can bridge two real
+  groups into one.
+- **Complete** links by the *farthest* pair, which keeps clusters tight and round.
+- **Average** sits in between.
+
+To read off `k` groups, you don't re-run anything — you cut the finished tree. The library replays
+just the first `n − k` merges with a union-find; whatever's still joined is a cluster. That's why
+moving the slider is instant: the tree is already built.
+
+## Try it yourself
+
+- **Three types** — the dendrogram has a tall empty stretch right before the final merges. That gap
+  *is* the signal: cut across it (k = 3) and you land exactly on the three real groups.
+- **Blended habits** — with **complete** linkage the two crescents get chopped straight across.
+  Switch to **single** and it threads along each curve like a string of beads — the round-blob
+  limit that beat k-means, beaten.
+- **A slow drift** — two crowds joined by a thin trickle of in-between regulars. **Complete** keeps
+  them as two; **single** *chains* right across the bridge and calls it one. Same data, and linkage
+  alone flips the answer — a real hazard to know about.
+
+> **Field note — read the gaps, not the leaves.** The natural number of clusters is written in the
+> dendrogram's **heights**: a big vertical jump before a merge means two groups that were far apart
+> got fused. Cut across the tallest such gap and you usually get the most honest grouping — a far
+> better guide than guessing `k` blind.
+
+## What broke
+
+Hierarchical clustering gave Nadia two things k-means couldn't: she no longer has to **guess the
+number** of groups up front, and with single linkage her groups no longer have to be **round**. The
+dendrogram even shows her the types-within-types Bea pointed out.
+
+But it has its own cracks. Building the tree compares every customer with every other, so it crawls
+once her list grows into the thousands. Single linkage's chaining means one stray regular can fuse
+two real crowds. And — the deeper problem — it still insists that **every customer belongs to some
+group**. The odd late-night visitor, the one-off tourist, the data glitch: hierarchical clustering
+sweeps each of them into whichever cluster happens to be nearest, the same way k-means did. Nadia
+still can't point at a thin scattering of oddballs and say *"those aren't a group — those are just
+noise, and that knot over there is the real cluster."*
+
+To do that, she'll need to stop thinking about distance to a centre or a neighbour, and start
+thinking about **density** — where customers pile up thickly, and where they're just stragglers.
