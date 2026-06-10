@@ -26,13 +26,13 @@ generative). The built algorithms become the spine; everything else is roadmap.
 
 **Goal:** engaging, fun, genuinely educational, and very cool.
 
-**Status (this release).** Woven through **Ch 0–17**: all of Part 1, the whole of Part 2 (k‑NN,
-Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support Vector Machines), and Part 3
-so far — k‑Means, Hierarchical Clustering, DBSCAN, PCA (with a Jacobi eigensolver), Anomaly Detection,
-and now **Ch 17 Association Rules** (the newest chapter, an Apriori market-basket miner). One built
-algorithm is *not yet woven into the story*: the **Neural Network** (Ch 20) still ships its older
-generic tutorial and needs the per-chapter café treatment. Everything else is roadmap. See the
-status column below.
+**Status (this release).** Woven through **Ch 0–18**: all of Part 1, the whole of Part 2 (k‑NN,
+Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support Vector Machines), and **all
+of Part 3** — k‑Means, Hierarchical Clustering, DBSCAN, PCA (with a Jacobi eigensolver), Anomaly
+Detection, Association Rules, and now **Ch 18 Recommender Systems** (the newest chapter, matrix
+factorization). One built algorithm is *not yet woven into the story*: the **Neural Network** (Ch 20)
+still ships its older generic tutorial and needs the per-chapter café treatment. Everything else is
+roadmap. See the status column below.
 
 ---
 
@@ -166,7 +166,7 @@ Every row's "Wall" is the previous tool failing.
 | 15 | **PCA / Dimensionality Reduction** | A 30-question taste survey you can't visualize | You can't see 30 dimensions; features are redundant → **principal components**: 30 → 2 "flavor axes" | ✅ `PCA` |
 | 16 | **Anomaly Detection** | Catch the fraudulent transaction / spoiled batch | Rare events drown in normal data → model "normal," flag the rest | ✅ `AnomalyDetector` |
 | 17 | **Association Rules** | "Coffee + muffin" basket combos | Need co-occurrence patterns → Apriori; support/confidence/lift | ✅ `AssociationRules` |
-| 18 | **Recommender Systems** | The loyalty app suggests items per person | Basket rules are global, not personal → **collaborative filtering / matrix factorization**; latent taste factors | ○ |
+| 18 | **Recommender Systems** | The loyalty app suggests items per person | Basket rules are global, not personal → **collaborative filtering / matrix factorization**; latent taste factors | ✅ `Recommender` |
 
 ### Part 4 — Scale, sequences & deep learning (Season 3)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
@@ -250,8 +250,8 @@ Canvas playgrounds). Realization is staged so we never block on the whole map:
 
 **Phase 1 — Re-frame the built algorithms into café chapters (no new algorithms). [mostly done]**
 - Rewrite the tutorials in `site/src/content/*.mdx` to follow the per-chapter template (Problem
-  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for Ch 0–17; the one
-  remaining built algorithm (Neural Network, Ch 20) still needs this treatment.*
+  → Wall → Idea → How It Works → Try It → What Broke), in Nadia's voice. *Done for Ch 0–18 (all of
+  Parts 0–3); the one remaining built algorithm (Neural Network, Ch 20) still needs this treatment.*
 - Re-theme datasets in `site/src/ml/*` (e.g. `datasets.ts`, `clusteringDatasets.ts`) to café data
   (demand, batches, pastries, regulars) **with the same underlying shapes/labels**, so the existing
   Canvas playgrounds and viz keep working unchanged.

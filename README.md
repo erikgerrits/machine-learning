@@ -39,6 +39,7 @@ Below are some simple code usage examples.
 * [PCA](#pca)
 * [Anomaly Detection](#anomaly-detection)
 * [Association Rules](#association-rules)
+* [Recommender](#recommender)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -379,6 +380,33 @@ rules.train(inputs);
 const top = rules.getRules()[0]; // rules come sorted strongest (highest lift) first
 console.log(top.antecedent, '->', top.consequent, '| confidence', top.confidence, 'lift', top.lift);
 // [ 1 ] -> [ 0 ] | confidence 1 lift 1.5  <- everyone who bought a croissant also bought coffee
+
+```
+
+### Recommender
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Recommender (matrix factorization): fill in ratings nobody gave, suggest what each person likes.
+// 4 users x 4 items, 0 = not rated. Two taste groups: users 0-1 vs users 2-3.
+const ratings = new ml.Matrix([
+    [5, 5, 1, 0],
+    [5, 0, 1, 1],
+    [1, 1, 5, 5],
+    [0, 1, 5, 5],
+]);
+
+const recommender = new ml.Recommender();
+recommender.setNumberOfFactors(2).setNumberOfEpochs(500).setLearningRate(0.02).setSeed(0);
+
+recommender.train(ratings);
+
+console.log(recommender.recommend(1)); // user 1's unrated items, best first
+// [ { item: 1, score: 5.24 } ]  <- predicts user 1 will love item 1 (their taste group does)
+
+console.log(recommender.predict().toArray()[3][0].toFixed(2)); // user 3's hidden item 0
+// 1.29  <- correctly low: user 3 is in the other taste group
 
 ```
 

@@ -175,6 +175,26 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Recommender (matrix factorization): fill in ratings nobody gave, suggest what each person likes.
+    // 4 users x 4 items, 0 = not rated. Two taste groups: users 0–1 vs users 2–3.
+    const ratings = new ml.Matrix([
+        [5, 5, 1, 0],
+        [5, 0, 1, 1],
+        [1, 1, 5, 5],
+        [0, 1, 5, 5],
+    ]);
+
+    const recommender = new ml.Recommender();
+    recommender.setNumberOfFactors(2).setNumberOfEpochs(500).setLearningRate(0.02).setSeed(0);
+
+    recommender.train(ratings);
+    console.log(recommender.recommend(1)); // user 1's unrated items, best first
+    // [ { item: 1, score: 5.24 } ]  ← predicts user 1 will love item 1 (their taste group does)
+    console.log(recommender.predict().toArray()[3][0].toFixed(2)); // user 3's hidden item 0 → low
+    // 1.29
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

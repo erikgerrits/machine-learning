@@ -56,7 +56,10 @@
     "mahalanobis",
     "association rules",
     "apriori",
-    "market basket analysis"
+    "market basket analysis",
+    "recommender",
+    "collaborative filtering",
+    "matrix factorization"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

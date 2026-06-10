@@ -128,6 +128,19 @@ export const ASSOCIATION_INPUTS = [
     [1, 1, 0, 1],
 ];
 
+/**
+ * Recommender: a 4-user × 4-item ratings matrix with two clear taste groups (0 = not rated yet).
+ * Users 0–1 love items 0–1 and dislike 2–3; users 2–3 are the opposite. A few ratings are hidden
+ * so matrix factorization has blanks to fill — and the group structure says exactly what they
+ * should be (e.g. user 1's hidden item 1 → high; user 3's hidden item 0 → low).
+ */
+export const RECOMMENDER_INPUTS = [
+    [5, 5, 1, 0],
+    [5, 0, 1, 1],
+    [1, 1, 5, 5],
+    [0, 1, 5, 5],
+];
+
 /** Two well-separated blobs for clustering: three points near the origin, three near (10, 10). */
 export const KMEANS_INPUTS = [[0, 0], [1, 0], [0, 1], [10, 10], [11, 10], [10, 11]];
 /** The mean of each blob — what the two centroids should converge to. */

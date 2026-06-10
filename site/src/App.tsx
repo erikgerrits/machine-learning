@@ -27,6 +27,7 @@ const DBSCANTutorial = lazy(() => import('./content/dbscan.mdx'));
 const PCATutorial = lazy(() => import('./content/pca.mdx'));
 const AnomalyDetectionTutorial = lazy(() => import('./content/anomaly-detection.mdx'));
 const AssociationRulesTutorial = lazy(() => import('./content/association-rules.mdx'));
+const RecommenderSystemsTutorial = lazy(() => import('./content/recommender-systems.mdx'));
 
 export function App() {
     return (
@@ -182,6 +183,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <AssociationRulesTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="recommender-systems"
+                    element={
+                        <TutorialPage>
+                            <RecommenderSystemsTutorial />
                         </TutorialPage>
                     }
                 />

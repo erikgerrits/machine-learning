@@ -186,6 +186,15 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         part: PART_3,
     },
     {
+        id: 'recommender-systems',
+        path: '/recommender-systems',
+        title: 'Recommender Systems',
+        tagline: 'Suggest what each regular will love but hasn\'t tried yet.',
+        status: 'live',
+        chapter: 18,
+        part: PART_3,
+    },
+    {
         id: 'neural-network',
         path: '/neural-network',
         title: 'Neural Network',
