@@ -80,7 +80,9 @@
     "bandit",
     "explore exploit",
     "epsilon-greedy",
-    "ucb"
+    "ucb",
+    "contextual bandit",
+    "linucb"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

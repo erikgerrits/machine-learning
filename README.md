@@ -46,6 +46,7 @@ Below are some simple code usage examples.
 * [Recommender](#recommender)
 * [Exponential Smoothing (time series)](#exponential-smoothing-time-series)
 * [Multi-Armed Bandit (reinforcement learning)](#multi-armed-bandit-reinforcement-learning)
+* [Contextual Bandit (LinUCB)](#contextual-bandit-linucb)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -567,6 +568,34 @@ console.log(bandit.getValues().map(v => Number(v.toFixed(2))));
 // [ 0.30, 0.55, 0.80 ]  <- learned sell-rates converge to the hidden truth
 console.log(bandit.getCounts());
 // [ 80, 246, 1674 ]  <- and it played the winner (special 2) far the most, sampling the rest to be sure
+
+```
+
+### Contextual Bandit (LinUCB)
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Contextual bandit: the best offer depends on WHO is at the counter. Before each choice the world
+// hands you a context (here [isMorningRegular, isEveningTourist]); LinUCB fits a little ridge-regression
+// model per arm and picks by predicted reward + an uncertainty bonus where it has seen little data.
+const types = [[1, 0], [0, 1]];            // morning regular / evening tourist
+const rate = [[0.8, 0.2], [0.2, 0.8]];     // hidden: cinnamon roll wins mornings, espresso tonic evenings
+
+const bandit = new ml.ContextualBandit();
+bandit.setNumberOfArms(2).setContextDimensions(2).setStrategy('linucb'); // or 'epsilon-greedy'
+
+let lcg = 1;
+const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+for (let t = 0; t < 3000; t++) {
+    const context = types[rng() < 0.5 ? 0 : 1];
+    const arm = bandit.selectArm(context);                       // pick an offer for this customer
+    const took = rng() < rate[arm][context[1] === 1 ? 1 : 0] ? 1 : 0;
+    bandit.update(arm, context, took);                           // learn from the outcome
+}
+
+console.log('morning →', bandit.selectArm([1, 0]), ' evening →', bandit.selectArm([0, 1]));
+// morning → 0  evening → 1  <- a per-customer policy: roll for regulars, tonic for tourists
 
 ```
 
