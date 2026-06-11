@@ -70,28 +70,43 @@ export function CNNPlayground() {
         const learnedFilters = model.getFilters();
         const maps = model.getConvMaps(image);
 
-        // Input image (top-left) + its predicted class.
-        label(ctx, 'Input image', 8, 16);
-        drawGrid(ctx, 8, 22, 96, reshape(image, data.size));
+        // Proportional composition: the input image fills a left column, the filter and
+        // feature-map rows share the remaining width, and both blocks centre vertically.
+        const pad = Math.round(width * 0.025);
+        const labelH = 18;
+        const captionH = 36; // the pred/true lines under the input image
+
+        const inputBox = Math.min(Math.round(width * 0.24), height - 2 * pad - labelH - captionH);
+        const inputY = Math.round((height - (labelH + inputBox + captionH)) / 2);
+        label(ctx, 'Input image', pad, inputY + 13);
+        drawGrid(ctx, pad, inputY + labelH, inputBox, reshape(image, data.size));
         const probs = model.predict(new Matrix([image])).toArray()[0];
         const predicted = probs.indexOf(Math.max(...probs));
         const trueClass = data.targets[idx].indexOf(1);
         ctx.fillStyle = predicted === trueClass ? '#34d399' : '#f87171';
         ctx.font = '12px ui-sans-serif, system-ui, sans-serif';
-        ctx.fillText(`pred: ${data.classNames[predicted]}`, 8, 140);
+        ctx.fillText(`pred: ${data.classNames[predicted]}`, pad, inputY + labelH + inputBox + 16);
         ctx.fillStyle = 'rgba(148,163,184,0.8)';
-        ctx.fillText(`true: ${data.classNames[trueClass]}`, 8, 156);
+        ctx.fillText(`true: ${data.classNames[trueClass]}`, pad, inputY + labelH + inputBox + 32);
 
-        // Learned filters (a row).
-        const fx = 130;
-        label(ctx, `Learned filters (${learnedFilters.length})`, fx, 16);
-        const fbox = 34;
-        learnedFilters.forEach((f, k) => drawGrid(ctx, fx + k * (fbox + 8), 22, fbox, f, true));
+        // Filter/map tiles: as big as the right column allows, capped against the canvas height.
+        const fx = pad * 2 + inputBox;
+        const availW = width - fx - pad;
+        const n = Math.max(1, learnedFilters.length);
+        const gap = Math.max(6, Math.round(width * 0.012));
+        const slot = (availW - gap * (n - 1)) / n;
+        const fbox = Math.min(slot, height * 0.22);
+        const mbox = Math.min(slot, height * 0.34);
+        const rowGap = Math.round(height * 0.06);
+        const blockH = labelH + fbox + rowGap + labelH + mbox;
+        const topY = Math.max(pad, Math.round((height - blockH) / 2));
 
-        // Feature maps for this image (a row), aligned under the filters.
-        label(ctx, 'Feature maps (what each filter sees here)', fx, 86);
-        const mbox = 44;
-        maps.forEach((m, k) => drawGrid(ctx, fx + k * (mbox + 8), 92, mbox, m));
+        label(ctx, `Learned filters (${learnedFilters.length})`, fx, topY + 13);
+        learnedFilters.forEach((f, k) => drawGrid(ctx, fx + k * (fbox + gap), topY + labelH, fbox, f, true));
+
+        const mapY = topY + labelH + fbox + rowGap;
+        label(ctx, 'Feature maps (what each filter sees here)', fx, mapY + 13);
+        maps.forEach((m, k) => drawGrid(ctx, fx + k * (mbox + gap), mapY + labelH, mbox, m));
     }, []);
 
     const drawLoss = useCallback(() => {
