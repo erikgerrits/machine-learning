@@ -38,6 +38,7 @@ const ContextualBanditsTutorial = lazy(() => import('./content/contextual-bandit
 const QLearningTutorial = lazy(() => import('./content/q-learning.mdx'));
 const DeepRlTutorial = lazy(() => import('./content/deep-rl.mdx'));
 const AutoencodersTutorial = lazy(() => import('./content/autoencoders.mdx'));
+const GenerativeModelsTutorial = lazy(() => import('./content/generative-models.mdx'));
 
 export function App() {
     return (
@@ -281,6 +282,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <AutoencodersTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="generative-models"
+                    element={
+                        <TutorialPage>
+                            <GenerativeModelsTutorial />
                         </TutorialPage>
                     }
                 />

@@ -39,10 +39,12 @@ world), and **Ch 27 Deep RL** (a from-scratch **DQN** with experience replay and
 reusing the Chapter-20 neural network to approximate value over a *continuous* floor). **Part 6 (the
 frontier)** is now under way with **Ch 28 Autoencoders** (a from-scratch symmetric encoder/decoder with
 MSE backprop and gradient checking — compression, denoising, and anomaly detection all from one
-reconstruction objective, taught with a live latent-manifold playground). **The deep-RL and autoencoder
-chapters, like the three deep-learning frontier chapters (CNN, RNN, Transformer), became full trainable
-builds** rather than the planned "adopts" explainers. Still roadmap: the rest of Part 6 — generative
-models (Ch 29) and Bayesian (Ch 30). See the status column below.
+reconstruction objective) and **Ch 29 Generative Models** (a from-scratch **variational autoencoder** —
+reparameterisation trick + KL regulariser, gradient-checked — that *samples brand-new images* from the
+prior; GANs and diffusion covered as a field note). **The deep-RL, autoencoder, and VAE chapters, like
+the three deep-learning frontier chapters (CNN, RNN, Transformer), became full trainable builds** rather
+than the planned "adopts" explainers. Still roadmap: the course's final chapter — Bayesian / probabilistic
+models (Ch 30). See the status column below.
 
 ---
 
@@ -200,7 +202,7 @@ Every row's "Wall" is the previous tool failing.
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
 | 28 | **Autoencoders** | Compress & denoise data; anomaly detection with nets | Need compact learned representations → encode→decode | ✅ `Autoencoder` (from scratch — symmetric encoder/decoder, MSE backprop, gradient-checked; compress + denoise + anomaly via reconstruction error; latent-manifold playground) |
-| 29 | **Generative Models (VAE/GAN/Diffusion)** | Invent new recipe ideas & marketing images | Don't classify — *create* → generative modeling | ○ (adopts) |
+| 29 | **Generative Models (VAE/GAN/Diffusion)** | Invent new recipe ideas & marketing images | Don't classify — *create* → generative modeling | ✅ `VariationalAutoencoder` (built from scratch — reparameterisation trick + KL regulariser, gradient-checked; sample new images from the prior; exceeded the "adopts" plan. GAN/Diffusion covered as a field note) |
 | 30 | **Bayesian / Probabilistic Models** | "How *sure* are we?" before a big bet (signing the lease for store #3, a huge catering order) | Point predictions hide uncertainty → priors, posteriors, reasoning under uncertainty | ○ |
 
 **Cross-cutting "Field Notes"** (recurring sidebars, threaded through the story, not standalone

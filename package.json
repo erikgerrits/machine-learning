@@ -94,7 +94,11 @@
     "autoencoder",
     "representation learning",
     "denoising",
-    "bottleneck"
+    "bottleneck",
+    "variational autoencoder",
+    "vae",
+    "generative model",
+    "generative ai"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

@@ -428,6 +428,31 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Variational autoencoder (VAE): the autoencoder turned into a *generator*. It learns a latent
+    // space shaped like a standard normal, so we can draw a random code z ~ N(0, 1), decode it, and get
+    // a brand-new blob that was never in the training set. Same 7×7 blobs as before.
+    const W = 7;
+    const blob = (cx: number, cy: number) => {
+        const img: number[] = [];
+        for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) img.push(Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / 4));
+        return img;
+    };
+    let lcg = 1;
+    const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+    const images = Array.from({ length: 200 }, () => blob(1.5 + rng() * 4, 1.5 + rng() * 4));
+
+    const vae = new ml.VariationalAutoencoder().setHiddenSize(32).setCodeSize(2).setBeta(1).setLearningRate(0.06).setNumberOfEpochs(2000).setSeed(0);
+    vae.train(new ml.Matrix(images));
+
+    const samples = vae.sample(3, 7).toArray(); // 3 fresh blobs, drawn from the prior — not memorised
+    const render = (img: number[], y: number) => img.slice(y * W, y * W + W).map(v => ' .:+#'[Math.min(4, Math.floor(v * 5))]).join('');
+    console.log('three invented blobs (z ~ N(0,1) → decode):');
+    for (let y = 0; y < W; y++) console.log('  ' + [0, 1, 2].map(i => render(samples[i], y)).join('    '));
+    // Each column is a clean, plausible blob at a different spot — none of them copied from the data.
+    // The decoder became a little generator: feed it a point in latent space, get a new image out.
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);
