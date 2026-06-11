@@ -114,6 +114,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    grid-column: 1 / -1; /* in the playground card row, the metrics strip gets a full row to itself */
 }
 
 .metric {
@@ -141,6 +142,8 @@
 
 .badge {
     align-self: flex-start;
+    grid-column: 1 / -1; /* same: a pill shouldn't sit in (and overflow) a card-sized cell */
+    justify-self: start;
     background: rgba(52, 211, 153, 0.12);
     border: 1px solid rgba(52, 211, 153, 0.4);
     color: var(--good);
