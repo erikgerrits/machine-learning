@@ -25,9 +25,11 @@ export function drawBandit(canvas: HTMLCanvasElement, view: BanditView): void {
     ctx.fillRect(0, 0, width, height);
 
     const n = view.names.length;
-    const padX = 16;
-    const labelW = 132;
-    const countW = 64;
+    // Margins scale with the canvas: the chart column can be narrow (the side cards take their share),
+    // so fixed pixel widths for the labels/counts would leave no room for the bars at all.
+    const padX = Math.min(16, width * 0.03);
+    const labelW = Math.max(54, Math.min(132, width * 0.32));
+    const countW = Math.max(26, Math.min(64, width * 0.13));
     const trackX0 = padX + labelW;
     const trackX1 = width - padX - countW;
     const trackW = trackX1 - trackX0;
@@ -36,6 +38,11 @@ export function drawBandit(canvas: HTMLCanvasElement, view: BanditView): void {
     const botPad = 14;
     const rowH = (height - topPad - botPad) / n;
     const barH = Math.min(26, rowH * 0.5);
+
+    // Before its CSS aspect-ratio settles, the canvas can be measured tiny (or even narrower than the
+    // fixed label/count margins), which would make the bars negative-sized. Skip until it's laid out —
+    // a ResizeObserver redraws once it has real dimensions.
+    if (trackW <= 0 || rowH <= 0 || barH <= 0) return;
 
     const leader = argmax(view.estimates);
     const toX = (v: number) => trackX0 + Math.max(0, Math.min(1, v)) * trackW;
@@ -88,7 +95,7 @@ export function drawBandit(canvas: HTMLCanvasElement, view: BanditView): void {
 
         // Name (★ marks the current front-runner).
         ctx.fillStyle = '#e2e8f0';
-        ctx.font = '13px system-ui, sans-serif';
+        ctx.font = `${Math.max(10, Math.min(13, labelW * 0.15))}px system-ui, sans-serif`;
         ctx.textAlign = 'left';
         const star = i === leader && view.counts[i] > 0 ? '★ ' : '';
         ctx.fillText(star + view.names[i], padX, cy);
@@ -109,8 +116,10 @@ function argmax(values: number[]): number {
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
-    const rr = Math.min(r, w / 2, h / 2);
     ctx.beginPath();
+    if (w <= 0 || h <= 0) return; // degenerate box — leave an empty path so a following fill/stroke is a no-op
+    const rr = Math.max(0, Math.min(r, w / 2, h / 2)); // never negative: arcTo rejects a negative radius
+
     ctx.moveTo(x + rr, y);
     ctx.arcTo(x + w, y, x + w, y + h, rr);
     ctx.arcTo(x + w, y + h, x, y + h, rr);

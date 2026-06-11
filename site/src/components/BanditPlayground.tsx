@@ -83,6 +83,16 @@ export function BanditPlayground() {
         rebuild();
     }, [rebuild]);
 
+    // Redraw once the canvas actually has a size (its CSS aspect-ratio settles a frame after mount) and
+    // on any later resize — otherwise the first paint can land while the canvas is still zero-sized.
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas || typeof ResizeObserver === 'undefined') return;
+        const observer = new ResizeObserver(() => draw());
+        observer.observe(canvas);
+        return () => observer.disconnect();
+    }, [draw]);
+
     const step = useCallback(() => {
         const bandit = banditRef.current;
         const menu = menuRef.current;
