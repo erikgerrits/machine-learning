@@ -266,4 +266,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 25,
         part: PART_5,
     },
+    {
+        id: 'q-learning',
+        path: '/q-learning',
+        title: 'MDPs & Q-Learning',
+        tagline: 'Actions with delayed consequences — learn a route home as value flows backward.',
+        status: 'live',
+        chapter: 26,
+        part: PART_5,
+    },
 ];

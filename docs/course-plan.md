@@ -32,12 +32,14 @@ Vector Machines), all of Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA
 Association Rules, Recommender Systems), all of Part 4 — Time Series, the Perceptron interlude, Neural
 Networks, Convolutional Networks, Recurrent Networks, Transformers & Attention — and **Part 5
 (reinforcement learning)** now under way with **Ch 24 Multi-Armed Bandits** (the first model that
-*acts* rather than predicts — online select → reward → update, ε-greedy + UCB) and **Ch 25 Contextual
+*acts* rather than predicts — online select → reward → update, ε-greedy + UCB), **Ch 25 Contextual
 Bandits** (LinUCB: a per-arm ridge-regression model over the context, so the best offer depends on
-who's at the counter). **All three deep-learning frontier chapters (CNN, RNN, Transformer) became full
-trainable builds**, each gradient-checked, rather than the planned "adopts" explainers. Still roadmap:
-the rest of the reinforcement-learning arc (Ch 26–27), generative (Ch 28–29), and Bayesian (Ch 30).
-See the status column below.
+who's at the counter), and **Ch 26 MDPs & Q-Learning** (tabular, model-free, off-policy TD control —
+delayed consequences, the Bellman backup, taught through a café-floor grid world with a live value
+heatmap and policy arrows). **All three deep-learning frontier chapters (CNN, RNN, Transformer) became
+full trainable builds**, each gradient-checked, rather than the planned "adopts" explainers. Still
+roadmap: the close of the reinforcement-learning arc (Ch 27 deep RL), generative (Ch 28–29), and
+Bayesian (Ch 30). See the status column below.
 
 ---
 
@@ -188,7 +190,7 @@ Every row's "Wall" is the previous tool failing.
 |---|---|---|---|---|
 | 24 | **Multi-Armed Bandits** | Which daily special sells best? | Static prediction never *acts* or learns from outcomes → **explore vs. exploit**; regret; ε-greedy/UCB (the gentle RL entry) | ✅ `MultiArmedBandit` (first reinforcement-learning chapter — online select/reward/update; ε-greedy + UCB) |
 | 25 | **Contextual Bandits** | Personalized offers per customer context | One best arm for everyone is too coarse → condition the choice on context | ✅ `ContextualBandit` (LinUCB + ε-greedy — per-arm ridge regression over the context, online) |
-| 26 | **MDPs & Q-Learning** | A restocking / pricing **policy** over time | Actions have *delayed* consequences → states, actions, rewards, value, Bellman, Q-learning | ○ |
+| 26 | **MDPs & Q-Learning** | A restocking / pricing **policy** over time | Actions have *delayed* consequences → states, actions, rewards, value, Bellman, Q-learning | ✅ `QLearning` (tabular, model-free, off-policy TD control; taught via a café-floor grid world — value heatmap + policy arrows) |
 | 27 | **Deep RL (DQN / Policy Gradients)** | **Chain-scale** optimization where the state space explodes (many stores × SKUs × conditions) | *Tabular Q-learning's table is now impossibly large* → neural nets approximate value/policy. **NB: this is the weakest café hook** — keep it tied to chain-scale optimization, not a gimmicky "robot barista" | ○ (adopts) |
 
 ### Part 6 — The frontier (Season 5)

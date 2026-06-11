@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -82,7 +82,11 @@
     "epsilon-greedy",
     "ucb",
     "contextual bandit",
-    "linucb"
+    "linucb",
+    "q-learning",
+    "markov decision process",
+    "temporal difference",
+    "gridworld"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",
