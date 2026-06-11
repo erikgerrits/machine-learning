@@ -60,6 +60,8 @@
     top: 56px;
     align-self: start;
     height: calc(100vh - 56px);
+    overflow-y: auto; /* the course has 30+ chapters — let the nav scroll instead of clipping the tail */
+    overscroll-behavior: contain;
 }
 
 .navHeading {
