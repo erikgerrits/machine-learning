@@ -21,12 +21,12 @@
     align-items: start;
 }
 
-/* Metrics + explainer cards flow into as many ~220px+ columns as fit. */
+/* Metrics + explainer cards flow into as many ~220px+ columns as fit.
+   Items stretch to equal height per row so mixed-length cards don't stagger. */
 .side {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
-    align-items: start;
 }
 
 @media (max-width: 900px) {
