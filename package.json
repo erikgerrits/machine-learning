@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -90,7 +90,11 @@
     "deep reinforcement learning",
     "deep q-network",
     "dqn",
-    "experience replay"
+    "experience replay",
+    "autoencoder",
+    "representation learning",
+    "denoising",
+    "bottleneck"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

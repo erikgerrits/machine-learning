@@ -399,6 +399,35 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Autoencoder: compress, then denoise. Each "image" is a 7×7 soft blob at some position — 49
+    // pixels that really only vary 2 ways (where the blob is). The autoencoder squeezes each through a
+    // 2-number bottleneck and rebuilds it; noise can't fit through that squeeze, so it gets cleaned up.
+    const W = 7;
+    const blob = (cx: number, cy: number) => {
+        const img: number[] = [];
+        for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) img.push(Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / 5));
+        return img;
+    };
+    let lcg = 1;
+    const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+    const images = Array.from({ length: 80 }, () => blob(1.5 + rng() * 4, 1.5 + rng() * 4));
+
+    const autoencoder = new ml.Autoencoder().setHiddenSizes([24]).setCodeSize(2).setLearningRate(1).setNumberOfEpochs(1500).setSeed(0);
+    autoencoder.train(new ml.Matrix(images)); // 49 pixels -> 2 numbers -> 49 pixels
+
+    const clean = blob(3, 3);
+    const noisy = clean.map(v => Math.min(1, Math.max(0, v + (rng() - 0.5) * 0.8))); // speckle it
+    const cleaned = autoencoder.reconstruct(new ml.Matrix([noisy])).toArray()[0];
+
+    const render = (img: number[]) => img.map(v => ' .:+#'[Math.min(4, Math.floor(v * 5))]).join('');
+    const row = (y: number, img: number[]) => render(img.slice(y * W, y * W + W));
+    console.log('   noisy        →  reconstructed');
+    for (let y = 0; y < W; y++) console.log('  ' + row(y, noisy) + '      ' + row(y, cleaned));
+    // The left is a speckled mess; the right is a clean blob back near the centre — the network kept
+    // only what fit through the 2-number code (roughly "a blob, here") and dropped the noise.
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

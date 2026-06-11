@@ -23,6 +23,7 @@ const PART_2 = 'Part 2 · A wider toolbox';
 const PART_3 = 'Part 3 · Understanding customers';
 const PART_4 = 'Part 4 · Sequences & deep learning';
 const PART_5 = 'Part 5 · Learning by doing';
+const PART_6 = 'Part 6 · The frontier';
 
 export const ALGORITHMS: AlgorithmEntry[] = [
     {
@@ -283,5 +284,14 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         status: 'live',
         chapter: 27,
         part: PART_5,
+    },
+    {
+        id: 'autoencoders',
+        path: '/autoencoders',
+        title: 'Autoencoders',
+        tagline: 'Squeeze data through a bottleneck to compress, denoise, and spot the odd one out.',
+        status: 'live',
+        chapter: 28,
+        part: PART_6,
     },
 ];
