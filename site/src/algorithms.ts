@@ -303,4 +303,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 29,
         part: PART_6,
     },
+    {
+        id: 'bayesian-regression',
+        path: '/bayesian-regression',
+        title: 'Bayesian Inference',
+        tagline: 'Predict with honest error bars — tight where there is data, wide where there is not.',
+        status: 'live',
+        chapter: 30,
+        part: PART_6,
+    },
 ];

@@ -98,7 +98,11 @@
     "variational autoencoder",
     "vae",
     "generative model",
-    "generative ai"
+    "generative ai",
+    "bayesian",
+    "bayesian regression",
+    "uncertainty",
+    "probabilistic"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

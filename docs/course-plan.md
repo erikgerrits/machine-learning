@@ -26,7 +26,15 @@ generative). The built algorithms become the spine; everything else is roadmap.
 
 **Goal:** engaging, fun, genuinely educational, and very cool.
 
-**Status (this release).** Woven through **Ch 0–27** with no built-but-unwoven gaps: all of Part 1,
+**Status (this release).** 🎉 **The course is complete — all 31 chapters (Ch 0–30) across all six
+parts are built and woven into the story**, every algorithm written from scratch in `src/lib` with a
+playground and a tutorial chapter. The arc runs from the baseline predictors through regression,
+classification, trees/forests/boosting, SVMs, the unsupervised toolbox, time series, the full
+deep-learning stack (neural nets, CNNs, RNNs, Transformers), the reinforcement-learning arc (bandits →
+contextual bandits → Q-learning → deep RL), and the frontier (autoencoders, a VAE, and — the finale —
+Bayesian inference). Earlier status detail, retained for reference:
+
+Woven through **Ch 0–27** with no built-but-unwoven gaps: all of Part 1,
 the whole of Part 2 (k‑NN, Naive Bayes, Decision Trees, Random Forests, Gradient Boosting, Support
 Vector Machines), all of Part 3 (k‑Means, Hierarchical Clustering, DBSCAN, PCA, Anomaly Detection,
 Association Rules, Recommender Systems), all of Part 4 — Time Series, the Perceptron interlude, Neural
@@ -203,7 +211,7 @@ Every row's "Wall" is the previous tool failing.
 |---|---|---|---|---|
 | 28 | **Autoencoders** | Compress & denoise data; anomaly detection with nets | Need compact learned representations → encode→decode | ✅ `Autoencoder` (from scratch — symmetric encoder/decoder, MSE backprop, gradient-checked; compress + denoise + anomaly via reconstruction error; latent-manifold playground) |
 | 29 | **Generative Models (VAE/GAN/Diffusion)** | Invent new recipe ideas & marketing images | Don't classify — *create* → generative modeling | ✅ `VariationalAutoencoder` (built from scratch — reparameterisation trick + KL regulariser, gradient-checked; sample new images from the prior; exceeded the "adopts" plan. GAN/Diffusion covered as a field note) |
-| 30 | **Bayesian / Probabilistic Models** | "How *sure* are we?" before a big bet (signing the lease for store #3, a huge catering order) | Point predictions hide uncertainty → priors, posteriors, reasoning under uncertainty | ○ |
+| 30 | **Bayesian / Probabilistic Models** | "How *sure* are we?" before a big bet (signing the lease for store #3, a huge catering order) | Point predictions hide uncertainty → priors, posteriors, reasoning under uncertainty | ✅ `BayesianLinearRegression` (from scratch — conjugate posterior over weights, predictive mean + credible band that fans out away from data, posterior function samples; the course finale) |
 
 **Cross-cutting "Field Notes"** (recurring sidebars, threaded through the story, not standalone
 chapters): evaluation metrics (accuracy, precision/recall, RMSE, ROC), cross-validation,

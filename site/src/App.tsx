@@ -39,6 +39,7 @@ const QLearningTutorial = lazy(() => import('./content/q-learning.mdx'));
 const DeepRlTutorial = lazy(() => import('./content/deep-rl.mdx'));
 const AutoencodersTutorial = lazy(() => import('./content/autoencoders.mdx'));
 const GenerativeModelsTutorial = lazy(() => import('./content/generative-models.mdx'));
+const BayesianRegressionTutorial = lazy(() => import('./content/bayesian-regression.mdx'));
 
 export function App() {
     return (
@@ -290,6 +291,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <GenerativeModelsTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="bayesian-regression"
+                    element={
+                        <TutorialPage>
+                            <BayesianRegressionTutorial />
                         </TutorialPage>
                     }
                 />

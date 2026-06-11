@@ -453,6 +453,31 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Bayesian linear regression: a model that reports how *sure* it is. We give it noisy points from a
+    // hidden curve, but only over the middle of the range — and ask it to predict everywhere, with error
+    // bars. Where it has data the bars are tight; out past the edges (extrapolation) they fan wide open.
+    const truth = (x: number) => Math.sin(2 * Math.PI * x) * 0.5;
+    let lcg = 1;
+    const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+    const xs: number[][] = [], ys: number[][] = [];
+    for (let i = 0; i < 30; i++) { const x = 0.25 + rng() * 0.4; xs.push([x]); ys.push([truth(x) + (rng() - 0.5) * 0.1]); }
+
+    const model = new ml.BayesianLinearRegression().setBasis('gaussian').setNumberOfBases(6).setBasisWidth(0.15).setBeta(40);
+    model.train(new ml.Matrix(xs), new ml.Matrix(ys)); // observed only over x in [0.25, 0.65]
+
+    const grid = [0, 0.1, 0.25, 0.45, 0.65, 0.8, 1];
+    const mean = model.predict(new ml.Matrix(grid.map(x => [x]))).toArray().map(r => r[0]);
+    const std = model.predictiveStandardDeviation(new ml.Matrix(grid.map(x => [x])));
+    console.log('   x     mean    ±std   (■ = uncertainty)');
+    grid.forEach((x, i) => {
+        const inData = x >= 0.25 && x <= 0.65;
+        console.log(`  ${x.toFixed(2)}   ${mean[i].toFixed(2).padStart(5)}   ${std[i].toFixed(2)}  ${'■'.repeat(Math.round(std[i] * 20))}${inData ? '  <- has data' : ''}`);
+    });
+    // The ±std bars are short where the café has data (x in 0.25..0.65) and balloon at the edges —
+    // the model is honest that it's guessing out there. That admitted doubt is the whole point.
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);
