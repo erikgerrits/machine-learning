@@ -54,7 +54,7 @@ export function drawContextualBandit(canvas: HTMLCanvasElement, view: Contextual
 
         const chosen = argmax(view.predicted[t]);
         const barSlot = panelW / nArms;
-        const barW = Math.min(38, barSlot * 0.6);
+        const barW = Math.min(64, barSlot * 0.6);
 
         for (let a = 0; a < nArms; a++) {
             const cx = panelX + barSlot * (a + 0.5);

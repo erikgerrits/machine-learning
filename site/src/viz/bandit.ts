@@ -37,7 +37,7 @@ export function drawBandit(canvas: HTMLCanvasElement, view: BanditView): void {
     const topPad = 14;
     const botPad = 14;
     const rowH = (height - topPad - botPad) / n;
-    const barH = Math.min(26, rowH * 0.5);
+    const barH = Math.min(48, rowH * 0.45);
 
     // Before its CSS aspect-ratio settles, the canvas can be measured tiny (or even narrower than the
     // fixed label/count margins), which would make the bars negative-sized. Skip until it's laid out —
