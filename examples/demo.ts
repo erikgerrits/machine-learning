@@ -313,6 +313,47 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Q-learning (reinforcement learning): a café runner learns the quickest tray route across the
+    // floor, from the kitchen (S) to a table (G), dodging a spill (#). Actions: up/right/down/left.
+    // Only the goal pays off (+1), the spill stings (−1), each step costs a little (−0.04) — so the
+    // agent must propagate that goal value *backward* through the floor to know which way to walk.
+    const COLS = 4, ROWS = 3, GOAL = 3, HAZARD = 5, START = 8; // state = row*COLS + col
+    //   . . . G        (top-right is the table)
+    //   . # . .        (centre-left is the spill)
+    //   S . . .        (bottom-left is the kitchen)
+    const step = (s: number, a: number) => {
+        let r = Math.floor(s / COLS), c = s % COLS;
+        if (a === 0) r--; else if (a === 1) c++; else if (a === 2) r++; else c--;
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS) { r = Math.floor(s / COLS); c = s % COLS; } // bump a wall, stay
+        const next = r * COLS + c;
+        if (next === GOAL) return { next, reward: 1, done: true };
+        if (next === HAZARD) return { next, reward: -1, done: true };
+        return { next, reward: -0.04, done: false };
+    };
+
+    const agent = new ml.QLearning().setNumberOfStates(ROWS * COLS).setNumberOfActions(4)
+        .setLearningRate(0.4).setDiscountFactor(0.95).setEpsilon(0.2).setSeed(0);
+    for (let episode = 0; episode < 3000; episode++) {
+        let state = START;
+        for (let t = 0; t < 50; t++) {
+            const action = agent.selectAction(state);
+            const { next, reward, done } = step(state, action);
+            agent.update(state, action, reward, next, done);
+            if (done) break;
+            state = next;
+        }
+    }
+
+    const arrows = ['↑', '→', '↓', '←'];
+    const policy = agent.getPolicy().map((a, s) =>
+        s === GOAL ? 'G' : s === HAZARD ? '#' : arrows[a]);
+    for (let r = 0; r < ROWS; r++) console.log(policy.slice(r * COLS, r * COLS + COLS).join(' '));
+    // → → → G     the learned policy — every cell points along a quickest safe route to the table.
+    // ↑ # ↑ ↑     From the kitchen it walks up the left edge, then right across the top, steering
+    // ↑ → ↑ ↑     around the spill (#) rather than through it.
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

@@ -23,6 +23,7 @@ export { default as NaiveBayes } from "./machine-learning/supervised/NaiveBayes"
 export { default as NearestNeighbors } from "./machine-learning/supervised/NearestNeighbors";
 export { default as PCA } from "./machine-learning/unsupervised/PCA";
 export { default as Perceptron } from "./machine-learning/supervised/Perceptron";
+export { default as QLearning } from "./machine-learning/reinforcement/QLearning";
 export { default as RandomForest } from "./machine-learning/supervised/RandomForest";
 export { default as RecurrentNeuralNetwork } from "./machine-learning/supervised/RecurrentNeuralNetwork";
 export { default as Recommender } from "./machine-learning/unsupervised/Recommender";

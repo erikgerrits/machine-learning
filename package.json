@@ -82,7 +82,11 @@
     "epsilon-greedy",
     "ucb",
     "contextual bandit",
-    "linucb"
+    "linucb",
+    "q-learning",
+    "markov decision process",
+    "temporal difference",
+    "gridworld"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

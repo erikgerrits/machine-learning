@@ -1,0 +1,109 @@
+import { QLearningPlayground } from '../components/QLearningPlayground';
+
+# Chapter 26 — When choices echo
+
+> *Markov decision processes & Q-learning.* The bandits chose, got a reward, and forgot — every turn
+> stood alone. But most real decisions **echo**: where you step now changes where you are next, and the
+> payoff might be a dozen moves away. This is the leap to reinforcement learning proper — learning to
+> act when consequences are *delayed*.
+
+The café is busy and Nadia's runner is carrying a tray from the kitchen to a table across a crowded
+floor. There's a spill in the middle. No single step is "right" or "wrong" on its own — the goal is to
+get the whole tray home quickly without disaster. A step left now only makes sense because of where it
+leaves you three steps from now. The bandit's question — *which arm pays best right now?* — can't even
+be asked here.
+
+## The wall: the reward comes later, so who gets the credit?
+
+Every model so far learned from an immediate signal: the right answer, the sale, the reward for *this*
+choice. But the table only pays off at the very end. The hundred little steps that led there got no
+reward at all — yet some of them were good (toward the goal) and some were wasteful (into a wall, near
+the spill). When the payoff finally lands, **which earlier moves deserve the credit?** That's the
+*temporal credit-assignment* problem, and it's exactly what a one-shot learner has no machinery for.
+
+## The idea: states, value, and the Bellman backup
+
+Frame the floor as a **Markov decision process**: a set of **states** (the runner's cell), **actions**
+(up/right/down/left), a **reward** for each step, and a rule that moves you to the next state. We want a
+**policy** — an action for every state — that maximises the *total* reward collected over a whole trip,
+not just the next step. Future rewards are discounted by **γ** per step, so sooner is worth more than
+later.
+
+The trick is to learn a number for every move: **Q(s, a)** — the total long-run reward of taking action
+`a` in state `s`, then acting well after. If you had it, the policy is trivial: in each state pick the
+action with the biggest Q. Q-learning builds it from raw experience with one update per step:
+
+$$
+Q(s, a) \;\leftarrow\; Q(s, a) \;+\; \alpha \big[\, \underbrace{r + \gamma \max_{a'} Q(s', a')}_{\text{a fresher estimate}} \;-\; Q(s, a) \,\big]
+$$
+
+That bracket is the **temporal-difference error** — the gap between the old guess and a better one: the
+reward we just saw plus the value of the best move available where we landed. Bootstrapping off the
+*next* state's value is the magic: it lets the goal's reward seep **one cell backward per visit**, until
+value fills the whole floor and the arrows point home.
+
+Press **Train** and watch exactly that — the heatmap glowing outward from the table (★), the policy
+arrows snapping into a route, the runner (yellow dot) still exploring as it learns:
+
+<div className="breakout">
+  <QLearningPlayground />
+</div>
+
+## How it works: one line of backup, looped over experience
+
+The agent keeps a table `Q[state][action]`, all zeros to start, and refines it transition by
+transition — the whole of Q-learning, straight from the
+[`QLearning`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/reinforcement/QLearning.ts)
+source:
+
+```ts
+// update(state, action, reward, nextState, done)
+const futureValue = done ? 0 : this.q[nextState][argmax(this.q[nextState])]; // value of where we landed
+const target = reward + this.discountFactor * futureValue;                   // r + γ·maxₐ′ Q(s′,a′)
+this.q[state][action] += this.learningRate * (target - this.q[state][action]); // step toward the target
+```
+
+Actions are chosen **ε-greedily** — mostly the current best, but a slice of the time a random move, so
+the runner keeps discovering routes it would otherwise never try:
+
+```ts
+if (this.random() < this.epsilon) return Math.floor(this.random() * this.numberOfActions); // explore
+return this.bestAction(state);                                                              // exploit
+```
+
+Two properties make this work without a map of the world. It's **model-free** — it never needs to know
+the transition rules in advance, only to *experience* them. And it's **off-policy** — that `max` means
+it learns the value of the *optimal* greedy policy even while it's busy exploring with random steps. The
+`done` flag matters: on the step that reaches the table there is no "after", so the future term is
+dropped and `Q` there equals the raw reward — the anchor everything else discounts back from.
+
+## Try it yourself
+
+- **Café floor.** The cleanest view of value propagating: start with a dark floor and watch a warm
+  gradient bloom out from the table, every arrow eventually pointing along a shortest safe route.
+- **Cliff walk.** The direct path home hugs a row of spills. Watch the runner learn to climb up and
+  over instead — the arrows lifting *away* from the edge even though it's the long way.
+- **The back room.** A wall splits the floor with one doorway. The far room stays dark and confused
+  until value finally threads back through the gap — a vivid picture of credit travelling cell by cell.
+- **Discount γ.** Drop it toward 0.5 and the runner turns short-sighted: distant cells fade to nothing
+  and it can dither, unable to "see" the table from far away. Push it near 0.99 and far-off value stays
+  vivid. **ε** trades the same way over time — vital early, then just noise once the route is known.
+
+> **Field note — a table only gets you so far.** Q-learning here stores one number per (state, action).
+> That's perfect for a café floor with a few dozen cells, but the table's size is the *whole* state
+> space — and for real problems (every arrangement of a warehouse, every pixel-frame of a game) it
+> explodes past any memory. The fix is to stop storing Q and start *predicting* it with a function — a
+> neural network that generalises across similar states. That's **deep reinforcement learning**.
+
+## What broke — nothing; the café learned to plan
+
+Nothing broke. For the first time a model reasons across *time*: it took an action whose reward arrived
+only much later, and figured out which choices deserved the credit. The same machinery that routed a
+tray across the floor is, in spirit, what learns to restock a shelf, price a season, or play a game —
+anywhere a decision now reshapes the rewards later.
+
+But look back at that field note. Tabular Q-learning leans on one fragile assumption: that you can keep
+a slot for *every* state. The moment the world is too big to enumerate — a chain of cafés, each with
+its own stock, staff, and weather — the table can't be built, let alone filled. The way forward is to
+trade the table for a learned approximation, marrying the value ideas of this chapter to the neural
+networks of Part 4. That's the frontier the map (`docs/course-plan.md`) points to next.

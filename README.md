@@ -47,6 +47,7 @@ Below are some simple code usage examples.
 * [Exponential Smoothing (time series)](#exponential-smoothing-time-series)
 * [Multi-Armed Bandit (reinforcement learning)](#multi-armed-bandit-reinforcement-learning)
 * [Contextual Bandit (LinUCB)](#contextual-bandit-linucb)
+* [Q-Learning (reinforcement learning)](#q-learning-reinforcement-learning)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -596,6 +597,48 @@ for (let t = 0; t < 3000; t++) {
 
 console.log('morning →', bandit.selectArm([1, 0]), ' evening →', bandit.selectArm([0, 1]));
 // morning → 0  evening → 1  <- a per-customer policy: roll for regulars, tonic for tourists
+
+```
+
+### Q-Learning (reinforcement learning)
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Q-learning: a café runner learns the quickest tray route across the floor — kitchen (S) to table (G),
+// dodging a spill (#). Unlike a bandit, actions have *delayed* consequences, so the agent learns a
+// value for every (state, action) and lets the goal's reward propagate backward through the floor.
+const COLS = 4, ROWS = 3, GOAL = 3, HAZARD = 5, START = 8; // state = row*COLS + col
+const step = (s: number, a: number) => {                   //   . . . G
+    let r = Math.floor(s / COLS), c = s % COLS;             //   . # . .
+    if (a === 0) r--; else if (a === 1) c++; else if (a === 2) r++; else c--; //  S . . .
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) { r = Math.floor(s / COLS); c = s % COLS; }
+    const next = r * COLS + c;
+    if (next === GOAL) return { next, reward: 1, done: true };
+    if (next === HAZARD) return { next, reward: -1, done: true };
+    return { next, reward: -0.04, done: false };
+};
+
+const agent = new ml.QLearning();
+agent.setNumberOfStates(ROWS * COLS).setNumberOfActions(4).setDiscountFactor(0.95).setEpsilon(0.2).setSeed(0);
+
+for (let episode = 0; episode < 3000; episode++) {         // learn online, one transition at a time
+    let state = START;
+    for (let t = 0; t < 50; t++) {
+        const action = agent.selectAction(state);
+        const { next, reward, done } = step(state, action);
+        agent.update(state, action, reward, next, done);
+        if (done) break;
+        state = next;
+    }
+}
+
+const arrows = ['↑', '→', '↓', '←'];
+const policy = agent.getPolicy().map((a, s) => (s === GOAL ? 'G' : s === HAZARD ? '#' : arrows[a]));
+for (let r = 0; r < ROWS; r++) console.log(policy.slice(r * COLS, r * COLS + COLS).join(' '));
+// → → → G   the learned policy: every cell points along a quickest safe route to the table,
+// ↑ # ↑ ↑   walking up the left edge then across the top, steering around the spill (#).
+// ↑ → ↑ ↑
 
 ```
 
