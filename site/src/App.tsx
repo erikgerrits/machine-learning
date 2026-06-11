@@ -36,6 +36,7 @@ const TransformerTutorial = lazy(() => import('./content/transformer.mdx'));
 const BanditsTutorial = lazy(() => import('./content/bandits.mdx'));
 const ContextualBanditsTutorial = lazy(() => import('./content/contextual-bandits.mdx'));
 const QLearningTutorial = lazy(() => import('./content/q-learning.mdx'));
+const DeepRlTutorial = lazy(() => import('./content/deep-rl.mdx'));
 
 export function App() {
     return (
@@ -263,6 +264,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <QLearningTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="deep-rl"
+                    element={
+                        <TutorialPage>
+                            <DeepRlTutorial />
                         </TutorialPage>
                     }
                 />

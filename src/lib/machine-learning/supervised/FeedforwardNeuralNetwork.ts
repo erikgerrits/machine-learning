@@ -150,6 +150,16 @@ export default class FeedforwardNeuralNetwork {
         return this.weightMatrices.map(weightMatrix => weightMatrix.getClone());
     }
 
+    /**
+     * Replaces the network's weights with clones of the given matrices — the inverse of
+     * {@link getWeightMatrices}. Useful for restoring saved weights, or copying one network's
+     * parameters into another (e.g. syncing a reinforcement-learning target network).
+     */
+    public setWeightMatrices (weightMatrices: Matrix[]) {
+        this.weightMatrices = weightMatrices.map(weightMatrix => weightMatrix.getClone());
+        return this;
+    }
+
     /* Private methods */
 
     private trainBatch (inputs: Matrix, targets: Matrix) {

@@ -86,7 +86,11 @@
     "q-learning",
     "markov decision process",
     "temporal difference",
-    "gridworld"
+    "gridworld",
+    "deep reinforcement learning",
+    "deep q-network",
+    "dqn",
+    "experience replay"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

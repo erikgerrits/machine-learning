@@ -48,6 +48,7 @@ Below are some simple code usage examples.
 * [Multi-Armed Bandit (reinforcement learning)](#multi-armed-bandit-reinforcement-learning)
 * [Contextual Bandit (LinUCB)](#contextual-bandit-linucb)
 * [Q-Learning (reinforcement learning)](#q-learning-reinforcement-learning)
+* [Deep Q-Network (DQN)](#deep-q-network-dqn)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -639,6 +640,53 @@ for (let r = 0; r < ROWS; r++) console.log(policy.slice(r * COLS, r * COLS + COL
 // → → → G   the learned policy: every cell points along a quickest safe route to the table,
 // ↑ # ↑ ↑   walking up the left edge then across the top, steering around the spill (#).
 // ↑ → ↑ ↑
+
+```
+
+### Deep Q-Network (DQN)
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// DQN: the same value idea as Q-learning, but the floor is now *continuous*. The runner's state is a
+// real position (x, y) — far too many states to tabulate — so a neural network learns to predict
+// Q(state) and generalises to spots it never stepped on. (Experience replay + a target network keep
+// the training stable.) Goal: reach the table near the top-right; every other step pays 0.
+const STEP = 0.12, GOAL: [number, number] = [0.85, 0.85], RADIUS = 0.18;
+const dist = (x: number, y: number) => Math.hypot(x - GOAL[0], y - GOAL[1]);
+const step = (s: number[], a: number) => {
+    const x = Math.min(1, Math.max(0, s[0] + (a === 1 ? STEP : a === 3 ? -STEP : 0)));
+    const y = Math.min(1, Math.max(0, s[1] + (a === 0 ? STEP : a === 2 ? -STEP : 0)));
+    return dist(x, y) < RADIUS ? { next: [x, y], reward: 1, done: true } : { next: [x, y], reward: 0, done: false };
+};
+
+const dqn = new ml.DeepQNetwork();
+dqn.setStateSize(2).setNumberOfActions(4).setHiddenSizes([24, 24]).setLearningRate(0.2).setDiscountFactor(0.9).setEpsilon(0.3).setSeed(1);
+
+let lcg = 3;
+const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+for (let episode = 0; episode < 4000; episode++) {
+    let state = [rng(), rng()];                 // start anywhere, so the goal is found often
+    for (let t = 0; t < 60; t++) {
+        const action = dqn.selectAction(state);
+        const { next, reward, done } = step(state, action);
+        dqn.observe(state, action, reward, next, done); // remember + learn from a replayed minibatch
+        if (done) break;
+        state = next;
+    }
+}
+
+const shades = ['·', '░', '▒', '▓', '█'];        // sample the learned value V(x, y) over the floor
+for (let row = 4; row >= 0; row--) {
+    let line = '';
+    for (let col = 0; col < 5; col++) line += shades[Math.min(4, Math.floor(dqn.getValue([col / 4, row / 4]) * 5))] + ' ';
+    console.log(line);
+}
+// ▓ ▓ █ █ █   the value surface the network painted over the whole floor — brightest at the table
+// ▒ ▓ ▓ █ █   (top-right), fading with distance. The runner walks uphill (greedy on Q) all the way
+// ░ ▒ ▓ ▓ █   home — even from spots it never visited in training, because the network interpolates
+// ░ ░ ▒ ▓ █   between the ones it did. That generalisation is what a lookup table could never do.
+// ░ ░ ░ ▒ ▓
 
 ```
 
