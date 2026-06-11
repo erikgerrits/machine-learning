@@ -1,0 +1,36 @@
+/*
+ * Shared playground layout, composed by every *Playground.module.css. Chart-first:
+ * a sticky controls rail on the left, the visualization filling all remaining
+ * width, and the metrics/explainer cards flowing in a row beneath it — the cards
+ * yield space, never the chart. Layout changes belong here, not in the
+ * per-playground files (those should only style the charts themselves).
+ */
+
+.playground {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+/* Single column: the chart on top at full width, the card row underneath. */
+.stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+/* Metrics + explainer cards flow into as many ~220px+ columns as fit. */
+.side {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .playground {
+        grid-template-columns: 1fr;
+    }
+}

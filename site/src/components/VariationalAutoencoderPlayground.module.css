@@ -1,15 +1,9 @@
 .playground {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 20px;
-    align-items: start;
+    composes: playground from './PlaygroundLayout.module.css';
 }
 
 .stage {
-    display: grid;
-    grid-template-columns: minmax(0, 420px) minmax(240px, 1fr);
-    gap: 20px;
-    align-items: start;
+    composes: stage from './PlaygroundLayout.module.css';
 }
 
 .gridWrap {
@@ -19,6 +13,7 @@
     border: 1px solid var(--border);
     box-shadow: 0 20px 60px -30px rgba(56, 189, 248, 0.5);
     aspect-ratio: 1 / 1;
+    max-width: 620px;
     background: #0b1120;
 }
 
@@ -41,9 +36,7 @@
 }
 
 .side {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    composes: side from './PlaygroundLayout.module.css';
 }
 
 .galleryWrap {
@@ -66,12 +59,3 @@
     line-height: 1.5;
 }
 
-@media (max-width: 900px) {
-    .playground {
-        grid-template-columns: 1fr;
-    }
-
-    .stage {
-        grid-template-columns: 1fr;
-    }
-}
