@@ -1,0 +1,114 @@
+import { DeepQNetworkPlayground } from '../components/DeepQNetworkPlayground';
+
+# Chapter 27 — Too big for a table
+
+> *Deep reinforcement learning (DQN).* Q-learning routed a tray across a floor by keeping a number for
+> every cell. But the moment the floor isn't tiled — a *continuous* position, or a whole chain of cafés
+> with their own stock and staff — there are too many states to ever list. The fix marries Part 4 to
+> Part 5: stop storing the value table and let a **neural network predict it**.
+
+The café is thriving, and Nadia is mapping out store #3. The same routing problem keeps coming back —
+move a tray, a delivery, a restock toward where it should be — but now she wants it to work on a real
+floor, where the runner's position is a smooth `(x, y)`, not one of nine tiles. And eventually across a
+*chain*, where the "state" is the stock and queue and weather of every store at once.
+
+## The wall: you can't tabulate a continuous world
+
+Chapter 26's Q-learning kept a slot `Q[state][action]` for every state. That only works because you
+can **list** the states — nine cells, sixteen, a few hundred. A continuous position has *infinitely
+many* states; a chain of stores has more joint states than atoms in the room. There's no table to
+build, and even if you discretised it finely, the runner would have to visit **every** cell to learn
+its value — it could never say anything sensible about a spot it hadn't already stood on. The lookup
+table can't generalise, and that's exactly what a big world demands.
+
+## The idea: approximate Q with a network
+
+So replace the table with a **function**. A neural network takes the state vector `(x, y)` and outputs
+a Q-value for each action. Now "learning Q" means *training the network* — and because a network
+interpolates, it gives sensible values for states between the ones it visited. It **generalises**. The
+target is the very same temporal-difference idea from Chapter 26, just used as a regression target the
+network is nudged toward:
+
+$$
+\text{target} \;=\; r + \gamma \max_{a'} Q(s', a';\, \theta^{-}), \qquad \text{minimise } \big(Q(s, a;\, \theta) - \text{target}\big)^2
+$$
+
+Bootstrapping a network off its own moving predictions is unstable, so **DQN** (DeepMind's Atari
+breakthrough) adds two stabilisers: an **experience-replay** buffer it trains on in random minibatches,
+and a periodically-frozen **target network** (`θ⁻`) that supplies a *steady* target instead of one that
+lurches every step.
+
+Below, the floor is continuous and the table (★) sits in a corner. Press **Train** and watch the
+network paint a value surface over the *whole* floor — including spots the runner never steps — while
+the arrows lock into a field that points home. Reinforcement learning is slow; give it a minute.
+
+<div className="breakout">
+  <DeepQNetworkPlayground />
+</div>
+
+## How it works: the table becomes a regression
+
+The agent stores each transition and learns from a **random minibatch** of past ones. For each sampled
+transition it builds a target vector — the network's current outputs, with only the *taken* action's
+entry overwritten by the TD target — then takes one gradient step toward it, straight from the
+[`DeepQNetwork`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/reinforcement/DeepQNetwork.ts)
+source:
+
+```ts
+const targets = this.online.predict(new Matrix(states)).toArray();   // start from current Q (untaken
+const nextQ = this.target.predict(new Matrix(nextStates)).toArray(); //  actions then get zero error)
+
+for (let i = 0; i < this.batchSize; i++) {
+    const t = batch[i];
+    const future = t.done ? 0 : nextQ[i][argmax(nextQ[i])];          // bootstrap off the *target* net
+    targets[i][t.action] = t.reward + this.discountFactor * future;  // r + γ·maxₐ′ Q⁻(s′,a′)
+}
+this.online.train(new Matrix(states), new Matrix(targets));          // one gradient step
+```
+
+Every so often the target network is re-frozen from the online one, so it tracks slowly:
+
+```ts
+if (this.learnSteps % this.targetSyncInterval === 0) {
+    this.target.setWeightMatrices(this.online.getWeightMatrices());
+}
+```
+
+The network reuses the exact [`FeedforwardNeuralNetwork`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/FeedforwardNeuralNetwork.ts)
+from Chapter 20 — Part 5's value ideas riding on Part 4's backprop. Its sigmoid output means values
+live in `(0, 1)`, so the reward is shaped to fit: `+1` at the table, `0` elsewhere, discounted by `γ`,
+which keeps every value in range while still rewarding shorter routes.
+
+## Try it yourself
+
+- **Watch the surface form.** Early on it's flat and noisy and the runner wanders aimlessly. Reward
+  from the table slowly seeps back through the network until a smooth gradient covers the floor and the
+  arrows point home from everywhere — the table you saw in Chapter 26, now *drawn by a function*.
+- **Generalisation, made visible.** The heatmap is coloured at far more points than the runner ever
+  visits — every one is the network *predicting* a value it was never directly taught. That smooth
+  fill-in is the whole reason DQN scales where a lookup table can't.
+- **Move the table.** Switch to *Window seat* or *Corner booth*: same runner, same network, a brand-new
+  value landscape learned from scratch.
+- **γ and ε.** Drop **γ** and the far floor goes dark — the runner turns short-sighted, unable to
+  value a table many steps away. Drop **ε** once it knows the route and the wandering stops.
+
+> **Field note — this is the small end of a vast field.** What you're watching is a faithful DQN, just
+> tiny: a two-input state, a few-dozen-neuron network, one floor. Scale the state to the pixels of a
+> screen and the network to millions of weights and the *same* loop learns to play Atari from raw
+> video. Swap "predict the value" for "predict the action directly" and you get **policy-gradient**
+> methods; combine the two and you get the actor-critic algorithms behind robotics and game-playing
+> agents — and, in spirit, the reinforcement-learning-from-feedback that tunes assistants like the one
+> that wrote this page.
+
+## What broke — nothing; and the café ran out of new algorithms to need
+
+Nothing broke — and that's the quiet milestone. From a shoebox of receipts in Chapter 0, the café has
+arrived at an agent that learns to act in a world too large to enumerate, by *predicting* value rather
+than memorising it. Every thread of Part 5 — bandits, contexts, states over time — comes together here:
+choose, observe, and improve, with a neural network carrying the weight.
+
+This closes the reinforcement-learning arc. What's left on the map (`docs/course-plan.md`) isn't about
+deciding better but about *seeing* differently: compressing data into its essence (autoencoders),
+*inventing* new data rather than labelling it (generative models), and putting honest numbers on doubt
+before a big bet (Bayesian methods). The café that started by guessing tomorrow's croissants now has a
+whole toolbox — and the frontier it's walking toward is the same one the rest of the field is.

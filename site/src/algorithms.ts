@@ -275,4 +275,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 26,
         part: PART_5,
     },
+    {
+        id: 'deep-rl',
+        path: '/deep-rl',
+        title: 'Deep RL (DQN)',
+        tagline: 'Too many states to tabulate — let a neural network predict value across a continuous floor.',
+        status: 'live',
+        chapter: 27,
+        part: PART_5,
+    },
 ];

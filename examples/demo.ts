@@ -354,6 +354,51 @@ import * as ml from '../src/lib';
 }
 
 {
+    // Deep Q-network (DQN): the same value idea, but the floor is now *continuous*. The runner's state
+    // is a real position (x, y) in [0,1]², far too many states to tabulate — so a neural network learns
+    // to predict Q(state) and generalises to spots it never stepped on. Goal: reach the table near the
+    // top-right corner (+1, ends the trip); every other step pays 0, discounted by γ.
+    const STEP = 0.12, GOAL: [number, number] = [0.85, 0.85], RADIUS = 0.18;
+    const dist = (x: number, y: number) => Math.hypot(x - GOAL[0], y - GOAL[1]);
+    const step = (s: number[], a: number) => {
+        const x = Math.min(1, Math.max(0, s[0] + (a === 1 ? STEP : a === 3 ? -STEP : 0)));
+        const y = Math.min(1, Math.max(0, s[1] + (a === 0 ? STEP : a === 2 ? -STEP : 0)));
+        return dist(x, y) < RADIUS ? { next: [x, y], reward: 1, done: true } : { next: [x, y], reward: 0, done: false };
+    };
+
+    const dqn = new ml.DeepQNetwork().setStateSize(2).setNumberOfActions(4).setHiddenSizes([24, 24])
+        .setLearningRate(0.2).setDiscountFactor(0.9).setEpsilon(0.3).setSeed(1);
+    let lcg = 3;
+    const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+    for (let episode = 0; episode < 4000; episode++) {
+        let state = [rng(), rng()]; // start anywhere on the floor, so the goal is found often
+        for (let t = 0; t < 60; t++) {
+            const action = dqn.selectAction(state);
+            const { next, reward, done } = step(state, action);
+            dqn.observe(state, action, reward, next, done);
+            if (done) break;
+            state = next;
+        }
+    }
+
+    // Sample the learned value V(x, y) on a coarse grid — high (▓) near the table, low (·) far away.
+    const shades = ['·', '░', '▒', '▓', '█'];
+    for (let row = 4; row >= 0; row--) {
+        let line = '';
+        for (let col = 0; col < 5; col++) {
+            const v = dqn.getValue([col / 4, row / 4]);
+            line += shades[Math.min(4, Math.floor(v * 5))] + ' ';
+        }
+        console.log(line);
+    }
+    // ▓ ▓ █ █ █     the value surface the network painted over the whole floor — brightest at the
+    // ▒ ▓ ▓ █ █     table (top-right) and fading with distance. The runner just walks uphill: in every
+    // ░ ▒ ▓ ▓ █     state it picks the action whose Q is highest, and that leads it home — even from
+    // ░ ░ ▒ ▓ █     spots it never actually visited while training, because the net interpolates
+    // ░ ░ ░ ▒ ▓     between the ones it did.
+}
+
+{
     // Naive Bayes (multinomial): classify messages by word counts.
     // Vocabulary [free, money, table, tonight]; one-hot classes [spam, ham].
     const inputs = new ml.Matrix([[2, 1, 0, 0], [1, 2, 0, 0], [0, 0, 2, 1], [0, 0, 1, 2]]);

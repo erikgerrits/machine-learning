@@ -5,6 +5,7 @@ export { default as ContextualBandit } from "./machine-learning/reinforcement/Co
 export type { ContextualStrategy } from "./machine-learning/reinforcement/ContextualBandit";
 export { default as ConvolutionalNeuralNetwork } from "./machine-learning/supervised/ConvolutionalNeuralNetwork";
 export { default as DBSCAN } from "./machine-learning/unsupervised/DBSCAN";
+export { default as DeepQNetwork } from "./machine-learning/reinforcement/DeepQNetwork";
 export { default as DecisionTree } from "./machine-learning/supervised/DecisionTree";
 export type { DecisionTreeNode } from "./machine-learning/supervised/DecisionTree";
 export { default as ExponentialSmoothing } from "./machine-learning/time-series/ExponentialSmoothing";
