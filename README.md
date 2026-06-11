@@ -6,13 +6,19 @@
 
 A small, dependency-free TypeScript machine learning library — built to be **read, understood, and watched**.
 
+It doubles as a **complete, story-driven machine learning course**: **31 chapters (0–30)**, from the
+humble baseline predictors all the way to deep reinforcement learning, generative models, and Bayesian
+inference — every algorithm written from scratch (no ML dependencies), each with its own tests, an
+interactive playground, and a tutorial. The course is **finished**: follow Nadia and her café, *The
+Drifting Leaf*, from a shoebox of receipts to reasoning under uncertainty.
+
 ## 🚀 Interactive playground
 
 **[Open the live playground & tutorials →](https://erikgerrits.github.io/machine-learning/)**
 
 Train each model live in your browser and watch the decision boundary form, the loss fall, and
-the network's weights pulse in real time. Each algorithm comes with a tutorial that maps the math
-straight onto the library's source. (The site lives in [`site/`](./site) and deploys to GitHub Pages.)
+the network's weights pulse in real time. Every one of the 31 chapters comes with a tutorial that maps
+the math straight onto the library's source. (The site lives in [`site/`](./site) and deploys to GitHub Pages.)
 
 ## Important notes
 This library is in an early development phase and many **breaking changes are to be expected**.
