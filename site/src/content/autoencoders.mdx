@@ -1,0 +1,117 @@
+import { AutoencoderPlayground } from '../components/AutoencoderPlayground';
+
+# Chapter 28 — The art of forgetting well
+
+> *Autoencoders.* Part 6 turns from *deciding* to *seeing*. The first frontier model learns nothing but
+> to copy its input to its output — through a bottleneck so narrow it can't just memorise. Forced to
+> throw most of the data away, it discovers the handful of things that actually matter.
+
+Nadia's café app now logs everything: a heatmap of where customers sit each day, scans of handwritten
+receipts, sensor readings from the espresso machine. It's a flood of high-dimensional data with no
+labels — nobody to say "this is a 7" or "that's fraud." She wants to *compress* it, *clean up* the
+noisy scans, and get a quiet alarm when something looks **off**. Three different jobs, it seems.
+
+## The wall: structure with nobody to point it out
+
+Every supervised model needed a target column; clustering needed a notion of distance that fell apart
+in hundreds of dimensions. A day's floor heatmap is 64 pixels, a receipt scan thousands — but they
+don't really wander freely through all that space. The crowd blob only ever *moves*; a digit is one of
+ten shapes, jittered. There's a low-dimensional truth hiding inside the high-dimensional data, and no
+label to reveal it. How do you find structure when nothing tells you what the structure is?
+
+## The idea: make it reconstruct itself through a pinch
+
+Hand the network the simplest possible task — **reproduce your input** — but run it through a pinch in
+the middle. An **encoder** squeezes each input down to a tiny **code** (say 2 numbers); a **decoder**
+must rebuild the whole input from that code alone. The target is the input itself, so it needs no
+labels — it's unsupervised. And because the code is far too small to hold everything, the only way to
+reconstruct well is to spend those few numbers on what *varies most* and discard the rest. The network
+is forced to learn the data's essence.
+
+That one trick quietly solves all three of Nadia's problems:
+
+- **Compress** — the code *is* a learned low-dimensional summary (a non-linear cousin of PCA).
+- **Denoise** — random noise doesn't fit through the pinch, so a corrupted input is rebuilt *clean*.
+- **Spot the odd one out** — train on normal data and anything unlike it rebuilds badly, so a high
+  reconstruction error is an anomaly alarm.
+
+Below, each image is a soft blob that only moves around. Press **Train**: the big panel decodes a grid
+of codes back into images — watch it morph from noise into a smooth 2-D map of the data — while the
+triptych on the right cleans a noisy blob in real time.
+
+<div className="breakout">
+  <AutoencoderPlayground />
+</div>
+
+## How it works: a symmetric net, trained to copy
+
+The network is an MLP folded in half — `inputSize → … → codeSize → … → inputSize` — trained by gradient
+descent to minimise the squared difference between its output and its input. `encode` runs the first
+half, `decode` the second, straight from the
+[`Autoencoder`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/Autoencoder.ts)
+source:
+
+```ts
+public encode (inputs: Matrix) {                 // input → code: run the encoder layers
+    let activation = inputs;
+    for (let l = 0; l < this.encoderWeightCount; l++) activation = this.layerForward(activation, l);
+    return activation;
+}
+
+public decode (codes: Matrix) {                  // code → reconstruction: run the decoder layers
+    let activation = codes;
+    for (let l = this.encoderWeightCount; l < this.weightMatrices.length; l++) activation = this.layerForward(activation, l);
+    return activation;
+}
+```
+
+Training is ordinary backprop, but with the input doubling as the target — the output-layer error is
+`(reconstruction − input)`, and there's no label anywhere:
+
+```ts
+let delta = Matrix.subtract(activations[last], inputs)            // reconstruction error
+    .multiplyElementWise(Matrix.transform(preActivations[last], sigmoidPrime));
+```
+
+The whole gradient path is finite-difference verified by a shipped `checkGradients()`. And the
+anomaly score falls right out of the same forward pass — the per-row reconstruction error:
+
+```ts
+public reconstructionError (inputs: Matrix): number[] {          // big = "nothing like what I learned"
+    const reconstructed = this.reconstruct(inputs);
+    // … mean squared (reconstructed − input) per row …
+}
+```
+
+## Try it yourself
+
+- **Watch the manifold form.** Early on the tiles are noisy garbage. As it trains, they snap into clean
+  blobs that slide smoothly across the panel — the network has organised a 2-D *map* where nearby codes
+  mean nearby images. The coloured dots are the real data, laid out by their codes.
+- **Denoise.** Push the **Noise** slider right and the middle image turns to static — yet the rebuilt
+  one stays a clean blob. The bottleneck simply has no room to represent speckle, so it can't reproduce
+  it. That's denoising for free, a side effect of compression.
+- **Find the intrinsic dimension.** Switch to **Sliding bar**: the data really has *one* degree of
+  freedom, and the latent dots, coloured by bar position, line up into a clear gradient — one dominant
+  direction of variation, the autoencoder surfacing that the data is essentially one-dimensional.
+- **Learning rate.** Too low and the manifold forms in slow motion; too high and it can thrash before
+  settling. Reinforcement learning was slow; this is quick — give it a few seconds.
+
+> **Field note — the bottleneck is the whole point.** Widen the code until it's as big as the input and
+> the network can "cheat" — copy every pixel straight through, learning nothing. It's the *squeeze* that
+> forces understanding. Add a denoising objective (corrupt the input, ask for the clean original) or a
+> sparsity penalty and you get sturdier features; constrain the code to be a smooth probability
+> distribution and the decoder becomes a **generator** you can sample from — which is exactly the door
+> into the next chapter.
+
+## What broke — nothing; and the café learned to see
+
+Nothing broke. With no labels at all, one idea — reconstruct yourself through a pinch — gave Nadia a
+compressor, a denoiser, and an anomaly detector at once, each just a different way of reading the same
+trained network. The autoencoder learned the *shape* of her data.
+
+But notice what the decoder quietly became: a machine that turns a few numbers into a full image. Feed
+it a code and out comes a blob; the manifold panel is nothing but the decoder run over a grid of codes
+it was never given. If we could only sample *new* codes that land on the data's manifold, that decoder
+would invent images that never existed. Making that leap — from rebuilding the old to **generating the
+new** — is the frontier the next chapter walks into (`docs/course-plan.md`).

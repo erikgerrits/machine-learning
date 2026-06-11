@@ -36,10 +36,13 @@ predicts — online select → reward → update, ε-greedy + UCB), **Ch 25 Cont
 per-arm ridge-regression model over the context), **Ch 26 MDPs & Q-Learning** (tabular, model-free,
 off-policy TD control — delayed consequences and the Bellman backup, taught through a café-floor grid
 world), and **Ch 27 Deep RL** (a from-scratch **DQN** with experience replay and a target network,
-reusing the Chapter-20 neural network to approximate value over a *continuous* floor). **The deep-RL
-chapter, like the three deep-learning frontier chapters (CNN, RNN, Transformer), became a full
-trainable build** rather than the planned "adopts" explainer. Still roadmap: Part 6 — generative
-(Ch 28–29) and Bayesian (Ch 30). See the status column below.
+reusing the Chapter-20 neural network to approximate value over a *continuous* floor). **Part 6 (the
+frontier)** is now under way with **Ch 28 Autoencoders** (a from-scratch symmetric encoder/decoder with
+MSE backprop and gradient checking — compression, denoising, and anomaly detection all from one
+reconstruction objective, taught with a live latent-manifold playground). **The deep-RL and autoencoder
+chapters, like the three deep-learning frontier chapters (CNN, RNN, Transformer), became full trainable
+builds** rather than the planned "adopts" explainers. Still roadmap: the rest of Part 6 — generative
+models (Ch 29) and Bayesian (Ch 30). See the status column below.
 
 ---
 
@@ -196,7 +199,7 @@ Every row's "Wall" is the previous tool failing.
 ### Part 6 — The frontier (Season 5)
 | # | Chapter | Café problem | The Wall → The Idea | Status |
 |---|---|---|---|---|
-| 28 | **Autoencoders** | Compress & denoise data; anomaly detection with nets | Need compact learned representations → encode→decode | ○ |
+| 28 | **Autoencoders** | Compress & denoise data; anomaly detection with nets | Need compact learned representations → encode→decode | ✅ `Autoencoder` (from scratch — symmetric encoder/decoder, MSE backprop, gradient-checked; compress + denoise + anomaly via reconstruction error; latent-manifold playground) |
 | 29 | **Generative Models (VAE/GAN/Diffusion)** | Invent new recipe ideas & marketing images | Don't classify — *create* → generative modeling | ○ (adopts) |
 | 30 | **Bayesian / Probabilistic Models** | "How *sure* are we?" before a big bet (signing the lease for store #3, a huge catering order) | Point predictions hide uncertainty → priors, posteriors, reasoning under uncertainty | ○ |
 

@@ -37,6 +37,7 @@ const BanditsTutorial = lazy(() => import('./content/bandits.mdx'));
 const ContextualBanditsTutorial = lazy(() => import('./content/contextual-bandits.mdx'));
 const QLearningTutorial = lazy(() => import('./content/q-learning.mdx'));
 const DeepRlTutorial = lazy(() => import('./content/deep-rl.mdx'));
+const AutoencodersTutorial = lazy(() => import('./content/autoencoders.mdx'));
 
 export function App() {
     return (
@@ -272,6 +273,14 @@ export function App() {
                     element={
                         <TutorialPage>
                             <DeepRlTutorial />
+                        </TutorialPage>
+                    }
+                />
+                <Route
+                    path="autoencoders"
+                    element={
+                        <TutorialPage>
+                            <AutoencodersTutorial />
                         </TutorialPage>
                     }
                 />

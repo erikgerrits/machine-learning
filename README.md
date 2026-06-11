@@ -49,6 +49,7 @@ Below are some simple code usage examples.
 * [Contextual Bandit (LinUCB)](#contextual-bandit-linucb)
 * [Q-Learning (reinforcement learning)](#q-learning-reinforcement-learning)
 * [Deep Q-Network (DQN)](#deep-q-network-dqn)
+* [Autoencoder](#autoencoder)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -687,6 +688,43 @@ for (let row = 4; row >= 0; row--) {
 // ░ ▒ ▓ ▓ █   home — even from spots it never visited in training, because the network interpolates
 // ░ ░ ▒ ▓ █   between the ones it did. That generalisation is what a lookup table could never do.
 // ░ ░ ░ ▒ ▓
+
+```
+
+### Autoencoder
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Autoencoder: compress, then denoise. Each "image" is a 7×7 soft blob at some position — 49 pixels
+// that really vary only 2 ways (where the blob is). The autoencoder squeezes each through a 2-number
+// bottleneck and rebuilds it; noise can't fit through that squeeze, so a corrupted image comes out clean.
+const W = 7;
+const blob = (cx: number, cy: number) => {
+    const img: number[] = [];
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) img.push(Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / 5));
+    return img;
+};
+let lcg = 1;
+const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+const images = Array.from({ length: 80 }, () => blob(1.5 + rng() * 4, 1.5 + rng() * 4));
+
+const autoencoder = new ml.Autoencoder();
+autoencoder.setHiddenSizes([24]).setCodeSize(2).setLearningRate(1).setNumberOfEpochs(1500).setSeed(0);
+autoencoder.train(new ml.Matrix(images));         // 49 pixels -> 2 numbers -> 49 pixels
+
+const clean = blob(3, 3);
+const noisy = clean.map(v => Math.min(1, Math.max(0, v + (rng() - 0.5) * 0.8)));
+const cleaned = autoencoder.reconstruct(new ml.Matrix([noisy])).toArray()[0];
+
+const render = (img: number[], y: number) => img.slice(y * W, y * W + W).map(v => ' .:+#'[Math.min(4, Math.floor(v * 5))]).join('');
+console.log('   noisy        reconstructed');
+for (let y = 0; y < W; y++) console.log('  ' + render(noisy, y) + '      ' + render(cleaned, y));
+//    noisy        reconstructed     <- the left is a speckled mess; the right is a clean blob, because
+//   .  : :                             the network kept only what fits through the 2-number code ("a
+//    .#++..      .:++:                 blob, roughly here") and dropped the rest. That same code, read
+//   :.###        .:++:.                on its own, is a 2-D map of the data — and a high reconstruction
+//   ::#:.+       .:++.                 error flags an anomaly that looks like nothing it ever learned.
 
 ```
 

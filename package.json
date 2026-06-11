@@ -90,7 +90,11 @@
     "deep reinforcement learning",
     "deep q-network",
     "dqn",
-    "experience replay"
+    "experience replay",
+    "autoencoder",
+    "representation learning",
+    "denoising",
+    "bottleneck"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",
