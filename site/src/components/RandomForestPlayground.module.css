@@ -1,20 +1,15 @@
 .playground {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 20px;
-    align-items: start;
+    composes: playground from './PlaygroundLayout.module.css';
 }
 
 .stage {
-    display: grid;
-    grid-template-columns: minmax(0, 460px) minmax(260px, 1fr);
-    gap: 20px;
-    align-items: start;
+    composes: stage from './PlaygroundLayout.module.css';
 }
 
 .boundaryWrap {
     position: relative;
     aspect-ratio: 1 / 1;
+    max-width: 620px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
@@ -41,9 +36,7 @@
 }
 
 .side {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    composes: side from './PlaygroundLayout.module.css';
 }
 
 .note {
@@ -53,12 +46,3 @@
     line-height: 1.6;
 }
 
-@media (max-width: 900px) {
-    .playground {
-        grid-template-columns: 1fr;
-    }
-
-    .stage {
-        grid-template-columns: 1fr;
-    }
-}

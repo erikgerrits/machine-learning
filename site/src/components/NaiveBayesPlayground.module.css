@@ -1,14 +1,9 @@
 .playground {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 20px;
-    align-items: start;
+    composes: playground from './PlaygroundLayout.module.css';
 }
 
 .stage {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    composes: stage from './PlaygroundLayout.module.css';
 }
 
 .textarea {
@@ -112,8 +107,3 @@
     color: var(--muted);
 }
 
-@media (max-width: 900px) {
-    .playground {
-        grid-template-columns: 1fr;
-    }
-}

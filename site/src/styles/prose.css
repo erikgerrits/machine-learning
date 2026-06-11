@@ -91,8 +91,10 @@
     padding: 4px 0;
 }
 
-/* Let an embedded playground break out of the narrow prose column. */
+/* Let an embedded playground break out of the narrow prose column and span the
+   full content area (100cqw = the .content container's inner width). A plain
+   max-width: none can't do it — the prose column itself is only 760px wide. */
 .prose .breakout {
     max-width: none;
-    margin: 28px 0;
+    margin: 28px min(0px, calc((760px - 100cqw) / 2));
 }

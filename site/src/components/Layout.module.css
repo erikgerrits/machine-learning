@@ -124,6 +124,7 @@
 .content {
     padding: 28px 28px 80px;
     min-width: 0;
+    container-type: inline-size; /* lets .breakout size itself to the content area via cqw */
 }
 
 .loading {
