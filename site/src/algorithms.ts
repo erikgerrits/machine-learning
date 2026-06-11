@@ -294,4 +294,13 @@ export const ALGORITHMS: AlgorithmEntry[] = [
         chapter: 28,
         part: PART_6,
     },
+    {
+        id: 'generative-models',
+        path: '/generative-models',
+        title: 'Generative Models (VAE)',
+        tagline: 'Shape the latent space into a samplable prior — then invent images that never existed.',
+        status: 'live',
+        chapter: 29,
+        part: PART_6,
+    },
 ];

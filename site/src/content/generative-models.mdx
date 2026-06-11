@@ -1,0 +1,107 @@
+import { VariationalAutoencoderPlayground } from '../components/VariationalAutoencoderPlayground';
+
+# Chapter 29 — Inventing what was never there
+
+> *Generative models (the VAE).* Last chapter's decoder could already turn a code into an image — but
+> only codes it had seen. This chapter makes the latent space so smooth and well-organised that you can
+> pluck a code *at random* and get something new and plausible. The café stops summarising its data and
+> starts **dreaming up** new examples of it.
+
+Nadia's autoencoder learned the *shape* of her data — a 2-number summary of each floor heatmap, each
+receipt. Now she wants more than a summary. Could the model **invent** plausible new heatmaps to
+stress-test staffing? Sketch fresh latte-art ideas? That means *generating* data, not just rebuilding
+it — and the autoencoder is tantalisingly close, since its decoder already turns numbers into images.
+
+## The wall: the gaps between the codes
+
+So just feed the trained decoder a random code and see what comes out? Try it and you mostly get
+mush. A plain autoencoder was only ever asked to reconstruct *its* inputs, so it parks their codes
+wherever is convenient — scattered islands with **no-man's-land in between**. The data points decode
+fine; the empty space between them decodes to nonsense. There's no reason a random code should land on
+anything meaningful, because nothing ever told the model to fill the space in. To sample, we need a
+latent space with **no gaps** and a **known shape** to sample from.
+
+## The idea: encode a distribution, and tidy the space
+
+Two changes turn the autoencoder into a **variational autoencoder**. First, the encoder stops emitting
+a single point and instead outputs a little **distribution** for each input — a mean `μ` and a spread
+`σ` per latent dimension — and the code is **sampled** from it. That blurs each input across a small
+region instead of a pin-point, forcing nearby codes to also decode sensibly. (To keep it trainable, the
+sample is written `z = μ + σ·ε` with `ε ~ N(0, 1)` — the *reparameterisation trick* — so the
+randomness sits in `ε` and the gradient still flows through `μ` and `σ`.)
+
+Second, a **KL-divergence** penalty pulls every input's distribution toward a standard normal
+`N(0, 1)`. That gently packs all the codes into one smooth, gap-free blob centred on the origin — a
+shape we know exactly how to sample. Now the recipe to generate is trivial: **draw `z ~ N(0, 1)`,
+decode it, done.** The weight `β` sets how hard that tidying pulls.
+
+Below, the big panel decodes a grid of latent codes — every tile is an image the VAE *invents* — and
+the gallery decodes 16 fixed random codes. Press **Train** and watch noise resolve into samples:
+
+<div className="breakout">
+  <VariationalAutoencoderPlayground />
+</div>
+
+## How it works: a sampled code and two loss terms
+
+The encoder produces `μ` and `logσ²`; a code is sampled with external noise so gradients survive; the
+decoder rebuilds the input — straight from the
+[`VariationalAutoencoder`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/unsupervised/VariationalAutoencoder.ts)
+source:
+
+```ts
+const std = Matrix.transform(logVar, v => Math.exp(0.5 * v));
+const z = Matrix.add(mean, hadamard(std, noise)); // z = μ + σ·ε  — the reparameterisation trick
+```
+
+Training minimises two terms at once — rebuild the input **and** keep each code close to `N(0, 1)`:
+
+```ts
+// KL = −½ Σ(1 + logσ² − μ² − e^{logσ²}); its gradients flow back into the two encoder heads:
+const dMean   = Matrix.add(dz, Matrix.multiply(mean, this.beta));                         // dKL/dμ = μ
+const dLogVar = Matrix.add(dLogVarRecon, Matrix.multiply(/* ½(e^{logσ²} − 1) */, this.beta)); // dKL/dlogσ²
+```
+
+The reconstruction term keeps samples *sharp*; the KL term keeps the space *samplable*; `β` balances
+them. The gradient path — through the sampled `z` and the KL — is finite-difference verified by a
+shipped `checkGradients()`. Generating is then just the decoder on a fresh draw:
+
+```ts
+public sample (count: number) {                 // z ~ N(0,1) → decode → a brand-new image
+    const codes = /* `count` rows of standard-normal noise */;
+    return this.generate(new Matrix(codes));
+}
+```
+
+## Try it yourself
+
+- **Watch the gallery resolve.** The 16 thumbnails start as static — random codes through an untrained
+  decoder. As the KL term organises the space, those same codes decode into clean, varied samples. None
+  are copied from the data; the VAE is making them up.
+- **Read the manifold.** The big panel is latent space laid bare: move across it and the generated image
+  sweeps smoothly from one form to another, with no dead patches. The dots are the real data&apos;s codes
+  — note how they sit inside the same `N(0, 1)` cloud the samples are drawn from.
+- **Turn β up and down.** High **β** tidies the space hard: samples get more reliable but blurrier. Low
+  β sharpens reconstructions but tears gaps back open, and some random draws start decoding to mush —
+  the exact trade-off at the heart of generative modelling.
+
+> **Field note — the same idea, scaled and varied.** This is a *small* VAE on *tiny* images, but the
+> recipe generalises. Make the decoder a big convolutional or transformer network and you get models
+> that synthesise faces and photographs. Swap the approach and you meet the VAE&apos;s famous cousins:
+> **GANs** pit a generator against a critic that learns to spot fakes; **diffusion models** (behind
+> today&apos;s image generators) learn to reverse a gradual noising process, denoising pure static into a
+> picture step by step. Different machinery, same goal you just watched — sampling new data from learned
+> structure.
+
+## What broke — nothing; the café learned to imagine
+
+Nothing broke. By asking for a *distribution* instead of a point and tidying the latent space toward a
+shape it could sample, the café crossed the line from *describing* data to *creating* it. The decoder
+you trained in Chapter 28 became a generator — feed it noise, get something that never existed but
+could have.
+
+That leaves one last thread. Every model in this course, generators included, hands back an answer with
+total confidence — a blob, a class, a sampled image — and never says how *sure* it is. But Nadia&apos;s
+biggest decisions (sign the lease for store #3? take the giant catering order?) need exactly that:
+honest uncertainty, not a single confident guess. Putting numbers on doubt — priors, posteriors, and
+reasoning when the data is thin — is the final chapter on the map (`docs/course-plan.md`).

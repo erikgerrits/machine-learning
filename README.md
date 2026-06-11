@@ -50,6 +50,7 @@ Below are some simple code usage examples.
 * [Q-Learning (reinforcement learning)](#q-learning-reinforcement-learning)
 * [Deep Q-Network (DQN)](#deep-q-network-dqn)
 * [Autoencoder](#autoencoder)
+* [Variational Autoencoder (VAE)](#variational-autoencoder-vae)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -725,6 +726,42 @@ for (let y = 0; y < W; y++) console.log('  ' + render(noisy, y) + '      ' + ren
 //    .#++..      .:++:                 blob, roughly here") and dropped the rest. That same code, read
 //   :.###        .:++:.                on its own, is a 2-D map of the data — and a high reconstruction
 //   ::#:.+       .:++.                 error flags an anomaly that looks like nothing it ever learned.
+
+```
+
+### Variational Autoencoder (VAE)
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// VAE: the autoencoder turned into a *generator*. The encoder outputs a distribution (mean + variance)
+// per input, a KL term shapes the latent space into a standard normal, and the reparameterisation trick
+// keeps it trainable. So afterwards you can draw a random code z ~ N(0, 1), decode it, and get a
+// brand-new, plausible image that was never in the training set.
+const W = 7;
+const blob = (cx: number, cy: number) => {
+    const img: number[] = [];
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) img.push(Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / 4));
+    return img;
+};
+let lcg = 1;
+const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+const images = Array.from({ length: 200 }, () => blob(1.5 + rng() * 4, 1.5 + rng() * 4));
+
+const vae = new ml.VariationalAutoencoder();
+vae.setHiddenSize(32).setCodeSize(2).setBeta(1).setLearningRate(0.06).setNumberOfEpochs(2000).setSeed(0);
+vae.train(new ml.Matrix(images));
+
+const samples = vae.sample(3, 7).toArray();        // 3 fresh blobs drawn from the prior — none memorised
+const render = (img: number[], y: number) => img.slice(y * W, y * W + W).map(v => ' .:+#'[Math.min(4, Math.floor(v * 5))]).join('');
+console.log('three invented blobs (z ~ N(0,1) -> decode):');
+for (let y = 0; y < W; y++) console.log('  ' + [0, 1, 2].map(i => render(samples[i], y)).join('    '));
+// three invented blobs (z ~ N(0,1) -> decode):     <- each column is a clean blob at a different spot,
+//                  .                                   generated from a random latent code. The decoder
+//                .:::.           .::.                  became a generator: feed it a point in the smooth
+//     ..         .+++.       :++:                      latent space and a new image comes out. (Constrain
+//    .+:.        .::.        :++:                      that space to N(0,1) and that's exactly what makes
+//   .:##:.                   .::.                      the random draws land on plausible images.)
 
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -94,7 +94,11 @@
     "autoencoder",
     "representation learning",
     "denoising",
-    "bottleneck"
+    "bottleneck",
+    "variational autoencoder",
+    "vae",
+    "generative model",
+    "generative ai"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",

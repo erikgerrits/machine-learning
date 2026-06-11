@@ -30,5 +30,6 @@ export { default as RandomForest } from "./machine-learning/supervised/RandomFor
 export { default as RecurrentNeuralNetwork } from "./machine-learning/supervised/RecurrentNeuralNetwork";
 export { default as Recommender } from "./machine-learning/unsupervised/Recommender";
 export { default as SupportVectorMachine } from "./machine-learning/supervised/SupportVectorMachine";
+export { default as VariationalAutoencoder } from "./machine-learning/unsupervised/VariationalAutoencoder";
 export type { Kernel } from "./machine-learning/supervised/SupportVectorMachine";
 export { default as Transformer } from "./machine-learning/supervised/Transformer";
