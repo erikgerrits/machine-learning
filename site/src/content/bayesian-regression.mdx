@@ -1,0 +1,110 @@
+import { BayesianLinearRegressionPlayground } from '../components/BayesianLinearRegressionPlayground';
+
+# Chapter 30 — Knowing what you don't know
+
+> *Bayesian inference.* Every model in this course has answered with total confidence — a number, a
+> class, an image — and never once said how *sure* it was. The final idea fixes that: instead of a
+> single best fit, keep a whole **distribution** over answers, and report the spread. A model that
+> knows the difference between a good guess and a wild one.
+
+Nadia is about to sign the lease on store #3 — the biggest bet of her life. Her demand model says it'll
+work. But that model is the same kind that, back in Chapter 1, drew one confident line through the
+data. One line. What she actually needs to know isn't just the prediction — it's *how much to trust
+it*, especially for a neighbourhood unlike any café she's run. A point estimate can't tell her that.
+
+## The wall: a single answer hides its own doubt
+
+Every regressor so far returned one curve — the best fit to the data it saw. But "best fit" says
+nothing about confidence. Two situations can give the identical line: one where a thousand points pin
+it down, and one where three points barely suggest it. The line looks just as bold either way.
+Worse, ask it to predict somewhere it has *no* data — a new neighbourhood, next year's prices — and it
+answers with the same flat confidence as it does in the thick of the data. The model can't distinguish
+*"I know this"* from *"I'm guessing."* For a decision that matters, that missing humility is the whole
+ballgame.
+
+## The idea: keep the whole distribution
+
+So stop committing to one curve. Start with a **prior** — a vague belief about what curves are
+plausible before seeing data (gentle, not-too-wiggly ones). Then treat each observation as **evidence**
+that updates that belief into a **posterior**: a distribution over *all* the curves still consistent
+with what you've seen. Many curves fit the data near the points, so confidence is high there; but far
+from any data, wildly different curves all remain plausible, so the posterior stays broad. That spread,
+turned into an error bar at every input, is the model saying exactly how much it knows where.
+
+For a linear model with Gaussian noise this is **closed-form** — no training loop, just algebra. The
+posterior over the weights is itself a Gaussian, and so is the prediction at any point, with a variance
+that grows wherever the data didn't constrain things:
+
+$$
+\text{prediction at } x \sim \mathcal{N}\big(m_N^{\top}\phi(x),\;\; \underbrace{1/\beta}_{\text{noise}} + \underbrace{\phi(x)^{\top} S_N\, \phi(x)}_{\text{how unsure}}\big)
+$$
+
+Below, the data is revealed point by point. Press **Train** and watch the shaded band — the model's
+*credible region* — collapse onto the evidence as it arrives, while staying wide open everywhere it has
+none:
+
+<div className="breakout">
+  <BayesianLinearRegressionPlayground />
+</div>
+
+## How it works: a posterior in closed form
+
+The input `x` is expanded through basis functions `φ(x)` (Gaussian bumps or polynomial powers) so the
+fit can curve. A Gaussian prior on the weights meets the data, and the posterior covariance and mean
+come straight out — from the
+[`BayesianLinearRegression`](https://github.com/erikgerrits/machine-learning/blob/master/src/lib/machine-learning/supervised/BayesianLinearRegression.ts)
+source:
+
+```ts
+// A = α·I + β·ΦᵀΦ ;  posterior covariance Sₙ = A⁻¹ ;  posterior mean mₙ = β·Sₙ·Φᵀy
+const a = Matrix.add(Matrix.multiply(Matrix.identity(m), this.alpha), Matrix.multiply(Matrix.multiply(phiT, phi), this.beta));
+this.covariance = a.getInverse();
+this.meanWeights = Matrix.multiply(Matrix.multiply(Matrix.multiply(this.covariance, phiT), targets), this.beta);
+```
+
+The error bar at a new point is the noise floor plus an *epistemic* term — the part that shrinks with
+evidence and grows without it:
+
+```ts
+// predictive variance = 1/β + φ(x)ᵀ Sₙ φ(x)
+result.push(Math.sqrt(noiseVariance + epistemic));
+```
+
+And because the posterior over weights is a full Gaussian, you can **draw whole curves** from it — each
+a plausible explanation of the data. They thread tightly through the points and spray apart where the
+evidence runs out, which is exactly the picture of uncertainty the band summarises.
+
+## Try it yourself
+
+- **Watch the band breathe.** Start with one point — the band is huge, barely past the flat prior. Each
+  new observation snaps it tighter *locally*. By the end it clings to the data and balloons only at the
+  edges, where the model is honestly extrapolating.
+- **The gap.** Switch to that dataset: even *surrounded* by data, the band bulges across the hole in the
+  middle. The model won't pretend to know what happens where it never looked.
+- **α and β.** Raise **α** and the prior pulls harder — a steadier fit that resists the data (good when
+  points are scarce, stubborn when they're plentiful). Raise **β** and the model trusts each point more,
+  hugging them closely. The posterior is the tug-of-war between prior belief and evidence.
+- **Posterior samples.** Toggle them on: each thin curve is one plausible truth. Where they bunch into a
+  rope, the model is sure; where they fan into a brush, it isn't.
+
+> **Field note — Bayes is a lens, not one algorithm.** The same prior → evidence → posterior move
+> underlies far more than this line. Put a prior on a coin's bias and you get the Beta-Bernoulli updates
+> behind A/B tests; put it over functions directly and you get **Gaussian processes**; carry posteriors
+> through a neural network and you get the Bayesian deep learning used where calibrated uncertainty is
+> safety-critical. When the data is thin and the stakes are high, reasoning about *distributions* rather
+> than point estimates is the move.
+
+## What broke — nothing; and the ledger comes full circle
+
+Nothing broke. Nadia's model can finally say not just *"demand will be this"* but *"…and here's how
+sure I am"* — tight bars over familiar ground, wide ones over the unknown neighbourhood. That honesty,
+not a bolder point estimate, is what lets her weigh the lease with open eyes.
+
+And that closes the book. Thirty chapters ago there was a failing café and a shoebox of receipts, and
+the only tools were the average and a hunch. From there: a line through demand, then many features,
+then the wall of overfitting; classifiers and trees and forests; clustering and compression and
+recommendation; neural networks that see and read and attend; agents that act and learn from
+consequences; models that dream up new data; and now, at the end, a model that knows the limits of its
+own knowledge. Every chapter was the same move — find the wall, then find the idea that breaks it — and
+every one is built from scratch in this little library, no magic imported. The café learned to think.
+The map (`docs/course-plan.md`) has no chapters left unbuilt. Thanks for reading to the end. ☕

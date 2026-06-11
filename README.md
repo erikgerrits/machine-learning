@@ -51,6 +51,7 @@ Below are some simple code usage examples.
 * [Deep Q-Network (DQN)](#deep-q-network-dqn)
 * [Autoencoder](#autoencoder)
 * [Variational Autoencoder (VAE)](#variational-autoencoder-vae)
+* [Bayesian Linear Regression](#bayesian-linear-regression)
 
 ### Feedforward Neural Network
 ```TypeScript
@@ -762,6 +763,37 @@ for (let y = 0; y < W; y++) console.log('  ' + [0, 1, 2].map(i => render(samples
 //     ..         .+++.       :++:                      latent space and a new image comes out. (Constrain
 //    .+:.        .::.        :++:                      that space to N(0,1) and that's exactly what makes
 //   .:##:.                   .::.                      the random draws land on plausible images.)
+
+```
+
+### Bayesian Linear Regression
+
+```TypeScript
+import * as ml from 'machine-learning';
+
+// Bayesian linear regression: a model that reports how *sure* it is. Instead of one best-fit curve it
+// keeps a whole distribution over curves, so every prediction comes with an error bar — tight where it
+// has data, fanning wide open where it doesn't (a gap, or past the edge). Here it sees noisy points from
+// a hidden sine, but only over the middle of the range.
+const truth = (x: number) => Math.sin(2 * Math.PI * x) * 0.5;
+let lcg = 1;
+const rng = () => (lcg = (lcg * 48271) % 2147483647) / 2147483647;
+const xs: number[][] = [], ys: number[][] = [];
+for (let i = 0; i < 30; i++) { const x = 0.25 + rng() * 0.4; xs.push([x]); ys.push([truth(x) + (rng() - 0.5) * 0.1]); }
+
+const model = new ml.BayesianLinearRegression();
+model.setBasis('gaussian').setNumberOfBases(6).setBasisWidth(0.15).setBeta(40);
+model.train(new ml.Matrix(xs), new ml.Matrix(ys));   // observed only over x in [0.25, 0.65]
+
+const grid = [0, 0.25, 0.45, 0.65, 1];
+const mean = model.predict(new ml.Matrix(grid.map(x => [x]))).toArray().map(r => r[0]);
+const std = model.predictiveStandardDeviation(new ml.Matrix(grid.map(x => [x])));
+grid.forEach((x, i) => console.log(`x=${x.toFixed(2)}  mean=${mean[i].toFixed(2)}  +/-${std[i].toFixed(2)}  ${'#'.repeat(Math.round(std[i] * 20))}`));
+// x=0.00  mean=-0.02  +/-0.57  ###########       <- no data out here: huge error bars (honest doubt)
+// x=0.25  mean= 0.45  +/-0.18  ####               <- has data: tight
+// x=0.45  mean= 0.17  +/-0.16  ###                <- has data: tight
+// x=0.65  mean=-0.36  +/-0.18  ####               <- has data: tight
+// x=1.00  mean=-0.14  +/-0.66  #############       <- extrapolating: the bars fan wide open
 
 ```
 

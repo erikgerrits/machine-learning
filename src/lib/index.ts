@@ -1,5 +1,7 @@
 export { default as AnomalyDetector } from "./machine-learning/unsupervised/AnomalyDetector";
 export { default as AssociationRules } from "./machine-learning/unsupervised/AssociationRules";
+export { default as BayesianLinearRegression } from "./machine-learning/supervised/BayesianLinearRegression";
+export type { BayesianBasis } from "./machine-learning/supervised/BayesianLinearRegression";
 export { default as Autoencoder } from "./machine-learning/unsupervised/Autoencoder";
 export type { AssociationRule, FrequentItemset } from "./machine-learning/unsupervised/AssociationRules";
 export { default as ContextualBandit } from "./machine-learning/reinforcement/ContextualBandit";

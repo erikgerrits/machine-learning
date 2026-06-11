@@ -1,6 +1,6 @@
 {
   "name": "machine-learning",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "TypeScript & JavaScript machine learning library",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index",
@@ -98,7 +98,11 @@
     "variational autoencoder",
     "vae",
     "generative model",
-    "generative ai"
+    "generative ai",
+    "bayesian",
+    "bayesian regression",
+    "uncertainty",
+    "probabilistic"
   ],
   "author": "Erik Gerrits <gerrits.erik@gmail.com>",
   "license": "MIT",
