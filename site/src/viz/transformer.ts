@@ -18,27 +18,32 @@ export function drawAttention(
     const n = words.length;
     if (n === 0) return;
 
+    // Margins scale with the canvas so the title and value labels keep their headroom on a tall box.
     const padX = 10;
     const cellW = (width - 2 * padX) / n;
-    const baseY = height - 30;        // words sit here
-    const barTop = 24;                // bars grow down to baseY from here
+    const baseY = height - Math.max(28, height * 0.08); // words sit here
+    const barTop = Math.max(26, height * 0.1);          // bars grow down to baseY from here
     const barAreaH = baseY - barTop;
-
-    const maxAttn = Math.max(1e-6, ...attentionRow);
 
     ctx.fillStyle = 'rgba(226, 232, 240, 0.7)';
     ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText('[CLS] attention — which word the model looks at', padX, 14);
 
+    // The row is a softmax (sums to 1). Scale against a reference weight rather than the row's own max:
+    // uniform early on → short, equal bars; the winning word's bar visibly grows as it locks on, and a
+    // strongly-attended word (≳ FULL) fills the plot. (Normalising to the row max instead pinned the
+    // tallest bar to the ceiling every frame, so nothing ever appeared to "grow".)
+    const FULL = 0.6;
+
     ctx.textAlign = 'center';
     for (let i = 0; i < n; i++) {
         const cx = padX + (i + 0.5) * cellW;
-        const barH = (attentionRow[i] / maxAttn) * barAreaH;
+        const barH = Math.min(1, Math.max(0, attentionRow[i]) / FULL) * barAreaH;
 
         // Attention bar.
         ctx.fillStyle = BAR;
-        const barW = Math.min(cellW * 0.6, 26);
+        const barW = Math.min(cellW * 0.6, 44);
         ctx.fillRect(cx - barW / 2, baseY - barH, barW, barH);
 
         // Weight label above the bar.
